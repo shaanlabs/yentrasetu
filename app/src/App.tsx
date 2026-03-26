@@ -15,6 +15,8 @@ import {
   LogIn
 } from 'lucide-react';
 import { useAuth } from './contexts/AuthContext';
+import { apiClient } from './services/api';
+import SearchOverlay from './components/SearchOverlay';
 import './App.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -24,6 +26,9 @@ function App() {
   const { isAuthenticated, user } = useAuth();
   const [navScrolled, setNavScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterMsg, setNewsletterMsg] = useState('');
   
   // Section refs
   const heroRef = useRef<HTMLDivElement>(null);
@@ -464,6 +469,8 @@ function App() {
     <div className="relative">
       {/* Grain overlay */}
       <div className="grain-overlay" />
+      {/* Search Overlay */}
+      <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {/* Navigation */}
       <nav className={`nav-fixed ${navScrolled ? 'scrolled' : ''}`}>
@@ -477,7 +484,7 @@ function App() {
         </div>
 
         <div className="nav-actions">
-          <button className="p-2 hover:text-[#FF6A00] transition-colors">
+          <button className="p-2 hover:text-[#FF6A00] transition-colors" onClick={() => setSearchOpen(true)}>
             <Search size={20} />
           </button>
           <button 
@@ -977,9 +984,19 @@ function App() {
                   type="email" 
                   placeholder="Email address" 
                   className="footer-input"
+                  value={newsletterEmail}
+                  onChange={(e) => { setNewsletterEmail(e.target.value); setNewsletterMsg(''); }}
                 />
-                <button className="btn-primary rounded-l-none">Subscribe</button>
+                <button className="btn-primary rounded-l-none" onClick={async () => {
+                  if (!newsletterEmail) return;
+                  try {
+                    await apiClient.post('/newsletter/subscribe', { email: newsletterEmail });
+                    setNewsletterMsg('✓ Subscribed!');
+                    setNewsletterEmail('');
+                  } catch { setNewsletterMsg('Failed. Try again.'); }
+                }}>Subscribe</button>
               </div>
+              {newsletterMsg && <p className={`text-xs mt-2 ${newsletterMsg.startsWith('✓') ? 'text-green-400' : 'text-red-400'}`}>{newsletterMsg}</p>}
             </div>
 
             {/* Right Column */}
@@ -987,33 +1004,33 @@ function App() {
               <div>
                 <h4 className="font-bold mb-4">Buy</h4>
                 <ul className="space-y-2 text-sm text-gray-400">
-                  <li><a href="#" className="hover:text-white transition-colors">Browse</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Featured</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Compare</a></li>
+                  <li><a href="/browse?type=sale" onClick={(e) => { e.preventDefault(); navigate('/browse?type=sale'); }} className="hover:text-white transition-colors">Browse</a></li>
+                  <li><a href="/browse?sortBy=viewCount" onClick={(e) => { e.preventDefault(); navigate('/browse?sortBy=viewCount'); }} className="hover:text-white transition-colors">Featured</a></li>
+                  <li><a href="/browse" onClick={(e) => { e.preventDefault(); navigate('/browse'); }} className="hover:text-white transition-colors">Compare</a></li>
                 </ul>
               </div>
               <div>
                 <h4 className="font-bold mb-4">Rent</h4>
                 <ul className="space-y-2 text-sm text-gray-400">
-                  <li><a href="#" className="hover:text-white transition-colors">Short-term</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Long-term</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">With Operator</a></li>
+                  <li><a href="/browse?type=rent" onClick={(e) => { e.preventDefault(); navigate('/browse?type=rent'); }} className="hover:text-white transition-colors">Short-term</a></li>
+                  <li><a href="/browse?type=rent" onClick={(e) => { e.preventDefault(); navigate('/browse?type=rent'); }} className="hover:text-white transition-colors">Long-term</a></li>
+                  <li><a href="/browse?type=rent" onClick={(e) => { e.preventDefault(); navigate('/browse?type=rent'); }} className="hover:text-white transition-colors">With Operator</a></li>
                 </ul>
               </div>
               <div>
                 <h4 className="font-bold mb-4">Sell</h4>
                 <ul className="space-y-2 text-sm text-gray-400">
-                  <li><a href="#" className="hover:text-white transition-colors">List a Machine</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Valuation</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Dealer Program</a></li>
+                  <li><a href="/sell" onClick={(e) => { e.preventDefault(); navigate(isAuthenticated ? '/sell' : '/login'); }} className="hover:text-white transition-colors">List a Machine</a></li>
+                  <li><a href="/browse" onClick={(e) => { e.preventDefault(); navigate('/browse'); }} className="hover:text-white transition-colors">Valuation</a></li>
+                  <li><a href="/register" onClick={(e) => { e.preventDefault(); navigate('/register'); }} className="hover:text-white transition-colors">Dealer Program</a></li>
                 </ul>
               </div>
               <div>
                 <h4 className="font-bold mb-4">Support</h4>
                 <ul className="space-y-2 text-sm text-gray-400">
-                  <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Inspection Standards</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Financing</a></li>
+                  <li><a href="/login" onClick={(e) => { e.preventDefault(); navigate('/login'); }} className="hover:text-white transition-colors">Contact</a></li>
+                  <li><a href="#standards" className="hover:text-white transition-colors">Inspection Standards</a></li>
+                  <li><a href="#financing" className="hover:text-white transition-colors">Financing</a></li>
                 </ul>
               </div>
             </div>

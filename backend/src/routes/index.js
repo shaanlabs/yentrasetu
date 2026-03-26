@@ -46,5 +46,14 @@ router.get('/chats', authenticate, (req, res) => {
 router.get('/admin/dashboard', authenticate, (req, res) => {
   res.json({ message: 'Admin dashboard - Coming soon' });
 });
+// Newsletter
+router.post('/newsletter/subscribe', (req, res) => {
+  const { email } = req.body;
+  if (!email || !email.includes('@')) {
+    return res.status(400).json({ success: false, message: 'Valid email is required.' });
+  }
+  console.log(`📧 Newsletter subscription: ${email}`);
+  res.json({ success: true, message: 'Subscribed successfully!' });
+});
 
 module.exports = router;

@@ -118,6 +118,18 @@ async function request<T = unknown>(
   return res.json();
 }
 
+/**
+ * Exported convenience client for ad-hoc API calls (e.g. newsletter).
+ */
+export const apiClient = {
+  get: <T = unknown>(endpoint: string) => request<T>(endpoint),
+  post: <T = unknown>(endpoint: string, data?: unknown) =>
+    request<T>(endpoint, { method: 'POST', body: data ? JSON.stringify(data) : undefined }),
+  put: <T = unknown>(endpoint: string, data?: unknown) =>
+    request<T>(endpoint, { method: 'PUT', body: data ? JSON.stringify(data) : undefined }),
+  delete: <T = unknown>(endpoint: string) => request<T>(endpoint, { method: 'DELETE' }),
+};
+
 // ─── Auth API ──────────────────────────────────────────
 
 export interface RegisterPayload {
