@@ -553,11 +553,11 @@ function App() {
             </p>
 
             <div className="flex flex-col gap-4 mb-10">
-              <button className="hero-cta btn-primary flex items-center justify-center gap-2">
+              <button className="hero-cta btn-primary flex items-center justify-center gap-2" onClick={() => navigate('/browse?type=sale')}>
                 Browse Machines for Sale
                 <ArrowRight size={18} />
               </button>
-              <button className="hero-cta btn-secondary">
+              <button className="hero-cta btn-secondary" onClick={() => navigate('/browse?type=rent')}>
                 Rent Equipment by the Month
               </button>
             </div>
@@ -596,7 +596,7 @@ function App() {
             <p className="text-[#6F757C] mb-6 text-sm md:text-base">
               From earthmoving to lifting to transport—find machines that match your scope and site.
             </p>
-            <a href="#all-categories" className="link-arrow text-sm">
+            <a href="/browse" onClick={(e) => { e.preventDefault(); navigate('/browse'); }} className="link-arrow text-sm">
               See all categories
               <ArrowRight size={14} />
             </a>
@@ -621,7 +621,7 @@ function App() {
             <p className="text-gray-400 mb-4 text-sm md:text-base">
               Short-term or long-term. Flexible rates with operator options.
             </p>
-            <a href="#rentals" className="link-arrow text-white text-sm">
+            <a href="/browse?type=rent" onClick={(e) => { e.preventDefault(); navigate('/browse?type=rent'); }} className="link-arrow text-white text-sm">
               View rental fleet
               <ArrowRight size={14} />
             </a>
@@ -646,7 +646,7 @@ function App() {
             <p className="text-[#6F757C] mb-4 text-sm md:text-base">
               List in minutes. Get offers from contractors and dealers.
             </p>
-            <a href="#sell" className="link-arrow text-sm">
+            <a href="/sell" onClick={(e) => { e.preventDefault(); navigate(isAuthenticated ? '/sell' : '/login'); }} className="link-arrow text-sm">
               Start a listing
               <ArrowRight size={14} />
             </a>
