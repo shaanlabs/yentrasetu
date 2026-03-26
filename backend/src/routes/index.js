@@ -26,26 +26,55 @@ router.delete('/machinery/:id', authenticate, machineryController.deleteListing)
 router.put('/machinery/:id/mark-sold', authenticate, machineryController.markAsSold);
 router.put('/machinery/:id/renew', authenticate, machineryController.renewListing);
 
-// Placeholder routes for future implementation
-router.get('/parts', (req, res) => {
-  res.json({ message: 'Parts marketplace - Coming soon' });
-});
+const partsController = require('../controllers/partsController');
+const operatorController = require('../controllers/operatorController');
+const mechanicController = require('../controllers/mechanicController');
+const reviewController = require('../controllers/reviewController');
+const bookingController = require('../controllers/bookingController');
+const chatController = require('../controllers/chatController');
+const adminController = require('../controllers/adminController');
 
-router.get('/operators', (req, res) => {
-  res.json({ message: 'Operator hiring - Coming soon' });
-});
+// Parts routes
+router.post('/parts', authenticate, partsController.createPart);
+router.get('/parts', partsController.getParts);
+router.get('/parts/my-parts', authenticate, partsController.getMyParts);
+router.get('/parts/:id', partsController.getPart);
+router.delete('/parts/:id', authenticate, partsController.deletePart);
 
-router.get('/mechanics', (req, res) => {
-  res.json({ message: 'Mechanic hiring - Coming soon' });
-});
+// Operator routes
+router.post('/operators/profile', authenticate, operatorController.createOrUpdateProfile);
+router.get('/operators', operatorController.getOperators);
+router.get('/operators/my-profile', authenticate, operatorController.getMyProfile);
+router.get('/operators/:id', operatorController.getOperator);
 
-router.get('/chats', authenticate, (req, res) => {
-  res.json({ message: 'Chat system - Coming soon' });
-});
+// Mechanic routes
+router.post('/mechanics/profile', authenticate, mechanicController.createOrUpdateProfile);
+router.get('/mechanics', mechanicController.getMechanics);
+router.get('/mechanics/my-profile', authenticate, mechanicController.getMyProfile);
+router.get('/mechanics/:id', mechanicController.getMechanic);
 
-router.get('/admin/dashboard', authenticate, (req, res) => {
-  res.json({ message: 'Admin dashboard - Coming soon' });
-});
+// Review routes
+router.post('/reviews', authenticate, reviewController.createReview);
+router.get('/reviews', reviewController.getReviews);
+router.put('/reviews/:id/respond', authenticate, reviewController.respondToReview);
+
+// Booking routes
+router.post('/bookings', authenticate, bookingController.createBooking);
+router.get('/bookings', authenticate, bookingController.getMyBookings);
+router.put('/bookings/:id/status', authenticate, bookingController.updateBookingStatus);
+
+// Chat routes
+router.post('/chats', authenticate, chatController.startOrGetChat);
+router.get('/chats', authenticate, chatController.getMyChats);
+router.get('/chats/:chatId/messages', authenticate, chatController.getMessages);
+router.post('/chats/:chatId/messages', authenticate, chatController.sendMessage);
+
+// Admin routes
+router.get('/admin/dashboard', authenticate, adminController.getDashboard);
+router.get('/admin/pending-listings', authenticate, adminController.getPendingListings);
+router.put('/admin/listings/:id/approve', authenticate, adminController.approveListing);
+router.put('/admin/listings/:id/reject', authenticate, adminController.rejectListing);
+router.get('/admin/users', authenticate, adminController.getAllUsers);
 // Newsletter
 router.post('/newsletter/subscribe', (req, res) => {
   const { email } = req.body;

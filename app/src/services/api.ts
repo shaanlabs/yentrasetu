@@ -332,3 +332,78 @@ export const machineryApi = {
       method: 'PUT',
     }),
 };
+
+// ─── Parts API ─────────────────────────────────────────
+export const partsApi = {
+  getParts: (filters?: Record<string, any>) => {
+    const p = new URLSearchParams();
+    if (filters) Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') p.set(k, String(v)); });
+    return request<{ parts: any[]; pagination: any }>(`/parts${p.toString() ? `?${p}` : ''}`);
+  },
+  getPart: (id: string) => request<{ part: any }>(`/parts/${id}`),
+  createPart: (data: any) => request<{ message: string; part: any }>('/parts', { method: 'POST', body: JSON.stringify(data) }),
+  deletePart: (id: string) => request<{ message: string }>(`/parts/${id}`, { method: 'DELETE' }),
+  getMyParts: () => request<{ parts: any[] }>('/parts/my-parts'),
+};
+
+// ─── Operators API ─────────────────────────────────────
+export const operatorsApi = {
+  getOperators: (filters?: Record<string, any>) => {
+    const p = new URLSearchParams();
+    if (filters) Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') p.set(k, String(v)); });
+    return request<{ operators: any[]; pagination: any }>(`/operators${p.toString() ? `?${p}` : ''}`);
+  },
+  getOperator: (id: string) => request<{ operator: any }>(`/operators/${id}`),
+  createOrUpdate: (data: any) => request<{ message: string; profile: any }>('/operators/profile', { method: 'POST', body: JSON.stringify(data) }),
+  getMyProfile: () => request<{ profile: any }>('/operators/my-profile'),
+};
+
+// ─── Mechanics API ─────────────────────────────────────
+export const mechanicsApi = {
+  getMechanics: (filters?: Record<string, any>) => {
+    const p = new URLSearchParams();
+    if (filters) Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') p.set(k, String(v)); });
+    return request<{ mechanics: any[]; pagination: any }>(`/mechanics${p.toString() ? `?${p}` : ''}`);
+  },
+  getMechanic: (id: string) => request<{ mechanic: any }>(`/mechanics/${id}`),
+  createOrUpdate: (data: any) => request<{ message: string; profile: any }>('/mechanics/profile', { method: 'POST', body: JSON.stringify(data) }),
+  getMyProfile: () => request<{ profile: any }>('/mechanics/my-profile'),
+};
+
+// ─── Reviews API ───────────────────────────────────────
+export const reviewsApi = {
+  getReviews: (filters?: Record<string, any>) => {
+    const p = new URLSearchParams();
+    if (filters) Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') p.set(k, String(v)); });
+    return request<{ reviews: any[]; pagination: any }>(`/reviews${p.toString() ? `?${p}` : ''}`);
+  },
+  createReview: (data: any) => request<{ message: string; review: any }>('/reviews', { method: 'POST', body: JSON.stringify(data) }),
+  respond: (id: string, response: string) => request<{ message: string }>(`/reviews/${id}/respond`, { method: 'PUT', body: JSON.stringify({ response }) }),
+};
+
+// ─── Bookings API ──────────────────────────────────────
+export const bookingsApi = {
+  create: (data: any) => request<{ message: string; booking: any }>('/bookings', { method: 'POST', body: JSON.stringify(data) }),
+  getMyBookings: (role?: string) => request<{ bookings: any[] }>(`/bookings${role ? `?role=${role}` : ''}`),
+  updateStatus: (id: string, status: string, reason?: string) =>
+    request<{ message: string; booking: any }>(`/bookings/${id}/status`, { method: 'PUT', body: JSON.stringify({ status, reason }) }),
+};
+
+// ─── Chats API ─────────────────────────────────────────
+export const chatsApi = {
+  startOrGet: (sellerId: string, listingType?: string, listingId?: string) =>
+    request<{ chat: any }>('/chats', { method: 'POST', body: JSON.stringify({ sellerId, listingType, listingId }) }),
+  getMyChats: () => request<{ chats: any[] }>('/chats'),
+  getMessages: (chatId: string) => request<{ messages: any[]; chat: any }>(`/chats/${chatId}/messages`),
+  sendMessage: (chatId: string, content: string) =>
+    request<{ message: any }>(`/chats/${chatId}/messages`, { method: 'POST', body: JSON.stringify({ content }) }),
+};
+
+// ─── Admin API ─────────────────────────────────────────
+export const adminApi = {
+  getDashboard: () => request<{ stats: any }>('/admin/dashboard'),
+  getPendingListings: () => request<{ listings: any[] }>('/admin/pending-listings'),
+  approveListing: (id: string) => request<{ message: string }>(`/admin/listings/${id}/approve`, { method: 'PUT' }),
+  rejectListing: (id: string) => request<{ message: string }>(`/admin/listings/${id}/reject`, { method: 'PUT' }),
+  getUsers: () => request<{ users: any[] }>('/admin/users'),
+};

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { machineryApi } from '../services/api';
-import { ArrowLeft, ArrowRight, Plus, Loader2, MapPin, IndianRupee } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Plus, Loader2, MapPin, IndianRupee, ImagePlus, X } from 'lucide-react';
 
 const CATEGORIES: Record<string, string[]> = {
   construction: ['Excavators', 'Cranes', 'Bulldozers', 'Graders', 'Compactors', 'Tower Cranes', 'Concrete Pumps'],
@@ -24,6 +24,18 @@ export default function CreateListingPage() {
     make: '', model: '', year: '', condition: 'used', hoursUsed: '', description: '',
     price: '', rentalRateDaily: '', rentalRateWeekly: '', rentalRateMonthly: '', city: '', state: '',
   });
+  const [images, setImages] = useState<string[]>([]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    files.forEach(file => {
+      if (images.length >= 5) return;
+      const reader = new FileReader();
+      reader.onload = () => { if (reader.result) setImages(prev => [...prev.slice(0, 4), reader.result as string]); };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+  };
 
   const u = (f: string, v: string) => { setForm(p => ({ ...p, [f]: v })); setError(''); };
   const subCats = form.category ? CATEGORIES[form.category] || [] : [];
@@ -40,6 +52,7 @@ export default function CreateListingPage() {
       if (form.rentalRateDaily) d.rentalRateDaily = Number(form.rentalRateDaily);
       if (form.rentalRateWeekly) d.rentalRateWeekly = Number(form.rentalRateWeekly);
       if (form.rentalRateMonthly) d.rentalRateMonthly = Number(form.rentalRateMonthly);
+      if (images.length > 0) d.images = images;
       await machineryApi.createListing(d);
       navigate('/my-listings');
     } catch (err: any) { setError(err.message || 'Failed to create listing.'); }
@@ -109,7 +122,27 @@ export default function CreateListingPage() {
 
         {step === 3 && (
           <div className="bg-white rounded-lg shadow-sm border border-[#E9E3DA] p-6 space-y-5">
-            <h2 className="font-semibold text-sm text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Description & Submit</h2>
+            <h2 className="font-semibold text-sm text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Photos & Description</h2>
+            {/* Image upload */}
+            <div>
+              <label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Photos (up to 5)</label>
+              <div className="grid grid-cols-5 gap-3">
+                {images.map((img, i) => (
+                  <div key={i} className="relative aspect-square rounded border border-[#E9E3DA] overflow-hidden group">
+                    <img src={img} className="w-full h-full object-cover" />
+                    <button onClick={() => setImages(prev => prev.filter((_, j) => j !== i))}
+                      className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><X size={12} /></button>
+                  </div>
+                ))}
+                {images.length < 5 && (
+                  <label className="aspect-square rounded border-2 border-dashed border-[#E9E3DA] hover:border-[#FF6A00] flex flex-col items-center justify-center cursor-pointer text-[#6F757C] hover:text-[#FF6A00] transition-colors">
+                    <ImagePlus size={20} />
+                    <span className="text-[10px] mt-1">Add</span>
+                    <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
+                  </label>
+                )}
+              </div>
+            </div>
             <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Description</label>
               <textarea value={form.description} onChange={e => u('description', e.target.value)} rows={5} placeholder="Describe the machine…" className={`${inp} resize-none`} /></div>
             <div className="bg-[#E9E3DA]/40 rounded-lg p-4">

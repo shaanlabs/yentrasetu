@@ -9,6 +9,12 @@ import BrowsePage from './pages/BrowsePage';
 import ListingDetailPage from './pages/ListingDetailPage';
 import CreateListingPage from './pages/CreateListingPage';
 import MyListingsPage from './pages/MyListingsPage';
+import PartsPage from './pages/PartsPage';
+import OperatorsPage from './pages/OperatorsPage';
+import MechanicsPage from './pages/MechanicsPage';
+import BookingsPage from './pages/BookingsPage';
+import ChatsPage from './pages/ChatsPage';
+import AdminPage from './pages/AdminPage';
 
 export const router = createBrowserRouter([
   { path: '/', element: <App /> },
@@ -26,6 +32,14 @@ export const router = createBrowserRouter([
   { path: '/sell', element: <CreateListingPage /> },
   { path: '/my-listings', element: <MyListingsPage /> },
 
+  // P5 — Parts, Operators, Mechanics, Bookings, Chat, Admin
+  { path: '/parts', element: <PartsPage /> },
+  { path: '/operators', element: <OperatorsPage /> },
+  { path: '/mechanics', element: <MechanicsPage /> },
+  { path: '/bookings', element: <BookingsPage /> },
+  { path: '/chats', element: <ChatsPage /> },
+  { path: '/admin', element: <AdminPage /> },
+
   // 404
   {
     path: '*',
@@ -38,3 +52,4 @@ export const router = createBrowserRouter([
     ),
   },
 ]);
+
