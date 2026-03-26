@@ -1,0 +1,301 @@
+/* App-specific styles */
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ensure pinned sections stack correctly */
+.pinned-section {
+  will-change: transform;
+}
+
+/* Hero responsive adjustments */
+@media (max-width: 768px) {
+  .hero-image {
+    position: relative !important;
+    width: 100% !important;
+    height: 50vh !important;
+  }
+  
+  .hero-content {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 40px 24px !important;
+  }
+}
+
+/* Category tiles responsive */
+@media (max-width: 768px) {
+  .cat-tile-top-left,
+  .cat-tile-top-right,
+  .cat-tile-bottom-center {
+    height: 40vh !important;
+  }
+  
+  .cat-text-tile {
+    height: auto !important;
+    padding: 32px 24px !important;
+  }
+}
+
+/* Featured panels responsive */
+@media (max-width: 768px) {
+  .featured-panel {
+    height: 33vh !important;
+  }
+}
+
+/* How it works responsive */
+@media (max-width: 768px) {
+  .hiw-image {
+    position: relative !important;
+    width: 100% !important;
+    height: 40vh !important;
+  }
+}
+
+/* Value props responsive */
+@media (max-width: 768px) {
+  .vp-image {
+    position: relative !important;
+    width: 100% !important;
+    height: 40vh !important;
+  }
+}
+
+/* Safety responsive */
+@media (max-width: 768px) {
+  .safety-image {
+    position: relative !important;
+    width: 100% !important;
+    height: 40vh !important;
+  }
+}
+
+/* Financing responsive */
+@media (max-width: 768px) {
+  .fin-image {
+    position: relative !important;
+    width: 100% !important;
+    height: 40vh !important;
+  }
+  
+  .fin-panel {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 60px 24px !important;
+  }
+}
+
+/* Animation performance */
+.hero-image,
+.hero-content,
+.cat-tile-top-left,
+.cat-tile-top-right,
+.cat-tile-bottom-center,
+.cat-text-tile,
+.hiw-image,
+.hiw-card,
+.featured-panel,
+.vp-image,
+.vp-card,
+.safety-image,
+.safety-item,
+.fin-image,
+.fin-panel,
+.fin-content {
+  will-change: transform, opacity;
+}
+
+/* Card hover effects */
+.value-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.value-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px rgba(16, 18, 20, 0.12);
+}
+
+/* Button pulse animation for financing CTA */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.fin-cta {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+/* Border accent pulse for step cards */
+@keyframes borderPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.hiw-card {
+  position: relative;
+}
+
+.hiw-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #FF6A00;
+  animation: borderPulse 3s ease-in-out infinite;
+}
+
+/* Image parallax container */
+.image-parallax {
+  overflow: hidden;
+}
+
+.image-parallax img {
+  will-change: transform;
+}
+
+/* Navigation transitions */
+.nav-fixed {
+  transition: background-color 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Footer input focus */
+.footer-input:focus {
+  outline: none;
+  border-color: #FF6A00;
+}
+
+/* Link hover underline effect */
+.link-arrow {
+  position: relative;
+}
+
+.link-arrow::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+}
+
+.link-arrow:hover::after {
+  width: 100%;
+}
+
+/* Dark section link styles */
+.dark-section .link-arrow::after {
+  background-color: white;
+}
+
+/* Price badge shadow */
+.price-badge {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Stat number gradient effect */
+.stat-number {
+  background: linear-gradient(135deg, #FF6A00 0%, #FF8533 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Testimonial quote styling */
+.quote-mark {
+  font-family: 'Sora', sans-serif;
+  font-weight: 800;
+  line-height: 0.8;
+}
+
+/* Mobile menu animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Grid line styling */
+.grid-lines {
+  position: relative;
+}
+
+.grid-lines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid rgba(16, 18, 20, 0.08);
+  pointer-events: none;
+}
+
+/* Ensure proper z-index stacking for pinned sections */
+.pinned-section:nth-child(1) { z-index: 10; }
+.pinned-section:nth-child(2) { z-index: 20; }
+.pinned-section:nth-child(3) { z-index: 30; }
+.pinned-section:nth-child(4) { z-index: 40; }
+.pinned-section:nth-child(5) { z-index: 50; }
+.pinned-section:nth-child(6) { z-index: 60; }
+.pinned-section:nth-child(7) { z-index: 70; }
+.pinned-section:nth-child(8) { z-index: 80; }
+
+/* Loading state for images */
+img {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+img[loading] {
+  opacity: 0;
+}
+
+/* Focus states for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid #FF6A00;
+  outline-offset: 2px;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .fin-cta {
+    animation: none;
+  }
+  
+  .hiw-card::before {
+    animation: none;
+  }
+}

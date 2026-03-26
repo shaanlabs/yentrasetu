@@ -1,0 +1,317 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #E9E3DA;
+  --bg-secondary: #101214;
+  --accent: #FF6A00;
+  --text-primary: #101214;
+  --text-secondary: #6F757C;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.mono {
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Grain overlay */
+.grain-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.06;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Pinned section base */
+.pinned-section {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: var(--accent);
+  color: white;
+  padding: 16px 32px;
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(255, 106, 0, 0.3);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-primary);
+  padding: 16px 32px;
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 2px solid var(--text-primary);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+/* Link styles */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: gap 0.3s ease;
+}
+
+.link-arrow:hover {
+  gap: 12px;
+}
+
+/* Card styles */
+.value-card {
+  background: white;
+  border-left: 4px solid var(--accent);
+  padding: 24px 28px;
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 10px 30px rgba(16, 18, 20, 0.08);
+}
+
+/* Image treatment overlay */
+.image-warm-overlay {
+  position: relative;
+}
+
+.image-warm-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--accent);
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+/* Navigation */
+.nav-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 20px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.nav-fixed.scrolled {
+  background-color: rgba(233, 227, 218, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 20px rgba(16, 18, 20, 0.08);
+}
+
+.nav-logo {
+  font-family: 'Sora', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--text-primary);
+}
+
+.nav-links {
+  display: flex;
+  gap: 40px;
+}
+
+.nav-links a {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: var(--accent);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.btn-small {
+  padding: 10px 20px;
+  font-size: 13px;
+}
+
+/* Section specific styles */
+.hero-headline {
+  font-size: clamp(36px, 4.5vw, 68px);
+  font-weight: 800;
+  line-height: 1.0;
+  color: var(--text-primary);
+}
+
+.section-heading {
+  font-size: clamp(28px, 3.2vw, 48px);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+/* Price badge */
+.price-badge {
+  background-color: var(--accent);
+  color: white;
+  padding: 12px 20px;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  border-radius: 4px;
+}
+
+/* Grid lines */
+.grid-lines {
+  border: 2px solid rgba(16, 18, 20, 0.08);
+}
+
+/* Dark section */
+.dark-section {
+  background-color: var(--bg-secondary);
+  color: white;
+}
+
+.dark-section .section-heading,
+.dark-section .link-arrow {
+  color: white;
+}
+
+/* Testimonial quote */
+.quote-mark {
+  font-size: 120px;
+  color: var(--accent);
+  opacity: 0.3;
+  line-height: 1;
+  font-family: 'Sora', sans-serif;
+}
+
+/* Stats */
+.stat-number {
+  font-family: 'Sora', sans-serif;
+  font-weight: 800;
+  font-size: clamp(36px, 4vw, 56px);
+  color: var(--accent);
+  line-height: 1;
+}
+
+/* Footer */
+.footer {
+  background-color: var(--bg-secondary);
+  color: white;
+}
+
+.footer-input {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 14px 20px;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  border-radius: 4px 0 0 4px;
+  width: 280px;
+}
+
+.footer-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-fixed {
+    padding: 16px 20px;
+  }
+  
+  .nav-links {
+    display: none;
+  }
+  
+  .pinned-section {
+    min-height: 100vh;
+    height: auto;
+  }
+}
