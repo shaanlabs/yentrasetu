@@ -1,4 +1,5 @@
 import { useEffect, useRef, useLayoutEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { 
@@ -10,13 +11,17 @@ import {
   X,
   Shield,
   Clock,
-  Wrench
+  Wrench,
+  LogIn
 } from 'lucide-react';
+import { useAuth } from './contexts/AuthContext';
 import './App.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
   const [navScrolled, setNavScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
@@ -475,10 +480,17 @@ function App() {
           <button className="p-2 hover:text-[#FF6A00] transition-colors">
             <Search size={20} />
           </button>
-          <button className="p-2 hover:text-[#FF6A00] transition-colors hidden sm:block">
-            <User size={20} />
+          <button 
+            className="p-2 hover:text-[#FF6A00] transition-colors hidden sm:block"
+            onClick={() => navigate(isAuthenticated ? '/profile' : '/login')}
+            title={isAuthenticated ? `${user?.firstName}'s profile` : 'Sign in'}
+          >
+            {isAuthenticated ? <User size={20} /> : <LogIn size={20} />}
           </button>
-          <button className="btn-primary btn-small hidden sm:flex items-center gap-2">
+          <button 
+            className="btn-primary btn-small hidden sm:flex items-center gap-2"
+            onClick={() => navigate(isAuthenticated ? '/sell' : '/login')}
+          >
             <Plus size={16} />
             Post a Listing
           </button>
@@ -499,9 +511,19 @@ function App() {
             <a href="#rent" className="text-2xl font-bold" onClick={() => setMobileMenuOpen(false)}>Rent</a>
             <a href="#sell" className="text-2xl font-bold" onClick={() => setMobileMenuOpen(false)}>Sell</a>
             <a href="#services" className="text-2xl font-bold" onClick={() => setMobileMenuOpen(false)}>Services</a>
-            <button className="btn-primary flex items-center justify-center gap-2 mt-4">
+            <button 
+              className="btn-primary flex items-center justify-center gap-2 mt-4"
+              onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/sell' : '/login'); }}
+            >
               <Plus size={18} />
               Post a Listing
+            </button>
+            <button
+              className="btn-secondary flex items-center justify-center gap-2"
+              onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/profile' : '/login'); }}
+            >
+              <User size={18} />
+              {isAuthenticated ? 'My Profile' : 'Sign In'}
             </button>
           </div>
         </div>

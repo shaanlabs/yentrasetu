@@ -1,31 +1,35 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from './App';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import VerifyOtpPage from './pages/VerifyOtpPage';
+import ProfilePage from './pages/ProfilePage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
 
 /**
  * App Router
- * 
- * Currently serves the landing page at root.
- * New pages (Browse, Login, Register, Listing Detail, etc.)
- * will be added here as they are built in P1/P2.
+ *
+ * Landing page at root. Auth pages for P1. 
+ * Browse/listing pages will be added in P2.
  */
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
   },
-  // ── P1: Auth pages (to be added) ────────────────────
-  // { path: '/login',    element: <LoginPage /> },
-  // { path: '/register', element: <RegisterPage /> },
-  // { path: '/profile',  element: <ProfilePage /> },
+
+  // ── P1: Auth pages ──────────────────────────────────
+  { path: '/login', element: <LoginPage /> },
+  { path: '/register', element: <RegisterPage /> },
+  { path: '/verify-otp', element: <VerifyOtpPage /> },
+  { path: '/profile', element: <ProfilePage /> },
+  { path: '/change-password', element: <ChangePasswordPage /> },
 
   // ── P2: Machinery pages (to be added) ───────────────
   // { path: '/browse',       element: <BrowsePage /> },
   // { path: '/listing/:id',  element: <ListingDetailPage /> },
   // { path: '/sell',         element: <CreateListingPage /> },
   // { path: '/my-listings',  element: <MyListingsPage /> },
-
-  // ── P3: Search ──────────────────────────────────────
-  // { path: '/search',  element: <SearchPage /> },
 
   // ── Catch-all ───────────────────────────────────────
   {
