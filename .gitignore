@@ -46,3 +46,4 @@ build/
 *.pid
 *.seed
 *.pid.lock
+DEV_CREDENTIALS.md
