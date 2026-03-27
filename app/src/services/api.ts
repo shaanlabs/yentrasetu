@@ -163,8 +163,15 @@ export interface UserProfile {
   accountTier?: string;
   isVerified: boolean;
   companyName?: string;
+  gstNumber?: string;
+  address?: string;
   city?: string;
   state?: string;
+  pincode?: string;
+  profileImage?: string;
+  rating?: number;
+  reviewCount?: number;
+  createdAt?: string;
 }
 
 export const authApi = {

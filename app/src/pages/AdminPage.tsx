@@ -6,8 +6,10 @@ import { ArrowLeft, Loader2, Users, Package, Wrench, Gauge, Calendar, Star, Chec
 
 export default function AdminPage() {
   const navigate = useNavigate();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   useEffect(() => { if (!authLoading && !isAuthenticated) navigate('/login'); }, [authLoading, isAuthenticated, navigate]);
+
+  const isAdmin = user?.userType === 'admin' || user?.userType === 'super_admin';
 
   const [stats, setStats] = useState<any>(null);
   const [pending, setPending] = useState<any[]>([]);
@@ -31,6 +33,19 @@ export default function AdminPage() {
   };
 
   if (authLoading || loading) return <div className="min-h-screen bg-[#E9E3DA] flex items-center justify-center"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div>;
+
+  if (!isAdmin) return (
+    <div className="min-h-screen bg-[#E9E3DA] flex items-center justify-center">
+      <div className="bg-white rounded-lg shadow-sm border border-[#E9E3DA] p-10 text-center max-w-md">
+        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <XCircle size={32} className="text-red-500" />
+        </div>
+        <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.25rem', marginBottom: '0.5rem' }}>Access Denied</h1>
+        <p className="text-sm text-[#6F757C] mb-6">You don't have permission to view the admin dashboard. Admin role required.</p>
+        <Link to="/" className="btn-primary inline-flex items-center gap-2 text-sm px-6 py-2.5"><ArrowLeft size={16} /> Back to Home</Link>
+      </div>
+    </div>
+  );
 
   const cards = stats ? [
     { label: 'Users', value: stats.users, icon: Users, color: 'bg-blue-50 text-blue-600' },

@@ -34,7 +34,7 @@ const User = sequelize.define('User', {
     allowNull: true
   },
   userType: {
-    type: DataTypes.ENUM('individual', 'contractor', 'company', 'dealer', 'operator', 'mechanic'),
+    type: DataTypes.ENUM('individual', 'contractor', 'company', 'dealer', 'operator', 'mechanic', 'admin', 'super_admin'),
     defaultValue: 'individual'
   },
   accountTier: {

@@ -477,10 +477,11 @@ function App() {
         <div className="nav-logo">YantraSetu</div>
         
         <div className="nav-links hidden md:flex">
-          <a href="#buy">Buy</a>
-          <a href="#rent">Rent</a>
-          <a href="#sell">Sell</a>
-          <a href="#services">Services</a>
+          <a onClick={() => navigate('/browse?type=sale')} style={{ cursor: 'pointer' }}>Buy</a>
+          <a onClick={() => navigate('/browse?type=rent')} style={{ cursor: 'pointer' }}>Rent</a>
+          <a onClick={() => navigate(isAuthenticated ? '/sell' : '/login')} style={{ cursor: 'pointer' }}>Sell</a>
+          <a onClick={() => navigate('/parts')} style={{ cursor: 'pointer' }}>Parts</a>
+          <a onClick={() => navigate('/operators')} style={{ cursor: 'pointer' }}>Services</a>
         </div>
 
         <div className="nav-actions">
@@ -514,10 +515,11 @@ function App() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 bg-[#E9E3DA] z-[999] pt-24 px-6 md:hidden">
           <div className="flex flex-col gap-6">
-            <a href="#buy" className="text-2xl font-bold" onClick={() => setMobileMenuOpen(false)}>Buy</a>
-            <a href="#rent" className="text-2xl font-bold" onClick={() => setMobileMenuOpen(false)}>Rent</a>
-            <a href="#sell" className="text-2xl font-bold" onClick={() => setMobileMenuOpen(false)}>Sell</a>
-            <a href="#services" className="text-2xl font-bold" onClick={() => setMobileMenuOpen(false)}>Services</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer' }} onClick={() => { setMobileMenuOpen(false); navigate('/browse?type=sale'); }}>Buy</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer' }} onClick={() => { setMobileMenuOpen(false); navigate('/browse?type=rent'); }}>Rent</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer' }} onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/sell' : '/login'); }}>Sell</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer' }} onClick={() => { setMobileMenuOpen(false); navigate('/parts'); }}>Parts</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer' }} onClick={() => { setMobileMenuOpen(false); navigate('/operators'); }}>Services</a>
             <button 
               className="btn-primary flex items-center justify-center gap-2 mt-4"
               onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/sell' : '/login'); }}

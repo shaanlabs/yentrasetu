@@ -254,7 +254,8 @@ const updateProfile = async (req, res) => {
     const updates = req.body;
     const allowedUpdates = [
       'firstName', 'lastName', 'email', 'companyName', 'gstNumber',
-      'address', 'city', 'state', 'pincode', 'latitude', 'longitude'
+      'address', 'city', 'state', 'pincode', 'latitude', 'longitude',
+      'profileImage'
     ];
 
     const updateData = {};
@@ -278,8 +279,16 @@ const updateProfile = async (req, res) => {
         userType: user.userType,
         accountTier: user.accountTier,
         companyName: user.companyName,
+        gstNumber: user.gstNumber,
+        address: user.address,
         city: user.city,
-        state: user.state
+        state: user.state,
+        pincode: user.pincode,
+        profileImage: user.profileImage,
+        isVerified: user.isVerified,
+        rating: user.rating,
+        reviewCount: user.reviewCount,
+        createdAt: user.createdAt
       }
     });
   } catch (error) {

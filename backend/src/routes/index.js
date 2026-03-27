@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { authenticate, optionalAuth } = require('../middleware/auth');
+const { authenticate, optionalAuth, requireAdmin } = require('../middleware/auth');
 const authController = require('../controllers/authController');
 const machineryController = require('../controllers/machineryController');
 
@@ -69,12 +69,12 @@ router.get('/chats', authenticate, chatController.getMyChats);
 router.get('/chats/:chatId/messages', authenticate, chatController.getMessages);
 router.post('/chats/:chatId/messages', authenticate, chatController.sendMessage);
 
-// Admin routes
-router.get('/admin/dashboard', authenticate, adminController.getDashboard);
-router.get('/admin/pending-listings', authenticate, adminController.getPendingListings);
-router.put('/admin/listings/:id/approve', authenticate, adminController.approveListing);
-router.put('/admin/listings/:id/reject', authenticate, adminController.rejectListing);
-router.get('/admin/users', authenticate, adminController.getAllUsers);
+// Admin routes (require admin role)
+router.get('/admin/dashboard', authenticate, requireAdmin, adminController.getDashboard);
+router.get('/admin/pending-listings', authenticate, requireAdmin, adminController.getPendingListings);
+router.put('/admin/listings/:id/approve', authenticate, requireAdmin, adminController.approveListing);
+router.put('/admin/listings/:id/reject', authenticate, requireAdmin, adminController.rejectListing);
+router.get('/admin/users', authenticate, requireAdmin, adminController.getAllUsers);
 // Newsletter
 router.post('/newsletter/subscribe', (req, res) => {
   const { email } = req.body;
