@@ -15,6 +15,7 @@ import MechanicsPage from './pages/MechanicsPage';
 import BookingsPage from './pages/BookingsPage';
 import ChatsPage from './pages/ChatsPage';
 import AdminPage from './pages/AdminPage';
+import LoanEligibilityPage from './pages/LoanEligibilityPage';
 
 export const router = createBrowserRouter([
   { path: '/', element: <App /> },
@@ -39,6 +40,7 @@ export const router = createBrowserRouter([
   { path: '/bookings', element: <BookingsPage /> },
   { path: '/chats', element: <ChatsPage /> },
   { path: '/admin', element: <AdminPage /> },
+  { path: '/loan-eligibility', element: <LoanEligibilityPage /> },
 
   // 404
   {

@@ -984,7 +984,7 @@ function App() {
               Partnered with India's leading equipment financiers. Competitive rates, minimal paperwork, fast approval.
             </p>
 
-            <button className="fin-cta btn-primary mb-6">
+            <button className="fin-cta btn-primary mb-6" onClick={() => navigate('/loan-eligibility')}>
               Check Loan Eligibility
             </button>
 

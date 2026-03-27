@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { machineryApi, type MachineryListing } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import {
   ArrowLeft, MapPin, Calendar, Gauge, Eye, Shield, User,
-  Phone, Loader2, Share2, ChevronLeft, ChevronRight
+  Phone, Loader2, Share2, ChevronLeft, ChevronRight, IndianRupee
 } from 'lucide-react';
 
 export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
   const [listing, setListing] = useState<MachineryListing | null>(null);
@@ -183,6 +184,17 @@ export default function ListingDetailPage() {
                   <Share2 size={18} className="text-[#101214]" />
                 </button>
               </div>
+
+              {listing.listingType === 'sale' && (
+                <button
+                  onClick={() => navigate(`/loan-eligibility?amount=${listing.price}&equipment=${encodeURIComponent(listing.category || '')}`)}
+                  className="w-full mt-3 py-3 text-sm font-semibold rounded flex items-center justify-center gap-2 border-2 border-[#FF6A00] text-[#FF6A00] bg-[#FF6A00]/5 hover:bg-[#FF6A00] hover:text-white transition-all"
+                  style={{ fontFamily: 'Sora, sans-serif' }}
+                >
+                  <IndianRupee size={15} />
+                  Check Loan Eligibility
+                </button>
+              )}
             </div>
 
             {/* Seller card */}
