@@ -303,7 +303,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Responsive */
 @media (max-width: 768px) {
   .nav-fixed {
-    padding: 16px 20px;
+    padding: 14px 16px;
   }
   
   .nav-links {
@@ -311,7 +311,46 @@ h1, h2, h3, h4, h5, h6 {
   }
   
   .pinned-section {
-    min-height: 100vh;
+    min-height: auto;
     height: auto;
+  }
+
+  .footer-input {
+    width: 100%;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+
+  .btn-primary.rounded-l-none {
+    border-radius: 4px;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .nav-fixed {
+    padding: 12px 12px;
+  }
+
+  .hero-headline {
+    font-size: clamp(28px, 8vw, 42px);
+  }
+
+  .section-heading {
+    font-size: clamp(22px, 6vw, 32px);
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 14px 24px;
+    font-size: 13px;
+  }
+
+  .stat-number {
+    font-size: clamp(28px, 8vw, 40px);
+  }
+
+  .quote-mark {
+    font-size: 80px;
   }
 }

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useLayoutEffect, useState } from 'react';
+import { useEffect, useRef, useLayoutEffect, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -51,48 +52,83 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Check if mobile
+  const isMobile = useCallback(() => window.innerWidth <= 768, []);
+
   // Hero entrance animation
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // Hero entrance animation
-      const heroTl = gsap.timeline({ delay: 0.2 });
+      const heroTl = gsap.timeline({ delay: 0.1 });
       
       heroTl
         .fromTo('.hero-image', 
-          { x: '-60vw', opacity: 0 }, 
-          { x: 0, opacity: 1, duration: 0.8, ease: 'power2.out' }
+          { x: '-40vw', opacity: 0 }, 
+          { x: 0, opacity: 1, duration: 0.6, ease: 'power2.out' }
         )
         .fromTo('.hero-content', 
-          { x: '8vw', opacity: 0 }, 
-          { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' }, 
-          '-=0.5'
+          { x: '6vw', opacity: 0 }, 
+          { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, 
+          '-=0.35'
         )
         .fromTo('.hero-headline-word', 
-          { y: 30, opacity: 0 }, 
-          { y: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: 'power2.out' }, 
-          '-=0.4'
+          { y: 20, opacity: 0 }, 
+          { y: 0, opacity: 1, duration: 0.35, stagger: 0.06, ease: 'power2.out' }, 
+          '-=0.3'
         )
         .fromTo('.hero-cta', 
           { scale: 0.95, opacity: 0 }, 
-          { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, ease: 'power2.out' }, 
-          '-=0.2'
+          { scale: 1, opacity: 1, duration: 0.35, stagger: 0.08, ease: 'power2.out' }, 
+          '-=0.15'
         );
     }, heroRef);
 
     return () => ctx.revert();
   }, []);
 
-  // Pinned sections scroll animations
+  // Pinned sections scroll animations — desktop only
   useLayoutEffect(() => {
+    if (isMobile()) {
+      // Mobile: simple fade-in-on-scroll for all sections
+      const ctx = gsap.context(() => {
+        const mobileFadeSelectors = [
+          '.hero-image', '.hero-content',
+          '.cat-tile-top-left', '.cat-tile-top-right', '.cat-tile-bottom-center', '.cat-text-tile',
+          '.hiw-image', '.hiw-heading', '.hiw-card',
+          '.featured-panel',
+          '.vp-image', '.vp-card',
+          '.safety-image', '.safety-heading', '.safety-item',
+          '.fin-image', '.fin-panel', '.fin-content',
+          '.testimonial-content', '.network-heading', '.stat-item',
+          '.footer-left', '.footer-right',
+        ];
+
+        mobileFadeSelectors.forEach((sel) => {
+          gsap.fromTo(sel,
+            { y: 30, opacity: 0 },
+            {
+              y: 0, opacity: 1, duration: 0.5, stagger: 0.08,
+              scrollTrigger: {
+                trigger: sel,
+                start: 'top 88%',
+                toggleActions: 'play none none none',
+              }
+            }
+          );
+        });
+      });
+      return () => ctx.revert();
+    }
+
+    // Desktop: pinned scrub animations with faster exits
     const ctx = gsap.context(() => {
       // Hero scroll animation
       const heroScrollTl = gsap.timeline({
         scrollTrigger: {
           trigger: heroRef.current,
           start: 'top top',
-          end: '+=130%',
+          end: '+=100%',
           pin: true,
-          scrub: 0.6,
+          scrub: 0.4,
           onLeaveBack: () => {
             gsap.set('.hero-image, .hero-content, .hero-headline-word, .hero-cta', { 
               opacity: 1, x: 0, y: 0, scale: 1 
@@ -104,18 +140,18 @@ function App() {
       heroScrollTl
         .fromTo('.hero-headline-word', 
           { x: 0, opacity: 1 }, 
-          { x: '18vw', opacity: 0, ease: 'power2.in' }, 
-          0.7
+          { x: '12vw', opacity: 0, ease: 'power2.in' }, 
+          0.85
         )
         .fromTo('.hero-cta', 
           { y: 0, opacity: 1 }, 
-          { y: '10vh', opacity: 0, ease: 'power2.in' }, 
-          0.7
+          { y: '6vh', opacity: 0, ease: 'power2.in' }, 
+          0.85
         )
         .fromTo('.hero-image', 
           { x: 0, scale: 1, opacity: 1 }, 
-          { x: '-18vw', scale: 1.04, opacity: 0.35, ease: 'power2.in' }, 
-          0.7
+          { x: '-12vw', scale: 1.02, opacity: 0.4, ease: 'power2.in' }, 
+          0.85
         );
 
       // Category Mosaic scroll animation
@@ -123,48 +159,48 @@ function App() {
         scrollTrigger: {
           trigger: categoryRef.current,
           start: 'top top',
-          end: '+=130%',
+          end: '+=100%',
           pin: true,
-          scrub: 0.6,
+          scrub: 0.4,
         }
       });
 
       categoryScrollTl
         .fromTo('.cat-tile-top-left', 
-          { x: '-50vw', opacity: 0 }, 
+          { x: '-35vw', opacity: 0 }, 
           { x: 0, opacity: 1, ease: 'none' }, 
           0
         )
         .fromTo('.cat-tile-top-right', 
-          { x: '50vw', opacity: 0 }, 
+          { x: '35vw', opacity: 0 }, 
           { x: 0, opacity: 1, ease: 'none' }, 
           0
         )
         .fromTo('.cat-tile-bottom-center', 
-          { y: '40vh', opacity: 0 }, 
+          { y: '30vh', opacity: 0 }, 
           { y: 0, opacity: 1, ease: 'none' }, 
           0.05
         )
         .fromTo('.cat-text-tile', 
-          { y: '-12vh', opacity: 0 }, 
+          { y: '-8vh', opacity: 0 }, 
           { y: 0, opacity: 1, stagger: 0.03, ease: 'none' }, 
           0.05
         )
         .to('.cat-tile-top-left', 
-          { y: '-18vh', opacity: 0, ease: 'power2.in' }, 
-          0.7
+          { y: '-10vh', opacity: 0, ease: 'power2.in' }, 
+          0.85
         )
         .to('.cat-tile-top-right', 
-          { y: '-18vh', opacity: 0, ease: 'power2.in' }, 
-          0.7
+          { y: '-10vh', opacity: 0, ease: 'power2.in' }, 
+          0.85
         )
         .to('.cat-tile-bottom-center', 
-          { y: '18vh', opacity: 0, ease: 'power2.in' }, 
-          0.7
+          { y: '10vh', opacity: 0, ease: 'power2.in' }, 
+          0.85
         )
         .to('.cat-text-tile', 
-          { y: '18vh', opacity: 0, stagger: 0.02, ease: 'power2.in' }, 
-          0.7
+          { y: '10vh', opacity: 0, stagger: 0.02, ease: 'power2.in' }, 
+          0.85
         );
 
       // How It Works scroll animation
@@ -172,35 +208,35 @@ function App() {
         scrollTrigger: {
           trigger: howItWorksRef.current,
           start: 'top top',
-          end: '+=125%',
+          end: '+=100%',
           pin: true,
-          scrub: 0.6,
+          scrub: 0.4,
         }
       });
 
       howItWorksScrollTl
         .fromTo('.hiw-image', 
-          { x: '-60vw', opacity: 0 }, 
+          { x: '-40vw', opacity: 0 }, 
           { x: 0, opacity: 1, ease: 'none' }, 
           0
         )
         .fromTo('.hiw-heading', 
-          { x: '10vw', opacity: 0 }, 
+          { x: '8vw', opacity: 0 }, 
           { x: 0, opacity: 1, ease: 'none' }, 
           0.05
         )
         .fromTo('.hiw-card', 
-          { x: '20vw', opacity: 0 }, 
+          { x: '15vw', opacity: 0 }, 
           { x: 0, opacity: 1, stagger: 0.04, ease: 'none' }, 
           0.1
         )
         .to('.hiw-card', 
-          { x: '-10vw', opacity: 0, stagger: 0.02, ease: 'power2.in' }, 
-          0.7
+          { x: '-6vw', opacity: 0, stagger: 0.02, ease: 'power2.in' }, 
+          0.85
         )
         .to('.hiw-image', 
-          { scale: 1.05, opacity: 0.35, ease: 'power2.in' }, 
-          0.7
+          { scale: 1.03, opacity: 0.4, ease: 'power2.in' }, 
+          0.85
         );
 
       // Featured Listings scroll animation
@@ -208,34 +244,34 @@ function App() {
         scrollTrigger: {
           trigger: featuredRef.current,
           start: 'top top',
-          end: '+=130%',
+          end: '+=100%',
           pin: true,
-          scrub: 0.6,
+          scrub: 0.4,
         }
       });
 
       featuredScrollTl
         .fromTo('.featured-panel', 
-          { y: '100vh', opacity: 0 }, 
+          { y: '60vh', opacity: 0 }, 
           { y: 0, opacity: 1, stagger: 0.05, ease: 'none' }, 
           0
         )
         .fromTo('.featured-badge', 
-          { scale: 0.85, opacity: 0 }, 
+          { scale: 0.9, opacity: 0 }, 
           { scale: 1, opacity: 1, stagger: 0.05, ease: 'none' }, 
           0.2
         )
         .to('.featured-panel-left', 
-          { x: '-10vw', opacity: 0, ease: 'power2.in' }, 
-          0.7
+          { x: '-6vw', opacity: 0, ease: 'power2.in' }, 
+          0.85
         )
         .to('.featured-panel-center', 
-          { y: '-8vh', opacity: 0, ease: 'power2.in' }, 
-          0.7
+          { y: '-5vh', opacity: 0, ease: 'power2.in' }, 
+          0.85
         )
         .to('.featured-panel-right', 
-          { x: '10vw', opacity: 0, ease: 'power2.in' }, 
-          0.7
+          { x: '6vw', opacity: 0, ease: 'power2.in' }, 
+          0.85
         );
 
       // Value Props scroll animation
@@ -243,30 +279,30 @@ function App() {
         scrollTrigger: {
           trigger: valuePropsRef.current,
           start: 'top top',
-          end: '+=125%',
+          end: '+=100%',
           pin: true,
-          scrub: 0.6,
+          scrub: 0.4,
         }
       });
 
       valuePropsScrollTl
         .fromTo('.vp-image', 
-          { x: '-60vw', opacity: 0 }, 
+          { x: '-40vw', opacity: 0 }, 
           { x: 0, opacity: 1, ease: 'none' }, 
           0
         )
         .fromTo('.vp-card', 
-          { x: '20vw', opacity: 0 }, 
+          { x: '15vw', opacity: 0 }, 
           { x: 0, opacity: 1, stagger: 0.04, ease: 'none' }, 
           0.1
         )
         .to('.vp-card', 
-          { y: '-10vh', opacity: 0, stagger: 0.02, ease: 'power2.in' }, 
-          0.7
+          { y: '-6vh', opacity: 0, stagger: 0.02, ease: 'power2.in' }, 
+          0.85
         )
         .to('.vp-image', 
-          { opacity: 0.35, ease: 'power2.in' }, 
-          0.7
+          { opacity: 0.4, ease: 'power2.in' }, 
+          0.85
         );
 
       // Safety scroll animation
@@ -274,35 +310,35 @@ function App() {
         scrollTrigger: {
           trigger: safetyRef.current,
           start: 'top top',
-          end: '+=125%',
+          end: '+=100%',
           pin: true,
-          scrub: 0.6,
+          scrub: 0.4,
         }
       });
 
       safetyScrollTl
         .fromTo('.safety-image', 
-          { x: '-60vw', opacity: 0 }, 
+          { x: '-40vw', opacity: 0 }, 
           { x: 0, opacity: 1, ease: 'none' }, 
           0
         )
         .fromTo('.safety-heading', 
-          { x: '10vw', opacity: 0 }, 
+          { x: '8vw', opacity: 0 }, 
           { x: 0, opacity: 1, ease: 'none' }, 
           0.05
         )
         .fromTo('.safety-item', 
-          { x: '16vw', opacity: 0 }, 
+          { x: '12vw', opacity: 0 }, 
           { x: 0, opacity: 1, stagger: 0.03, ease: 'none' }, 
           0.1
         )
         .to('.safety-item', 
-          { x: '-8vw', opacity: 0, stagger: 0.02, ease: 'power2.in' }, 
-          0.7
+          { x: '-5vw', opacity: 0, stagger: 0.02, ease: 'power2.in' }, 
+          0.85
         )
         .to('.safety-image', 
-          { scale: 1.05, opacity: 0.35, ease: 'power2.in' }, 
-          0.7
+          { scale: 1.03, opacity: 0.4, ease: 'power2.in' }, 
+          0.85
         );
 
       // Financing scroll animation
@@ -310,113 +346,113 @@ function App() {
         scrollTrigger: {
           trigger: financingRef.current,
           start: 'top top',
-          end: '+=120%',
+          end: '+=100%',
           pin: true,
-          scrub: 0.6,
+          scrub: 0.4,
         }
       });
 
       financingScrollTl
         .fromTo('.fin-image', 
-          { x: '-60vw', opacity: 0 }, 
+          { x: '-40vw', opacity: 0 }, 
           { x: 0, opacity: 1, ease: 'none' }, 
           0
         )
         .fromTo('.fin-panel', 
-          { x: '20vw', opacity: 0 }, 
+          { x: '15vw', opacity: 0 }, 
           { x: 0, opacity: 1, ease: 'none' }, 
           0.05
         )
         .fromTo('.fin-content', 
-          { y: '18vh', opacity: 0 }, 
+          { y: '12vh', opacity: 0 }, 
           { y: 0, opacity: 1, ease: 'none' }, 
           0.1
         )
         .fromTo('.fin-cta', 
-          { scale: 0.92, opacity: 0 }, 
+          { scale: 0.95, opacity: 0 }, 
           { scale: 1, opacity: 1, ease: 'none' }, 
           0.2
         )
         .to('.fin-content', 
-          { y: '-10vh', opacity: 0, ease: 'power2.in' }, 
-          0.7
+          { y: '-6vh', opacity: 0, ease: 'power2.in' }, 
+          0.85
         )
         .to('.fin-panel', 
-          { opacity: 0.4, ease: 'power2.in' }, 
-          0.7
+          { opacity: 0.5, ease: 'power2.in' }, 
+          0.85
         );
 
       // Flowing sections animations
       gsap.fromTo('.testimonial-content',
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          scrollTrigger: {
-            trigger: testimonialRef.current,
-            start: 'top 75%',
-            end: 'top 45%',
-            scrub: true,
-          }
-        }
-      );
-
-      gsap.fromTo('.network-heading',
         { y: 30, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: 0.6,
           scrollTrigger: {
-            trigger: networkRef.current,
-            start: 'top 75%',
+            trigger: testimonialRef.current,
+            start: 'top 80%',
             end: 'top 55%',
             scrub: true,
           }
         }
       );
 
-      gsap.fromTo('.stat-item',
+      gsap.fromTo('.network-heading',
         { y: 20, opacity: 0 },
         {
           y: 0,
           opacity: 1,
-          stagger: 0.1,
+          duration: 0.4,
           scrollTrigger: {
             trigger: networkRef.current,
-            start: 'top 65%',
-            end: 'top 45%',
+            start: 'top 80%',
+            end: 'top 60%',
+            scrub: true,
+          }
+        }
+      );
+
+      gsap.fromTo('.stat-item',
+        { y: 15, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          stagger: 0.08,
+          scrollTrigger: {
+            trigger: networkRef.current,
+            start: 'top 70%',
+            end: 'top 50%',
             scrub: true,
           }
         }
       );
 
       gsap.fromTo('.footer-left',
-        { x: -40, opacity: 0 },
+        { x: -30, opacity: 0 },
         {
           x: 0,
           opacity: 1,
-          duration: 0.6,
+          duration: 0.4,
           scrollTrigger: {
             trigger: footerRef.current,
-            start: 'top 80%',
-            end: 'top 60%',
+            start: 'top 85%',
+            end: 'top 65%',
             scrub: true,
           }
         }
       );
 
       gsap.fromTo('.footer-right',
-        { x: 40, opacity: 0 },
+        { x: 30, opacity: 0 },
         {
           x: 0,
           opacity: 1,
-          duration: 0.6,
+          duration: 0.4,
           scrollTrigger: {
             trigger: footerRef.current,
-            start: 'top 80%',
-            end: 'top 60%',
+            start: 'top 85%',
+            end: 'top 65%',
             scrub: true,
           }
         }
@@ -427,8 +463,10 @@ function App() {
     return () => ctx.revert();
   }, []);
 
-  // Global snap for pinned sections
+  // Global snap for pinned sections — desktop only
   useEffect(() => {
+    if (isMobile()) return;
+
     const timer = setTimeout(() => {
       const pinned = ScrollTrigger.getAll()
         .filter(st => st.vars.pin)
@@ -455,7 +493,7 @@ function App() {
             );
             return target;
           },
-          duration: { min: 0.15, max: 0.35 },
+          duration: { min: 0.12, max: 0.25 },
           delay: 0,
           ease: 'power2.out',
         }
@@ -511,15 +549,31 @@ function App() {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-[#E9E3DA] z-[999] pt-24 px-6 md:hidden">
+      {/* Mobile Menu — rendered via Portal to avoid GSAP DOM conflicts */}
+      {createPortal(
+        <div 
+          className={`fixed inset-0 bg-[#E9E3DA] z-[9999] pt-24 px-6 md:hidden mobile-menu-overlay ${
+            mobileMenuOpen ? 'mobile-menu-open' : 'mobile-menu-closed'
+          }`}
+          style={{ 
+            opacity: mobileMenuOpen ? 1 : 0, 
+            pointerEvents: mobileMenuOpen ? 'auto' : 'none',
+            transition: 'opacity 0.25s ease, transform 0.25s ease',
+            transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(100%)',
+          }}
+        >
+          <button 
+            className="absolute top-6 right-6 p-2"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <X size={24} />
+          </button>
           <div className="flex flex-col gap-6">
-            <a className="text-2xl font-bold" style={{ cursor: 'pointer' }} onClick={() => { setMobileMenuOpen(false); navigate('/browse?type=sale'); }}>Buy</a>
-            <a className="text-2xl font-bold" style={{ cursor: 'pointer' }} onClick={() => { setMobileMenuOpen(false); navigate('/browse?type=rent'); }}>Rent</a>
-            <a className="text-2xl font-bold" style={{ cursor: 'pointer' }} onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/sell' : '/login'); }}>Sell</a>
-            <a className="text-2xl font-bold" style={{ cursor: 'pointer' }} onClick={() => { setMobileMenuOpen(false); navigate('/parts'); }}>Parts</a>
-            <a className="text-2xl font-bold" style={{ cursor: 'pointer' }} onClick={() => { setMobileMenuOpen(false); navigate('/operators'); }}>Services</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/browse?type=sale'); }}>Buy</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/browse?type=rent'); }}>Rent</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/sell' : '/login'); }}>Sell</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/parts'); }}>Parts</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/operators'); }}>Services</a>
             <button 
               className="btn-primary flex items-center justify-center gap-2 mt-4"
               onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/sell' : '/login'); }}
@@ -535,7 +589,8 @@ function App() {
               {isAuthenticated ? 'My Profile' : 'Sign In'}
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Section 1: Hero */}
@@ -981,7 +1036,7 @@ function App() {
               <p className="text-gray-400 mb-8">India's heavy equipment marketplace.</p>
 
               <p className="text-sm text-gray-400 mb-4">Get weekly inventory drops and rental deals.</p>
-              <div className="flex">
+              <div className="flex flex-col sm:flex-row">
                 <input 
                   type="email" 
                   placeholder="Email address" 

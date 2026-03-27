@@ -67,7 +67,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       <div className="absolute inset-0 bg-[#101214]/70 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative max-w-2xl mx-auto mt-[10vh] bg-[#E9E3DA] rounded-xl shadow-2xl overflow-hidden animate-[slideDown_0.2s_ease-out]">
+      <div className="relative max-w-2xl mx-4 sm:mx-auto mt-[5vh] sm:mt-[10vh] bg-[#E9E3DA] rounded-xl shadow-2xl overflow-hidden animate-[slideDown_0.2s_ease-out]">
         {/* Search input */}
         <form onSubmit={handleSearch} className="flex items-center border-b border-[#101214]/10 px-6">
           <Search size={20} className="text-[#6F757C] flex-shrink-0" />
@@ -86,7 +86,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
 
         {/* Filters (expandable) */}
         {showFilters && (
-          <div className="px-6 py-4 border-b border-[#101214]/10 grid grid-cols-3 gap-3">
+          <div className="px-6 py-4 border-b border-[#101214]/10 grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-[10px] font-medium text-[#6F757C] mb-1 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Category</label>
               <select value={category} onChange={(e) => setCategory(e.target.value)}
