@@ -257,7 +257,15 @@ async function seedListings() {
       process.exit(1);
     }
 
-    const imagesDir = path.resolve(__dirname, '../../app/public/images');
+    // Resolve images directory with fallback
+    let imagesDir = path.resolve(__dirname, '../../app/public/images');
+    if (!fs.existsSync(imagesDir)) {
+      // Fallback for Render/production environments where the path might differ
+      imagesDir = path.resolve(__dirname, '../seeds/images');
+    }
+    
+    console.log(`📂 Searching for images in: ${imagesDir}`);
+    
     let createdCount = 0;
     let skippedCount = 0;
     const createdListings = [];

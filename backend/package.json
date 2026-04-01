@@ -8,6 +8,8 @@
     "dev": "nodemon src/server.js",
     "migrate": "npx sequelize-cli db:migrate",
     "seed": "npx sequelize-cli db:seed:all",
+    "seed:prod": "node src/seed-users.js && node src/seed-listings.js",
+    "build": "echo 'No build step required'",
     "test": "jest"
   },
   "keywords": [
