@@ -1,19 +1,117 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { operatorsApi } from '../services/api';
-import { ArrowLeft, Loader2, MapPin, Star, Briefcase, User, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Loader2, MapPin, Star, Briefcase, User, CheckCircle, Plus, X, Save } from 'lucide-react';
+
+const EQUIPMENT_OPTIONS = ['Excavator', 'Crane', 'Loader', 'Bulldozer', 'Dumper', 'Backhoe Loader', 'Roller', 'Forklift', 'Tower Crane', 'Other'];
+
+interface OperatorForm {
+  yearsOfExperience: string;
+  equipmentTypes: string[];
+  dayRate: string;
+  city: string;
+  state: string;
+  bio: string;
+  isAvailable: boolean;
+}
+
+const INITIAL_FORM: OperatorForm = {
+  yearsOfExperience: '', equipmentTypes: [], dayRate: '', city: '', state: '', bio: '', isAvailable: true,
+};
 
 export default function OperatorsPage() {
+  const navigate = useNavigate();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [operators, setOperators] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ city: '', isAvailable: 'true' });
+
+  // Service listing form state
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState<OperatorForm>(INITIAL_FORM);
+  const [myProfile, setMyProfile] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState('');
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof OperatorForm, string>>>({});
 
   useEffect(() => {
     setLoading(true);
     operatorsApi.getOperators(filters).then(d => setOperators(d.operators)).catch(() => setOperators([])).finally(() => setLoading(false));
   }, [filters]);
 
+  // Load existing profile
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    operatorsApi.getMyProfile().then(d => {
+      if (d.profile) {
+        setMyProfile(d.profile);
+        setForm({
+          yearsOfExperience: String(d.profile.yearsOfExperience || ''),
+          equipmentTypes: d.profile.equipmentTypes || [],
+          dayRate: String(d.profile.dayRate || ''),
+          city: d.profile.city || '',
+          state: d.profile.state || '',
+          bio: d.profile.bio || '',
+          isAvailable: d.profile.isAvailable ?? true,
+        });
+      }
+    }).catch(() => {});
+  }, [isAuthenticated]);
+
+  const validate = () => {
+    const e: Partial<Record<keyof OperatorForm, string>> = {};
+    if (!form.yearsOfExperience || Number(form.yearsOfExperience) < 0) e.yearsOfExperience = 'Required';
+    if (form.equipmentTypes.length === 0) e.equipmentTypes = 'Select at least one';
+    if (!form.dayRate || Number(form.dayRate) <= 0) e.dayRate = 'Required';
+    if (!form.city.trim()) e.city = 'Required';
+    if (!form.state.trim()) e.state = 'Required';
+    setFormErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSave = async () => {
+    if (!validate()) return;
+    setSaving(true);
+    setSaveMsg('');
+    try {
+      const payload = {
+        yearsOfExperience: Number(form.yearsOfExperience),
+        equipmentTypes: form.equipmentTypes,
+        dayRate: Number(form.dayRate),
+        city: form.city.trim(),
+        state: form.state.trim(),
+        bio: form.bio.trim(),
+        isAvailable: form.isAvailable,
+      };
+      const res = await operatorsApi.createOrUpdate(payload);
+      setMyProfile(res.profile);
+      setSaveMsg('✓ Profile saved! Your listing is now live.');
+      // Refresh list
+      operatorsApi.getOperators(filters).then(d => setOperators(d.operators)).catch(() => {});
+    } catch (err: any) {
+      setSaveMsg(err.message || 'Failed to save. Try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const toggleEquipment = (eq: string) => {
+    setForm(p => ({
+      ...p,
+      equipmentTypes: p.equipmentTypes.includes(eq)
+        ? p.equipmentTypes.filter(e => e !== eq)
+        : [...p.equipmentTypes, eq],
+    }));
+    setFormErrors(p => ({ ...p, equipmentTypes: '' }));
+  };
+
   const fmt = (p: number) => `₹${Number(p).toLocaleString('en-IN')}`;
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1.5px solid #ddd',
+    fontFamily: 'Inter, sans-serif', fontSize: '14px', outline: 'none', background: '#fff',
+  };
 
   return (
     <div className="min-h-screen bg-[#E9E3DA]">
@@ -23,12 +121,133 @@ export default function OperatorsPage() {
             <Link to="/" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214' }}>YantraSetu</Link>
             <span className="text-[#6F757C] text-sm">/ Operators</span>
           </div>
-          <Link to="/" className="flex items-center gap-1.5 text-sm text-[#6F757C] hover:text-[#101214]"><ArrowLeft size={16} /> Home</Link>
+          <div className="flex items-center gap-3">
+            {isAuthenticated && (
+              <button
+                onClick={() => setShowForm(!showForm)}
+                className="btn-primary btn-small text-xs flex items-center gap-1.5"
+                style={{ padding: '8px 16px' }}
+              >
+                {showForm ? <X size={14} /> : <Plus size={14} />}
+                {showForm ? 'Close' : myProfile ? 'Edit My Listing' : 'List Your Service'}
+              </button>
+            )}
+            <Link to="/" className="flex items-center gap-1.5 text-sm text-[#6F757C] hover:text-[#101214]"><ArrowLeft size={16} /> Home</Link>
+          </div>
         </div>
       </div>
+
       <div className="max-w-7xl mx-auto px-6 py-8">
         <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.75rem', marginBottom: '0.5rem' }}>Hire an Operator</h1>
         <p className="text-[#6F757C] text-sm mb-6">Find certified heavy equipment operators near you.</p>
+
+        {/* List Your Service Form */}
+        {showForm && (
+          <div style={{
+            background: '#fff', borderRadius: '12px', padding: '28px', marginBottom: '24px',
+            boxShadow: '0 4px 24px rgba(16,18,20,0.06)', border: '2px solid #FF6A00',
+          }}>
+            <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.1rem', marginBottom: '4px' }}>
+              {myProfile ? 'Edit Your Operator Profile' : 'List Your Operator Service'}
+            </h2>
+            <p style={{ fontSize: '13px', color: '#6F757C', marginBottom: '20px' }}>
+              Fill in your details to appear in the operator directory.
+            </p>
+
+            {!isAuthenticated ? (
+              <div style={{ textAlign: 'center', padding: '20px' }}>
+                <p style={{ fontSize: '14px', color: '#6F757C', marginBottom: '12px' }}>You need to sign in to list your service.</p>
+                <button className="btn-primary btn-small" onClick={() => navigate('/login')}>Sign In</button>
+              </div>
+            ) : (
+              <>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '12px', marginBottom: '4px' }}>Years of Experience *</label>
+                    <input type="number" min={0} value={form.yearsOfExperience} onChange={e => { setForm(p => ({ ...p, yearsOfExperience: e.target.value })); setFormErrors(p => ({ ...p, yearsOfExperience: '' })); }}
+                      style={{ ...inputStyle, borderColor: formErrors.yearsOfExperience ? '#e53e3e' : '#ddd' }} placeholder="e.g. 5" />
+                    {formErrors.yearsOfExperience && <p style={{ color: '#e53e3e', fontSize: '11px', marginTop: '2px' }}>{formErrors.yearsOfExperience}</p>}
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '12px', marginBottom: '4px' }}>Day Rate (₹) *</label>
+                    <input type="number" min={0} value={form.dayRate} onChange={e => { setForm(p => ({ ...p, dayRate: e.target.value })); setFormErrors(p => ({ ...p, dayRate: '' })); }}
+                      style={{ ...inputStyle, borderColor: formErrors.dayRate ? '#e53e3e' : '#ddd' }} placeholder="e.g. 1500" />
+                    {formErrors.dayRate && <p style={{ color: '#e53e3e', fontSize: '11px', marginTop: '2px' }}>{formErrors.dayRate}</p>}
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '12px', marginBottom: '4px' }}>City *</label>
+                    <input type="text" value={form.city} onChange={e => { setForm(p => ({ ...p, city: e.target.value })); setFormErrors(p => ({ ...p, city: '' })); }}
+                      style={{ ...inputStyle, borderColor: formErrors.city ? '#e53e3e' : '#ddd' }} placeholder="e.g. Bengaluru" />
+                    {formErrors.city && <p style={{ color: '#e53e3e', fontSize: '11px', marginTop: '2px' }}>{formErrors.city}</p>}
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '12px', marginBottom: '4px' }}>State *</label>
+                    <input type="text" value={form.state} onChange={e => { setForm(p => ({ ...p, state: e.target.value })); setFormErrors(p => ({ ...p, state: '' })); }}
+                      style={{ ...inputStyle, borderColor: formErrors.state ? '#e53e3e' : '#ddd' }} placeholder="e.g. Karnataka" />
+                    {formErrors.state && <p style={{ color: '#e53e3e', fontSize: '11px', marginTop: '2px' }}>{formErrors.state}</p>}
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '12px', marginBottom: '6px' }}>Equipment You Operate *</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {EQUIPMENT_OPTIONS.map(eq => (
+                      <button key={eq} onClick={() => toggleEquipment(eq)} type="button"
+                        style={{
+                          padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontFamily: 'Inter, sans-serif',
+                          border: `1.5px solid ${form.equipmentTypes.includes(eq) ? '#FF6A00' : '#ddd'}`,
+                          background: form.equipmentTypes.includes(eq) ? '#FF6A00' : '#fff',
+                          color: form.equipmentTypes.includes(eq) ? '#fff' : '#6F757C',
+                          cursor: 'pointer', transition: 'all 0.15s',
+                        }}>
+                        {eq}
+                      </button>
+                    ))}
+                  </div>
+                  {formErrors.equipmentTypes && <p style={{ color: '#e53e3e', fontSize: '11px', marginTop: '4px' }}>{formErrors.equipmentTypes}</p>}
+                </div>
+
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '12px', marginBottom: '4px' }}>Bio / Description</label>
+                  <textarea value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} rows={3}
+                    style={{ ...inputStyle, resize: 'vertical' }} placeholder="Describe your experience and what makes you a great operator…" />
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={form.isAvailable} onChange={e => setForm(p => ({ ...p, isAvailable: e.target.checked }))} />
+                    <span style={{ fontFamily: 'Sora, sans-serif', fontWeight: 500 }}>Currently available for hire</span>
+                  </label>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <button onClick={handleSave} disabled={saving} className="btn-primary btn-small" style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: saving ? 0.7 : 1 }}>
+                    {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                    {saving ? 'Saving…' : myProfile ? 'Update Profile' : 'Publish Listing'}
+                  </button>
+                  {saveMsg && <p style={{ fontSize: '13px', color: saveMsg.startsWith('✓') ? '#22c55e' : '#e53e3e' }}>{saveMsg}</p>}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* CTA for non-logged-in users */}
+        {!isAuthenticated && !authLoading && (
+          <div style={{
+            background: 'linear-gradient(135deg, #FF6A00 0%, #FF8533 100%)', borderRadius: '10px',
+            padding: '20px 24px', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px',
+          }}>
+            <div>
+              <p style={{ color: '#fff', fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '15px' }}>Are you an operator?</p>
+              <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13px' }}>List your service and get hired by contractors across India.</p>
+            </div>
+            <button onClick={() => navigate('/login')} className="btn-secondary" style={{ borderColor: '#fff', color: '#fff', padding: '10px 20px', fontSize: '13px' }}>
+              Sign In to List
+            </button>
+          </div>
+        )}
+
         <div className="flex gap-3 mb-8">
           <input placeholder="Filter by city…" value={filters.city} onChange={e => setFilters(p => ({ ...p, city: e.target.value }))}
             className="px-4 py-2.5 bg-white border border-[#E9E3DA] rounded text-sm w-48 focus:border-[#FF6A00] focus:outline-none" />

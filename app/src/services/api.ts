@@ -414,3 +414,22 @@ export const adminApi = {
   rejectListing: (id: string) => request<{ message: string }>(`/admin/listings/${id}/reject`, { method: 'PUT' }),
   getUsers: () => request<{ users: any[] }>('/admin/users'),
 };
+
+// ─── Certifications API ────────────────────────────────
+export const certificationsApi = {
+  submit: (data: any) => request<{ message: string; certification: any }>('/certifications', { method: 'POST', body: JSON.stringify(data) }),
+  getMine: () => request<{ certifications: any[] }>('/certifications/my'),
+  getCertification: (id: string) => request<{ certification: any }>(`/certifications/${id}`),
+  getPending: () => request<{ certifications: any[] }>('/certifications/pending'),
+  review: (id: string, status: string, adminNotes?: string) =>
+    request<{ message: string; certification: any }>(`/certifications/${id}/review`, { method: 'PUT', body: JSON.stringify({ status, adminNotes }) }),
+};
+
+// ─── Fraud Reports API ─────────────────────────────────
+export const fraudApi = {
+  submit: (data: any) => request<{ message: string; report: any }>('/fraud-reports', { method: 'POST', body: JSON.stringify(data) }),
+  getMyReports: () => request<{ reports: any[] }>('/fraud-reports/my'),
+  getPending: () => request<{ reports: any[] }>('/fraud-reports/pending'),
+  review: (id: string, status: string, adminNotes?: string, resolution?: string) =>
+    request<{ message: string; report: any }>(`/fraud-reports/${id}/review`, { method: 'PUT', body: JSON.stringify({ status, adminNotes, resolution }) }),
+};

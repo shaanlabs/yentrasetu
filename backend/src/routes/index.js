@@ -75,6 +75,21 @@ router.get('/admin/pending-listings', authenticate, requireAdmin, adminControlle
 router.put('/admin/listings/:id/approve', authenticate, requireAdmin, adminController.approveListing);
 router.put('/admin/listings/:id/reject', authenticate, requireAdmin, adminController.rejectListing);
 router.get('/admin/users', authenticate, requireAdmin, adminController.getAllUsers);
+// Certification routes
+const certificationController = require('../controllers/certificationController');
+router.post('/certifications', authenticate, certificationController.submitCertification);
+router.get('/certifications/my', authenticate, certificationController.getMyCertifications);
+router.get('/certifications/pending', authenticate, requireAdmin, certificationController.getPendingCertifications);
+router.get('/certifications/:id', authenticate, certificationController.getCertification);
+router.put('/certifications/:id/review', authenticate, requireAdmin, certificationController.reviewCertification);
+
+// Fraud report routes
+const fraudController = require('../controllers/fraudController');
+router.post('/fraud-reports', authenticate, fraudController.submitReport);
+router.get('/fraud-reports/my', authenticate, fraudController.getMyReports);
+router.get('/fraud-reports/pending', authenticate, requireAdmin, fraudController.getPendingReports);
+router.put('/fraud-reports/:id/review', authenticate, requireAdmin, fraudController.reviewReport);
+
 // Newsletter
 router.post('/newsletter/subscribe', (req, res) => {
   const { email } = req.body;

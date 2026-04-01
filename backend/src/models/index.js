@@ -7,6 +7,8 @@ const { Chat, Message } = require('./Chat');
 const Review = require('./Review');
 const Transaction = require('./Transaction');
 const RentalBooking = require('./RentalBooking');
+const CertificationRequest = require('./CertificationRequest');
+const FraudReport = require('./FraudReport');
 
 // Define associations
 
@@ -23,6 +25,8 @@ User.hasMany(Review, { foreignKey: 'revieweeId', as: 'reviewsReceived' });
 User.hasMany(Transaction, { foreignKey: 'userId', as: 'transactions' });
 User.hasMany(RentalBooking, { foreignKey: 'ownerId', as: 'rentalsAsOwner' });
 User.hasMany(RentalBooking, { foreignKey: 'renterId', as: 'rentalsAsRenter' });
+User.hasMany(CertificationRequest, { foreignKey: 'userId', as: 'certifications' });
+User.hasMany(FraudReport, { foreignKey: 'reporterId', as: 'fraudReports' });
 
 // MachineryListing associations
 MachineryListing.belongsTo(User, { foreignKey: 'userId', as: 'owner' });
@@ -58,6 +62,12 @@ RentalBooking.belongsTo(MachineryListing, { foreignKey: 'listingId', as: 'listin
 RentalBooking.belongsTo(User, { foreignKey: 'ownerId', as: 'owner' });
 RentalBooking.belongsTo(User, { foreignKey: 'renterId', as: 'renter' });
 
+// CertificationRequest associations
+CertificationRequest.belongsTo(User, { foreignKey: 'userId', as: 'applicant' });
+
+// FraudReport associations
+FraudReport.belongsTo(User, { foreignKey: 'reporterId', as: 'reporter' });
+
 module.exports = {
   User,
   MachineryListing,
@@ -68,5 +78,7 @@ module.exports = {
   Message,
   Review,
   Transaction,
-  RentalBooking
+  RentalBooking,
+  CertificationRequest,
+  FraudReport
 };

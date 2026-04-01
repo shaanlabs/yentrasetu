@@ -1061,33 +1061,33 @@ function App() {
               <div>
                 <h4 className="font-bold mb-4">Buy</h4>
                 <ul className="space-y-2 text-sm text-gray-400">
-                  <li><a href="/browse?type=sale" onClick={(e) => { e.preventDefault(); navigate('/browse?type=sale'); }} className="hover:text-white transition-colors">Browse</a></li>
+                  <li><a href="/browse?type=sale" onClick={(e) => { e.preventDefault(); navigate('/browse?type=sale'); }} className="hover:text-white transition-colors">Browse Sales</a></li>
                   <li><a href="/browse?sortBy=viewCount" onClick={(e) => { e.preventDefault(); navigate('/browse?sortBy=viewCount'); }} className="hover:text-white transition-colors">Featured</a></li>
-                  <li><a href="/browse" onClick={(e) => { e.preventDefault(); navigate('/browse'); }} className="hover:text-white transition-colors">Compare</a></li>
+                  <li><a href="/parts" onClick={(e) => { e.preventDefault(); navigate('/parts'); }} className="hover:text-white transition-colors">Spare Parts</a></li>
                 </ul>
               </div>
               <div>
                 <h4 className="font-bold mb-4">Rent</h4>
                 <ul className="space-y-2 text-sm text-gray-400">
-                  <li><a href="/browse?type=rent" onClick={(e) => { e.preventDefault(); navigate('/browse?type=rent'); }} className="hover:text-white transition-colors">Short-term</a></li>
-                  <li><a href="/browse?type=rent" onClick={(e) => { e.preventDefault(); navigate('/browse?type=rent'); }} className="hover:text-white transition-colors">Long-term</a></li>
-                  <li><a href="/browse?type=rent" onClick={(e) => { e.preventDefault(); navigate('/browse?type=rent'); }} className="hover:text-white transition-colors">With Operator</a></li>
+                  <li><a href="/browse?type=rent" onClick={(e) => { e.preventDefault(); navigate('/browse?type=rent'); }} className="hover:text-white transition-colors">Rental Fleet</a></li>
+                  <li><a href="/bookings" onClick={(e) => { e.preventDefault(); navigate(isAuthenticated ? '/bookings' : '/login'); }} className="hover:text-white transition-colors">My Bookings</a></li>
+                  <li><a href="/operators" onClick={(e) => { e.preventDefault(); navigate('/operators'); }} className="hover:text-white transition-colors">Hire Operators</a></li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-bold mb-4">Sell</h4>
+                <h4 className="font-bold mb-4">Services</h4>
                 <ul className="space-y-2 text-sm text-gray-400">
                   <li><a href="/sell" onClick={(e) => { e.preventDefault(); navigate(isAuthenticated ? '/sell' : '/login'); }} className="hover:text-white transition-colors">List a Machine</a></li>
-                  <li><a href="/browse" onClick={(e) => { e.preventDefault(); navigate('/browse'); }} className="hover:text-white transition-colors">Valuation</a></li>
-                  <li><a href="/register" onClick={(e) => { e.preventDefault(); navigate('/register'); }} className="hover:text-white transition-colors">Dealer Program</a></li>
+                  <li><a href="/loan-eligibility" onClick={(e) => { e.preventDefault(); navigate('/loan-eligibility'); }} className="hover:text-white transition-colors">Loan Eligibility</a></li>
+                  <li><a href="/mechanics" onClick={(e) => { e.preventDefault(); navigate('/mechanics'); }} className="hover:text-white transition-colors">Find Mechanics</a></li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-bold mb-4">Support</h4>
+                <h4 className="font-bold mb-4">Company</h4>
                 <ul className="space-y-2 text-sm text-gray-400">
-                  <li><a href="/login" onClick={(e) => { e.preventDefault(); navigate('/login'); }} className="hover:text-white transition-colors">Contact</a></li>
-                  <li><a href="#standards" className="hover:text-white transition-colors">Inspection Standards</a></li>
-                  <li><a href="#financing" className="hover:text-white transition-colors">Financing</a></li>
+                  <li><a href="/about" onClick={(e) => { e.preventDefault(); navigate('/about'); }} className="hover:text-white transition-colors">About & Contact</a></li>
+                  <li><a href="/terms" onClick={(e) => { e.preventDefault(); navigate('/terms'); }} className="hover:text-white transition-colors">Terms & Privacy</a></li>
+                  <li><a href="/register" onClick={(e) => { e.preventDefault(); navigate('/register'); }} className="hover:text-white transition-colors">Dealer Program</a></li>
                 </ul>
               </div>
             </div>
@@ -1097,8 +1097,8 @@ function App() {
           <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-gray-400">© 2026 YantraSetu. All rights reserved.</p>
             <div className="flex gap-6 text-sm text-gray-400">
-              <a href="#" className="hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms</a>
+              <a href="/terms#privacy" onClick={(e) => { e.preventDefault(); navigate('/terms'); }} className="hover:text-white transition-colors">Privacy</a>
+              <a href="/terms#terms" onClick={(e) => { e.preventDefault(); navigate('/terms'); }} className="hover:text-white transition-colors">Terms</a>
             </div>
           </div>
         </div>

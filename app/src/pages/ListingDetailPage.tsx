@@ -1,11 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { machineryApi, type MachineryListing } from '../services/api';
+import { machineryApi, fraudApi, type MachineryListing } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import {
-  ArrowLeft, MapPin, Calendar, Gauge, Eye, Shield, User,
-  Phone, Loader2, Share2, ChevronLeft, ChevronRight, IndianRupee
+  ArrowLeft, MapPin, Calendar, Gauge, Shield, User,
+  Phone, Loader2, Share2, ChevronLeft, ChevronRight, IndianRupee,
+  Flag, X, Upload, AlertTriangle
 } from 'lucide-react';
+
+const FRAUD_REASONS = [
+  { value: 'fake_listing', label: 'Fake Listing' },
+  { value: 'misleading_photos', label: 'Misleading Photos' },
+  { value: 'scam_pricing', label: 'Scam Pricing' },
+  { value: 'stolen_equipment', label: 'Stolen Equipment' },
+  { value: 'impersonation', label: 'Impersonation' },
+  { value: 'spam', label: 'Spam' },
+  { value: 'other', label: 'Other' },
+];
 
 export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +28,13 @@ export default function ListingDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentImage, setCurrentImage] = useState(0);
+
+  // Fraud report state
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportForm, setReportForm] = useState({ reason: '', description: '', evidenceImages: [] as string[] });
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [reportMsg, setReportMsg] = useState('');
+  const evidenceRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -183,6 +201,12 @@ export default function ListingDetailPage() {
                 <button className="p-3 bg-[#E9E3DA] rounded hover:bg-[#d9d3ca] transition-colors" title="Share">
                   <Share2 size={18} className="text-[#101214]" />
                 </button>
+                {isAuthenticated && (
+                  <button onClick={() => { setShowReportModal(true); setReportMsg(''); }}
+                    className="p-3 bg-red-50 rounded hover:bg-red-100 transition-colors" title="Report this listing">
+                    <Flag size={18} className="text-red-500" />
+                  </button>
+                )}
               </div>
 
               {listing.listingType === 'sale' && (
@@ -242,6 +266,88 @@ export default function ListingDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Fraud Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 relative max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setShowReportModal(false)} className="absolute top-4 right-4 p-1 hover:bg-[#E9E3DA] rounded">
+              <X size={18} />
+            </button>
+            <div className="flex items-center gap-2 mb-5">
+              <AlertTriangle size={20} className="text-red-500" />
+              <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.1rem' }}>Report this Listing</h2>
+            </div>
+
+            {reportMsg && (
+              <div className={`px-4 py-3 rounded-lg text-sm mb-4 ${reportMsg.startsWith('✅') ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>{reportMsg}</div>
+            )}
+
+            {!reportMsg.startsWith('✅') && (
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                if (!reportForm.reason || !reportForm.description) { setReportMsg('Please select a reason and add a description.'); return; }
+                setReportSubmitting(true); setReportMsg('');
+                try {
+                  await fraudApi.submit({ targetType: 'listing', targetId: listing.id, ...reportForm });
+                  setReportMsg('✅ Report submitted. Our team will investigate.');
+                  setReportForm({ reason: '', description: '', evidenceImages: [] });
+                } catch (err: any) { setReportMsg(err.message || 'Failed to submit report.'); }
+                finally { setReportSubmitting(false); }
+              }}>
+                <div className="mb-4">
+                  <label className="block text-xs font-medium text-[#6F757C] mb-1.5">Reason *</label>
+                  <select value={reportForm.reason} onChange={e => setReportForm(p => ({ ...p, reason: e.target.value }))}
+                    className="w-full px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-300">
+                    <option value="">Select reason…</option>
+                    {FRAUD_REASONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+                  </select>
+                </div>
+                <div className="mb-4">
+                  <label className="block text-xs font-medium text-[#6F757C] mb-1.5">Description *</label>
+                  <textarea rows={4} placeholder="Describe the issue in detail…" value={reportForm.description}
+                    onChange={e => setReportForm(p => ({ ...p, description: e.target.value }))}
+                    className="w-full px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-300 resize-none" />
+                </div>
+                <div className="mb-5">
+                  <label className="block text-xs font-medium text-[#6F757C] mb-1.5">Evidence (optional)</label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {reportForm.evidenceImages.map((img, i) => (
+                      <div key={i} className="relative w-16 h-16 rounded border border-[#E9E3DA] overflow-hidden">
+                        <img src={img} className="w-full h-full object-cover" />
+                        <button type="button" onClick={() => setReportForm(p => ({ ...p, evidenceImages: p.evidenceImages.filter((_, j) => j !== i) }))}
+                          className="absolute top-0 right-0 bg-red-500 text-white w-4 h-4 flex items-center justify-center text-[8px] rounded-bl"><X size={8} /></button>
+                      </div>
+                    ))}
+                  </div>
+                  {reportForm.evidenceImages.length < 3 && (
+                    <button type="button" onClick={() => evidenceRef.current?.click()}
+                      className="text-xs px-3 py-2 border border-dashed border-[#D1CBC2] rounded flex items-center gap-1 text-[#6F757C] hover:border-red-400 hover:text-red-500 transition-colors">
+                      <Upload size={12} /> Add screenshot
+                    </button>
+                  )}
+                  <input ref={evidenceRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file || file.size > 3 * 1024 * 1024) return;
+                    const reader = new FileReader();
+                    reader.onload = () => setReportForm(p => ({ ...p, evidenceImages: [...p.evidenceImages, reader.result as string] }));
+                    reader.readAsDataURL(file);
+                    e.target.value = '';
+                  }} />
+                </div>
+                <div className="flex gap-3">
+                  <button type="button" onClick={() => setShowReportModal(false)}
+                    className="flex-1 py-2.5 text-sm border border-[#E9E3DA] rounded-lg hover:bg-[#E9E3DA] transition-colors">Cancel</button>
+                  <button type="submit" disabled={reportSubmitting}
+                    className="flex-1 py-2.5 text-sm bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+                    {reportSubmitting ? <><Loader2 size={14} className="animate-spin" /> Submitting…</> : <><Flag size={14} /> Submit Report</>}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

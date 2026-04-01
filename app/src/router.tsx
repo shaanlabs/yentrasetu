@@ -16,6 +16,9 @@ import BookingsPage from './pages/BookingsPage';
 import ChatsPage from './pages/ChatsPage';
 import AdminPage from './pages/AdminPage';
 import LoanEligibilityPage from './pages/LoanEligibilityPage';
+import AboutPage from './pages/AboutPage';
+import TermsPage from './pages/TermsPage';
+import CertificationsPage from './pages/CertificationsPage';
 
 export const router = createBrowserRouter([
   { path: '/', element: <App /> },
@@ -41,6 +44,13 @@ export const router = createBrowserRouter([
   { path: '/chats', element: <ChatsPage /> },
   { path: '/admin', element: <AdminPage /> },
   { path: '/loan-eligibility', element: <LoanEligibilityPage /> },
+
+  // Phase 2
+  { path: '/certifications', element: <CertificationsPage /> },
+
+  // Info pages
+  { path: '/about', element: <AboutPage /> },
+  { path: '/terms', element: <TermsPage /> },
 
   // 404
   {
