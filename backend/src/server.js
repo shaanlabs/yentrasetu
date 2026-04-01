@@ -66,10 +66,16 @@ const startServer = async () => {
     console.log('Database connection established successfully.');
     
     // Sync models (in production, use migrations)
-    // Disable FK checks so SQLite allows Sequelize to drop/recreate tables during alter
-    await sequelize.query('PRAGMA foreign_keys = OFF;');
+    const dialect = sequelize.getDialect();
+    if (dialect === 'sqlite') {
+      await sequelize.query('PRAGMA foreign_keys = OFF;');
+    }
+    
     await sequelize.sync({ alter: true });
-    await sequelize.query('PRAGMA foreign_keys = ON;');
+    
+    if (dialect === 'sqlite') {
+      await sequelize.query('PRAGMA foreign_keys = ON;');
+    }
     console.log('Database models synchronized.');
     
     app.listen(PORT, () => {

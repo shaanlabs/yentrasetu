@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { machineryApi, type MachineryListing, type MachineryFilters, type CategoriesResponse } from '../services/api';
 import {
   Search, SlidersHorizontal, MapPin, ArrowLeft, ArrowRight,
@@ -7,7 +7,6 @@ import {
 } from 'lucide-react';
 
 export default function BrowsePage() {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [listings, setListings] = useState<MachineryListing[]>([]);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { partsApi } from '../services/api';
-import { Search, ArrowLeft, ArrowRight, Loader2, Eye, MapPin, Gauge } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2, Eye, MapPin, Gauge } from 'lucide-react';
 
 const CATS = ['engine', 'hydraulics', 'electrical', 'undercarriage', 'cab', 'attachments', 'other'];
 const CONDS = ['new', 'used', 'oem', 'aftermarket', 'refurbished'];
