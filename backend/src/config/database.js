@@ -1,9 +1,6 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-const { Sequelize } = require('sequelize');
-require('dotenv').config();
-
 const isProduction = process.env.NODE_ENV === 'production';
 const databaseUrl = process.env.DATABASE_URL;
 
