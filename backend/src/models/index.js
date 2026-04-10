@@ -9,6 +9,8 @@ const Transaction = require('./Transaction');
 const RentalBooking = require('./RentalBooking');
 const CertificationRequest = require('./CertificationRequest');
 const FraudReport = require('./FraudReport');
+const Subscription = require('./Subscription');
+const { sequelize } = require('../config/database');
 
 // Define associations
 
@@ -68,6 +70,10 @@ CertificationRequest.belongsTo(User, { foreignKey: 'userId', as: 'applicant' });
 // FraudReport associations
 FraudReport.belongsTo(User, { foreignKey: 'reporterId', as: 'reporter' });
 
+// Subscription associations
+User.hasMany(Subscription, { foreignKey: 'userId', as: 'subscriptions' });
+Subscription.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
 module.exports = {
   User,
   MachineryListing,
@@ -80,5 +86,7 @@ module.exports = {
   Transaction,
   RentalBooking,
   CertificationRequest,
-  FraudReport
+  FraudReport,
+  Subscription,
+  sequelize
 };

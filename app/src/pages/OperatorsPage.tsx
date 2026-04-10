@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { operatorsApi } from '../services/api';
-import { ArrowLeft, Loader2, MapPin, Star, Briefcase, User, CheckCircle, Plus, X, Save } from 'lucide-react';
+import { Loader2, MapPin, Star, Briefcase, User, CheckCircle, Plus, X, Save } from 'lucide-react';
+import PageShell from '../components/PageShell';
 
 const EQUIPMENT_OPTIONS = ['Excavator', 'Crane', 'Loader', 'Bulldozer', 'Dumper', 'Backhoe Loader', 'Roller', 'Forklift', 'Tower Crane', 'Other'];
 
@@ -87,7 +88,6 @@ export default function OperatorsPage() {
       const res = await operatorsApi.createOrUpdate(payload);
       setMyProfile(res.profile);
       setSaveMsg('✓ Profile saved! Your listing is now live.');
-      // Refresh list
       operatorsApi.getOperators(filters).then(d => setOperators(d.operators)).catch(() => {});
     } catch (err: any) {
       setSaveMsg(err.message || 'Failed to save. Try again.');
@@ -108,194 +108,232 @@ export default function OperatorsPage() {
 
   const fmt = (p: number) => `₹${Number(p).toLocaleString('en-IN')}`;
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1.5px solid #ddd',
-    fontFamily: 'Inter, sans-serif', fontSize: '14px', outline: 'none', background: '#fff',
-  };
-
   return (
-    <div className="min-h-screen bg-[#E9E3DA]">
-      <div className="bg-white/80 backdrop-blur-md border-b border-[#E9E3DA] sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214' }}>YantraSetu</Link>
-            <span className="text-[#6F757C] text-sm">/ Operators</span>
-          </div>
-          <div className="flex items-center gap-3">
-            {isAuthenticated && (
-              <button
-                onClick={() => setShowForm(!showForm)}
-                className="btn-primary btn-small text-xs flex items-center gap-1.5"
-                style={{ padding: '8px 16px' }}
-              >
-                {showForm ? <X size={14} /> : <Plus size={14} />}
-                {showForm ? 'Close' : myProfile ? 'Edit My Listing' : 'List Your Service'}
-              </button>
-            )}
-            <Link to="/" className="flex items-center gap-1.5 text-sm text-[#6F757C] hover:text-[#101214]"><ArrowLeft size={16} /> Home</Link>
-          </div>
+    <PageShell breadcrumb="Operators" backTo="/" backLabel="Home">
+      {/* Title + List Service button */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+        <div>
+          <h1 className="text-2xl sm:text-[1.75rem]" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700 }}>
+            Hire an Operator
+          </h1>
+          <p className="text-[#6F757C] text-sm mt-1">Find certified heavy equipment operators near you.</p>
         </div>
+        {isAuthenticated && (
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="btn-primary btn-small text-sm flex items-center gap-2 self-start sm:self-auto"
+          >
+            {showForm ? <X size={14} /> : <Plus size={14} />}
+            {showForm ? 'Close' : myProfile ? 'Edit Listing' : 'List Service'}
+          </button>
+        )}
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.75rem', marginBottom: '0.5rem' }}>Hire an Operator</h1>
-        <p className="text-[#6F757C] text-sm mb-6">Find certified heavy equipment operators near you.</p>
+      {/* List Your Service Form */}
+      {showForm && (
+        <div className="bg-white rounded-xl p-5 sm:p-7 mb-6 shadow-sm border-2 border-[#FF6A00]">
+          <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.1rem', marginBottom: '4px' }}>
+            {myProfile ? 'Edit Your Operator Profile' : 'List Your Operator Service'}
+          </h2>
+          <p className="text-sm text-[#6F757C] mb-5">
+            Fill in your details to appear in the operator directory.
+          </p>
 
-        {/* List Your Service Form */}
-        {showForm && (
-          <div style={{
-            background: '#fff', borderRadius: '12px', padding: '28px', marginBottom: '24px',
-            boxShadow: '0 4px 24px rgba(16,18,20,0.06)', border: '2px solid #FF6A00',
-          }}>
-            <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.1rem', marginBottom: '4px' }}>
-              {myProfile ? 'Edit Your Operator Profile' : 'List Your Operator Service'}
-            </h2>
-            <p style={{ fontSize: '13px', color: '#6F757C', marginBottom: '20px' }}>
-              Fill in your details to appear in the operator directory.
-            </p>
-
-            {!isAuthenticated ? (
-              <div style={{ textAlign: 'center', padding: '20px' }}>
-                <p style={{ fontSize: '14px', color: '#6F757C', marginBottom: '12px' }}>You need to sign in to list your service.</p>
-                <button className="btn-primary btn-small" onClick={() => navigate('/login')}>Sign In</button>
-              </div>
-            ) : (
-              <>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '12px', marginBottom: '4px' }}>Years of Experience *</label>
-                    <input type="number" min={0} value={form.yearsOfExperience} onChange={e => { setForm(p => ({ ...p, yearsOfExperience: e.target.value })); setFormErrors(p => ({ ...p, yearsOfExperience: '' })); }}
-                      style={{ ...inputStyle, borderColor: formErrors.yearsOfExperience ? '#e53e3e' : '#ddd' }} placeholder="e.g. 5" />
-                    {formErrors.yearsOfExperience && <p style={{ color: '#e53e3e', fontSize: '11px', marginTop: '2px' }}>{formErrors.yearsOfExperience}</p>}
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '12px', marginBottom: '4px' }}>Day Rate (₹) *</label>
-                    <input type="number" min={0} value={form.dayRate} onChange={e => { setForm(p => ({ ...p, dayRate: e.target.value })); setFormErrors(p => ({ ...p, dayRate: '' })); }}
-                      style={{ ...inputStyle, borderColor: formErrors.dayRate ? '#e53e3e' : '#ddd' }} placeholder="e.g. 1500" />
-                    {formErrors.dayRate && <p style={{ color: '#e53e3e', fontSize: '11px', marginTop: '2px' }}>{formErrors.dayRate}</p>}
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '12px', marginBottom: '4px' }}>City *</label>
-                    <input type="text" value={form.city} onChange={e => { setForm(p => ({ ...p, city: e.target.value })); setFormErrors(p => ({ ...p, city: '' })); }}
-                      style={{ ...inputStyle, borderColor: formErrors.city ? '#e53e3e' : '#ddd' }} placeholder="e.g. Bengaluru" />
-                    {formErrors.city && <p style={{ color: '#e53e3e', fontSize: '11px', marginTop: '2px' }}>{formErrors.city}</p>}
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '12px', marginBottom: '4px' }}>State *</label>
-                    <input type="text" value={form.state} onChange={e => { setForm(p => ({ ...p, state: e.target.value })); setFormErrors(p => ({ ...p, state: '' })); }}
-                      style={{ ...inputStyle, borderColor: formErrors.state ? '#e53e3e' : '#ddd' }} placeholder="e.g. Karnataka" />
-                    {formErrors.state && <p style={{ color: '#e53e3e', fontSize: '11px', marginTop: '2px' }}>{formErrors.state}</p>}
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '12px', marginBottom: '6px' }}>Equipment You Operate *</label>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                    {EQUIPMENT_OPTIONS.map(eq => (
-                      <button key={eq} onClick={() => toggleEquipment(eq)} type="button"
-                        style={{
-                          padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontFamily: 'Inter, sans-serif',
-                          border: `1.5px solid ${form.equipmentTypes.includes(eq) ? '#FF6A00' : '#ddd'}`,
-                          background: form.equipmentTypes.includes(eq) ? '#FF6A00' : '#fff',
-                          color: form.equipmentTypes.includes(eq) ? '#fff' : '#6F757C',
-                          cursor: 'pointer', transition: 'all 0.15s',
-                        }}>
-                        {eq}
-                      </button>
-                    ))}
-                  </div>
-                  {formErrors.equipmentTypes && <p style={{ color: '#e53e3e', fontSize: '11px', marginTop: '4px' }}>{formErrors.equipmentTypes}</p>}
-                </div>
-
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '12px', marginBottom: '4px' }}>Bio / Description</label>
-                  <textarea value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} rows={3}
-                    style={{ ...inputStyle, resize: 'vertical' }} placeholder="Describe your experience and what makes you a great operator…" />
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
-                    <input type="checkbox" checked={form.isAvailable} onChange={e => setForm(p => ({ ...p, isAvailable: e.target.checked }))} />
-                    <span style={{ fontFamily: 'Sora, sans-serif', fontWeight: 500 }}>Currently available for hire</span>
-                  </label>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <button onClick={handleSave} disabled={saving} className="btn-primary btn-small" style={{ display: 'flex', alignItems: 'center', gap: '6px', opacity: saving ? 0.7 : 1 }}>
-                    {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-                    {saving ? 'Saving…' : myProfile ? 'Update Profile' : 'Publish Listing'}
-                  </button>
-                  {saveMsg && <p style={{ fontSize: '13px', color: saveMsg.startsWith('✓') ? '#22c55e' : '#e53e3e' }}>{saveMsg}</p>}
-                </div>
-              </>
-            )}
-          </div>
-        )}
-
-        {/* CTA for non-logged-in users */}
-        {!isAuthenticated && !authLoading && (
-          <div style={{
-            background: 'linear-gradient(135deg, #FF6A00 0%, #FF8533 100%)', borderRadius: '10px',
-            padding: '20px 24px', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px',
-          }}>
-            <div>
-              <p style={{ color: '#fff', fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '15px' }}>Are you an operator?</p>
-              <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13px' }}>List your service and get hired by contractors across India.</p>
+          {!isAuthenticated ? (
+            <div className="text-center py-5">
+              <p className="text-sm text-[#6F757C] mb-3">You need to sign in to list your service.</p>
+              <button className="btn-primary btn-small" onClick={() => navigate('/login')}>Sign In</button>
             </div>
-            <button onClick={() => navigate('/login')} className="btn-secondary" style={{ borderColor: '#fff', color: '#fff', padding: '10px 20px', fontSize: '13px' }}>
-              Sign In to List
-            </button>
-          </div>
-        )}
-
-        <div className="flex gap-3 mb-8">
-          <input placeholder="Filter by city…" value={filters.city} onChange={e => setFilters(p => ({ ...p, city: e.target.value }))}
-            className="px-4 py-2.5 bg-white border border-[#E9E3DA] rounded text-sm w-48 focus:border-[#FF6A00] focus:outline-none" />
-          <label className="flex items-center gap-2 text-sm text-[#6F757C]">
-            <input type="checkbox" checked={filters.isAvailable === 'true'} onChange={e => setFilters(p => ({ ...p, isAvailable: e.target.checked ? 'true' : '' }))} className="rounded" />
-            Available only
-          </label>
-        </div>
-        {loading ? <div className="flex justify-center py-32"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div>
-        : operators.length === 0 ? (
-          <div className="text-center py-32">
-            <User size={48} className="mx-auto text-[#6F757C] mb-4 opacity-40" />
-            <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600 }}>No operators found</h2>
-            <p className="text-sm text-[#6F757C] mt-2">Try broadening your search.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {operators.map(op => (
-              <div key={op.id} className="bg-white rounded-lg shadow-sm border border-[#E9E3DA] p-6 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-[#FF6A00]/10 rounded-full flex items-center justify-center"><User size={22} className="text-[#FF6A00]" /></div>
-                  <div>
-                    <h3 className="font-bold text-sm" style={{ fontFamily: 'Sora, sans-serif' }}>{op.user?.firstName} {op.user?.lastName}</h3>
-                    <div className="flex items-center gap-2 text-xs text-[#6F757C]">
-                      {op.isVerified && <span className="flex items-center gap-0.5 text-green-600"><CheckCircle size={10} /> Verified</span>}
-                      {op.isAvailable ? <span className="text-green-600">Available</span> : <span className="text-red-500">Unavailable</span>}
-                    </div>
-                  </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>Years of Experience *</label>
+                  <input
+                    type="number" min={0} value={form.yearsOfExperience}
+                    onChange={e => { setForm(p => ({ ...p, yearsOfExperience: e.target.value })); setFormErrors(p => ({ ...p, yearsOfExperience: '' })); }}
+                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] min-h-[44px] ${formErrors.yearsOfExperience ? 'border-red-400' : 'border-[#E9E3DA]'}`}
+                    placeholder="e.g. 5"
+                  />
+                  {formErrors.yearsOfExperience && <p className="text-red-500 text-[11px] mt-1">{formErrors.yearsOfExperience}</p>}
                 </div>
-                <div className="space-y-2 text-xs text-[#6F757C] mb-4">
-                  <div className="flex items-center gap-2"><Briefcase size={12} />{op.yearsOfExperience} yrs experience</div>
-                  {op.city && <div className="flex items-center gap-2"><MapPin size={12} />{op.city}, {op.state}</div>}
-                  {op.rating > 0 && <div className="flex items-center gap-2"><Star size={12} className="text-yellow-500" />{op.rating} ({op.reviewCount} reviews)</div>}
+                <div>
+                  <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>Day Rate (₹) *</label>
+                  <input
+                    type="number" min={0} value={form.dayRate}
+                    onChange={e => { setForm(p => ({ ...p, dayRate: e.target.value })); setFormErrors(p => ({ ...p, dayRate: '' })); }}
+                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] min-h-[44px] ${formErrors.dayRate ? 'border-red-400' : 'border-[#E9E3DA]'}`}
+                    placeholder="e.g. 1500"
+                  />
+                  {formErrors.dayRate && <p className="text-red-500 text-[11px] mt-1">{formErrors.dayRate}</p>}
                 </div>
-                {op.equipmentTypes?.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-4">{op.equipmentTypes.slice(0, 3).map((t: string) => (
-                    <span key={t} className="px-2 py-0.5 bg-[#E9E3DA] text-[10px] rounded capitalize">{t}</span>
-                  ))}</div>
-                )}
-                <div className="flex items-center justify-between border-t border-[#E9E3DA] pt-3">
-                  {op.dayRate && <p className="text-sm font-bold text-[#FF6A00]" style={{ fontFamily: 'Sora, sans-serif' }}>{fmt(op.dayRate)}/day</p>}
-                  <button className="btn-primary btn-small text-xs px-4 py-2">Contact</button>
+                <div>
+                  <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>City *</label>
+                  <input
+                    type="text" value={form.city}
+                    onChange={e => { setForm(p => ({ ...p, city: e.target.value })); setFormErrors(p => ({ ...p, city: '' })); }}
+                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] min-h-[44px] ${formErrors.city ? 'border-red-400' : 'border-[#E9E3DA]'}`}
+                    placeholder="e.g. Bengaluru"
+                  />
+                  {formErrors.city && <p className="text-red-500 text-[11px] mt-1">{formErrors.city}</p>}
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>State *</label>
+                  <input
+                    type="text" value={form.state}
+                    onChange={e => { setForm(p => ({ ...p, state: e.target.value })); setFormErrors(p => ({ ...p, state: '' })); }}
+                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] min-h-[44px] ${formErrors.state ? 'border-red-400' : 'border-[#E9E3DA]'}`}
+                    placeholder="e.g. Karnataka"
+                  />
+                  {formErrors.state && <p className="text-red-500 text-[11px] mt-1">{formErrors.state}</p>}
                 </div>
               </div>
-            ))}
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>Equipment You Operate *</label>
+                <div className="chip-scroll flex-wrap sm:flex">
+                  {EQUIPMENT_OPTIONS.map(eq => (
+                    <button
+                      key={eq} onClick={() => toggleEquipment(eq)} type="button"
+                      className={`px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                        form.equipmentTypes.includes(eq)
+                          ? 'bg-[#FF6A00] text-white border border-[#FF6A00]'
+                          : 'bg-white text-[#6F757C] border border-[#E9E3DA] hover:border-[#FF6A00]'
+                      }`}
+                    >
+                      {eq}
+                    </button>
+                  ))}
+                </div>
+                {formErrors.equipmentTypes && <p className="text-red-500 text-[11px] mt-1">{formErrors.equipmentTypes}</p>}
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>Bio / Description</label>
+                <textarea
+                  value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} rows={3}
+                  className="w-full px-3 py-3 rounded-lg border border-[#E9E3DA] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] resize-none"
+                  placeholder="Describe your experience and what makes you a great operator…"
+                />
+              </div>
+
+              <div className="flex items-center gap-4 mb-5">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={form.isAvailable} onChange={e => setForm(p => ({ ...p, isAvailable: e.target.checked }))} className="rounded" />
+                  <span style={{ fontFamily: 'Sora, sans-serif', fontWeight: 500 }}>Currently available for hire</span>
+                </label>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <button onClick={handleSave} disabled={saving} className="btn-primary btn-small flex items-center gap-2" style={{ opacity: saving ? 0.7 : 1 }}>
+                  {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                  {saving ? 'Saving…' : myProfile ? 'Update Profile' : 'Publish Listing'}
+                </button>
+                {saveMsg && <p className={`text-sm ${saveMsg.startsWith('✓') ? 'text-green-600' : 'text-red-500'}`}>{saveMsg}</p>}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* CTA for non-logged-in users */}
+      {!isAuthenticated && !authLoading && (
+        <div className="bg-gradient-to-r from-[#FF6A00] to-[#FF8533] rounded-xl p-5 sm:p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <p className="text-white font-bold text-[15px]" style={{ fontFamily: 'Sora, sans-serif' }}>Are you an operator?</p>
+            <p className="text-white/80 text-sm">List your service and get hired by contractors across India.</p>
           </div>
-        )}
+          <button
+            onClick={() => navigate('/login')}
+            className="bg-white/20 backdrop-blur-sm text-white border border-white/40 px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-white hover:text-[#FF6A00] transition-all min-h-[44px] whitespace-nowrap"
+          >
+            Sign In to List
+          </button>
+        </div>
+      )}
+
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <input
+          placeholder="Filter by city…"
+          value={filters.city}
+          onChange={e => setFilters(p => ({ ...p, city: e.target.value }))}
+          className="w-full sm:w-48 px-4 py-3 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:border-[#FF6A00] focus:outline-none min-h-[44px]"
+        />
+        <label className="flex items-center gap-2 text-sm text-[#6F757C] min-h-[44px]">
+          <input
+            type="checkbox"
+            checked={filters.isAvailable === 'true'}
+            onChange={e => setFilters(p => ({ ...p, isAvailable: e.target.checked ? 'true' : '' }))}
+            className="rounded w-4 h-4"
+          />
+          Available only
+        </label>
       </div>
-    </div>
+
+      {/* Results */}
+      {loading ? (
+        <div className="flex justify-center py-32">
+          <Loader2 size={32} className="animate-spin text-[#FF6A00]" />
+        </div>
+      ) : operators.length === 0 ? (
+        <div className="text-center py-24 sm:py-32">
+          <User size={48} className="mx-auto text-[#6F757C] mb-4 opacity-40" />
+          <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600 }}>No operators found</h2>
+          <p className="text-sm text-[#6F757C] mt-2">Try broadening your search.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {operators.map(op => (
+            <div key={op.id} className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 hover:shadow-md transition-all">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-[#FF6A00]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <User size={22} className="text-[#FF6A00]" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-bold text-sm truncate" style={{ fontFamily: 'Sora, sans-serif' }}>
+                    {op.user?.firstName} {op.user?.lastName}
+                  </h3>
+                  <div className="flex items-center gap-2 text-xs text-[#6F757C]">
+                    {op.isVerified && <span className="flex items-center gap-0.5 text-green-600"><CheckCircle size={10} /> Verified</span>}
+                    {op.isAvailable ? <span className="text-green-600">Available</span> : <span className="text-red-500">Unavailable</span>}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 text-xs text-[#6F757C] mb-4">
+                <div className="flex items-center gap-2"><Briefcase size={12} />{op.yearsOfExperience} yrs experience</div>
+                {op.city && <div className="flex items-center gap-2"><MapPin size={12} />{op.city}, {op.state}</div>}
+                {op.rating > 0 && <div className="flex items-center gap-2"><Star size={12} className="text-yellow-500" />{op.rating} ({op.reviewCount} reviews)</div>}
+              </div>
+
+              {op.equipmentTypes?.length > 0 && (
+                <div className="chip-scroll mb-4">
+                  {op.equipmentTypes.slice(0, 4).map((t: string) => (
+                    <span key={t} className="px-2.5 py-1 bg-[#E9E3DA] text-[10px] font-medium rounded-full capitalize whitespace-nowrap">
+                      {t}
+                    </span>
+                  ))}
+                  {op.equipmentTypes.length > 4 && (
+                    <span className="px-2.5 py-1 bg-[#E9E3DA] text-[10px] font-medium rounded-full text-[#6F757C]">
+                      +{op.equipmentTypes.length - 4}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between border-t border-[#E9E3DA] pt-3">
+                {op.dayRate && (
+                  <p className="text-base font-bold text-[#FF6A00]" style={{ fontFamily: 'Sora, sans-serif' }}>
+                    {fmt(op.dayRate)}<span className="text-xs font-normal text-[#6F757C]">/day</span>
+                  </p>
+                )}
+                <button className="btn-primary btn-small text-xs">Contact</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </PageShell>
   );
 }

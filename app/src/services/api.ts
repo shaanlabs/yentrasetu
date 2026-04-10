@@ -433,3 +433,11 @@ export const fraudApi = {
   review: (id: string, status: string, adminNotes?: string, resolution?: string) =>
     request<{ message: string; report: any }>(`/fraud-reports/${id}/review`, { method: 'PUT', body: JSON.stringify({ status, adminNotes, resolution }) }),
 };
+
+// ─── Subscriptions API ─────────────────────────────────
+export const subscriptionsApi = {
+  getPlans: () => request<{ plans: any[] }>('/subscriptions/plans', { skipAuth: true }),
+  getMine: () => request<{ subscription: any }>('/subscriptions/mine'),
+  subscribe: (planId: string) => request<{ message: string; subscription: any }>('/subscriptions/subscribe', { method: 'POST', body: JSON.stringify({ planId }) }),
+  cancel: () => request<{ message: string }>('/subscriptions/cancel', { method: 'PUT' }),
+};

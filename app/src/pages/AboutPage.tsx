@@ -1,23 +1,10 @@
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Mail, Phone, MapPin, Clock } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock } from 'lucide-react';
+import PageShell from '../components/PageShell';
 
 export default function AboutPage() {
   return (
-    <div style={{ minHeight: '100vh', background: '#E9E3DA' }}>
-      {/* Header */}
-      <div style={{ background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #E9E3DA', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Link to="/" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214', textDecoration: 'none' }}>YantraSetu</Link>
-            <span style={{ color: '#6F757C', fontSize: '14px' }}>/ About & Contact</span>
-          </div>
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', color: '#6F757C', textDecoration: 'none' }}>
-            <ArrowLeft size={16} /> Home
-          </Link>
-        </div>
-      </div>
-
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '48px 24px 80px' }}>
+    <PageShell breadcrumb="About & Contact" backTo="/" backLabel="Home">
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         {/* About */}
         <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '2rem', marginBottom: '16px' }}>
           About YantraSetu
@@ -90,6 +77,6 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }

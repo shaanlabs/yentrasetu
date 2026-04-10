@@ -85,6 +85,8 @@ router.put('/certifications/:id/review', authenticate, requireAdmin, certificati
 
 // Fraud report routes
 const fraudController = require('../controllers/fraudController');
+const subscriptionController = require('../controllers/subscriptionController');
+
 router.post('/fraud-reports', authenticate, fraudController.submitReport);
 router.get('/fraud-reports/my', authenticate, fraudController.getMyReports);
 router.get('/fraud-reports/pending', authenticate, requireAdmin, fraudController.getPendingReports);
@@ -99,5 +101,11 @@ router.post('/newsletter/subscribe', (req, res) => {
   console.log(`📧 Newsletter subscription: ${email}`);
   res.json({ success: true, message: 'Subscribed successfully!' });
 });
+
+// Subscription routes
+router.get('/subscriptions/plans', subscriptionController.getPlans);
+router.get('/subscriptions/mine', authenticate, subscriptionController.getMySubscription);
+router.post('/subscriptions/subscribe', authenticate, subscriptionController.subscribe);
+router.put('/subscriptions/cancel', authenticate, subscriptionController.cancelSubscription);
 
 module.exports = router;

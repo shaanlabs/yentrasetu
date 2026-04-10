@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import PageShell from '../components/PageShell';
 
 const sections = [
   {
@@ -66,21 +65,8 @@ const sections = [
 
 export default function TermsPage() {
   return (
-    <div style={{ minHeight: '100vh', background: '#E9E3DA' }}>
-      {/* Header */}
-      <div style={{ background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #E9E3DA', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Link to="/" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214', textDecoration: 'none' }}>YantraSetu</Link>
-            <span style={{ color: '#6F757C', fontSize: '14px' }}>/ Legal</span>
-          </div>
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', color: '#6F757C', textDecoration: 'none' }}>
-            <ArrowLeft size={16} /> Home
-          </Link>
-        </div>
-      </div>
-
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '48px 24px 80px' }}>
+    <PageShell breadcrumb="Legal" backTo="/" backLabel="Home">
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         {/* Quick nav */}
         <div style={{ display: 'flex', gap: '12px', marginBottom: '40px' }}>
           {sections.map(s => (
@@ -126,6 +112,6 @@ export default function TermsPage() {
           Last updated: March 2026. For questions, contact <a href="mailto:support@yantrasetu.com" style={{ color: '#FF6A00' }}>support@yantrasetu.com</a>
         </p>
       </div>
-    </div>
+    </PageShell>
   );
 }

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { machineryApi, type MachineryListing } from '../services/api';
-import { ArrowLeft, Plus, Loader2, MapPin, Calendar, Gauge, Eye, Trash2, RefreshCw, CheckCircle } from 'lucide-react';
+import { Plus, Loader2, MapPin, Calendar, Gauge, Eye, Trash2, RefreshCw, CheckCircle } from 'lucide-react';
+import PageShell from '../components/PageShell';
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-800', approved: 'bg-green-100 text-green-800',
@@ -51,24 +52,13 @@ export default function MyListingsPage() {
 
   const formatPrice = (p: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(p);
 
-  if (authLoading) return <div className="min-h-screen bg-[#E9E3DA] flex items-center justify-center"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div>;
+  if (authLoading) return <PageShell breadcrumb="My Listings"><div className="flex items-center justify-center py-32"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div></PageShell>;
 
   return (
-    <div className="min-h-screen bg-[#E9E3DA]">
-      <div className="bg-white/80 backdrop-blur-md border-b border-[#E9E3DA] sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214' }}>YantraSetu</Link>
-            <span className="text-[#6F757C] text-sm hidden sm:inline">/ My Listings</span>
-          </div>
-          <Link to="/sell" className="btn-primary btn-small flex items-center gap-2"><Plus size={14} /> New Listing</Link>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-6 py-8">
+    <PageShell breadcrumb="My Listings" backTo="/" backLabel="Home">
         <div className="flex items-center justify-between mb-6">
           <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.5rem', color: '#101214' }}>My Listings</h1>
-          <Link to="/" className="flex items-center gap-1.5 text-sm text-[#6F757C] hover:text-[#101214]"><ArrowLeft size={16} /> Home</Link>
+          <Link to="/sell" className="btn-primary btn-small flex items-center gap-2"><Plus size={14} /> New Listing</Link>
         </div>
 
         {loading ? (
@@ -83,7 +73,7 @@ export default function MyListingsPage() {
         ) : (
           <div className="space-y-4">
             {listings.map(listing => (
-              <div key={listing.id} className="bg-white rounded-lg shadow-sm border border-[#E9E3DA] p-5 flex flex-col sm:flex-row gap-4">
+              <div key={listing.id} className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-4 sm:p-5 flex flex-col sm:flex-row gap-4">
                 {/* Thumbnail */}
                 <div className="w-full sm:w-32 h-24 bg-[#E9E3DA] rounded overflow-hidden flex-shrink-0">
                   {listing.images?.[0] ? <img src={listing.images[0]} className="w-full h-full object-cover" /> : <Gauge size={24} className="m-auto mt-7 text-[#6F757C] opacity-30" />}
@@ -127,7 +117,6 @@ export default function MyListingsPage() {
             ))}
           </div>
         )}
-      </div>
-    </div>
+    </PageShell>
   );
 }

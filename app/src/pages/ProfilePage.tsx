@@ -4,9 +4,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { authApi } from '../services/api';
 import {
   User, Phone, Mail, Building2, MapPin, FileText, Hash,
-  Save, Loader2, LogOut, Lock, ArrowLeft, CheckCircle,
+  Save, Loader2, LogOut, Lock, CheckCircle,
   Camera, Star, Calendar, Shield, Award
 } from 'lucide-react';
+import PageShell from '../components/PageShell';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -96,9 +97,11 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#E9E3DA] flex items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-[#FF6A00]" />
-      </div>
+      <PageShell breadcrumb="Profile" backTo="/" backLabel="Home">
+        <div className="flex items-center justify-center py-32">
+          <Loader2 size={32} className="animate-spin text-[#FF6A00]" />
+        </div>
+      </PageShell>
     );
   }
 
@@ -109,22 +112,15 @@ export default function ProfilePage() {
   const labelClass = 'block text-xs font-medium text-[#6F757C] mb-1.5 uppercase tracking-wider';
 
   return (
-    <div className="min-h-screen bg-[#E9E3DA]">
-      {/* Top bar */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-[#E9E3DA] sticky top-0 z-50">
-        <div className="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-sm text-[#6F757C] hover:text-[#101214] transition-colors">
-            <ArrowLeft size={16} />
-            <span style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214' }}>YantraSetu</span>
-          </Link>
+    <PageShell breadcrumb="Profile" backTo="/" backLabel="Home">
+      <div className="max-w-2xl mx-auto">
+        {/* Logout button */}
+        <div className="flex justify-end mb-4">
           <button onClick={handleLogout}
-            className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 transition-colors font-medium">
+            className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 transition-colors font-medium min-h-[44px]">
             <LogOut size={16} /> Sign out
           </button>
         </div>
-      </div>
-
-      <div className="max-w-2xl mx-auto px-6 py-10">
         {/* Profile Header Card */}
         <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] overflow-hidden mb-8">
           {/* Gradient banner */}
@@ -344,11 +340,11 @@ export default function ProfilePage() {
 
         {/* Change Password link */}
         <Link to="/change-password"
-          className="mt-6 w-full flex items-center justify-center gap-2 py-3.5 text-sm font-medium text-[#101214] bg-white border border-[#E9E3DA] rounded-xl shadow-sm hover:border-[#6F757C] transition-colors"
+          className="mt-6 w-full flex items-center justify-center gap-2 py-3.5 text-sm font-medium text-[#101214] bg-white border border-[#E9E3DA] rounded-xl shadow-sm hover:border-[#6F757C] transition-colors min-h-[48px]"
           style={{ fontFamily: 'Sora, sans-serif' }}>
           <Lock size={16} /> Change Password
         </Link>
       </div>
-    </div>
+    </PageShell>
   );
 }

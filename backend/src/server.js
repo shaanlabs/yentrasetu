@@ -71,7 +71,14 @@ const startServer = async () => {
       await sequelize.query('PRAGMA foreign_keys = OFF;');
     }
     
-    await sequelize.sync({ alter: true });
+    try {
+      await sequelize.sync({ alter: true });
+    } catch (syncErr) {
+      // alter can fail on SQLite – fall back to a non-destructive sync
+      // that only creates missing tables (never drops existing ones).
+      console.warn('⚠️  alter sync failed, falling back to safe sync...', syncErr.message);
+      await sequelize.sync(); // creates missing tables, never drops data
+    }
     
     if (dialect === 'sqlite') {
       await sequelize.query('PRAGMA foreign_keys = ON;');

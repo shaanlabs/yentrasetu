@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { adminApi, certificationsApi, fraudApi } from '../services/api';
 import { ArrowLeft, Loader2, Users, Package, Wrench, Gauge, Calendar, Star, CheckCircle, XCircle, Clock, Shield, AlertTriangle, Eye } from 'lucide-react';
+import PageShell from '../components/PageShell';
 
 type Tab = 'overview' | 'listings' | 'certifications' | 'fraud';
 
@@ -71,17 +72,19 @@ export default function AdminPage() {
     } catch {} finally { setActionId(null); }
   };
 
-  if (authLoading || loading) return <div className="min-h-screen bg-[#E9E3DA] flex items-center justify-center"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div>;
+  if (authLoading || loading) return <PageShell breadcrumb="Admin"><div className="flex items-center justify-center py-32"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div></PageShell>;
 
   if (!isAdmin) return (
-    <div className="min-h-screen bg-[#E9E3DA] flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-sm border border-[#E9E3DA] p-10 text-center max-w-md">
-        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4"><XCircle size={32} className="text-red-500" /></div>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.25rem', marginBottom: '0.5rem' }}>Access Denied</h1>
-        <p className="text-sm text-[#6F757C] mb-6">You don't have permission to view the admin dashboard. Admin role required.</p>
-        <Link to="/" className="btn-primary inline-flex items-center gap-2 text-sm px-6 py-2.5"><ArrowLeft size={16} /> Back to Home</Link>
+    <PageShell breadcrumb="Admin">
+      <div className="flex items-center justify-center py-20">
+        <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-10 text-center max-w-md">
+          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4"><XCircle size={32} className="text-red-500" /></div>
+          <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.25rem', marginBottom: '0.5rem' }}>Access Denied</h1>
+          <p className="text-sm text-[#6F757C] mb-6">You don't have permission to view the admin dashboard. Admin role required.</p>
+          <Link to="/" className="btn-primary inline-flex items-center gap-2 text-sm px-6 py-2.5"><ArrowLeft size={16} /> Back to Home</Link>
+        </div>
       </div>
-    </div>
+    </PageShell>
   );
 
   const cards = stats ? [
@@ -108,21 +111,11 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#E9E3DA]">
-      <div className="bg-white/80 backdrop-blur-md border-b border-[#E9E3DA] sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214' }}>YantraSetu</Link>
-            <span className="text-[#6F757C] text-sm">/ Admin</span>
-          </div>
-          <Link to="/" className="flex items-center gap-1.5 text-sm text-[#6F757C] hover:text-[#101214]"><ArrowLeft size={16} /> Home</Link>
-        </div>
-      </div>
-      <div className="max-w-6xl mx-auto px-6 py-8">
+    <PageShell breadcrumb="Admin" backTo="/" backLabel="Home">
         <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.5rem', marginBottom: '1.5rem' }}>Admin Dashboard</h1>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-6 bg-white rounded-lg p-1 shadow-sm border border-[#E9E3DA] overflow-x-auto">
+        <div className="chip-scroll mb-6 bg-white rounded-lg p-1 shadow-sm border border-[#E9E3DA]">
           {tabs.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
               className={`flex items-center gap-1.5 px-4 py-2.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${tab === t.key ? 'bg-[#FF6A00] text-white' : 'text-[#6F757C] hover:bg-[#E9E3DA]'}`}>
@@ -287,7 +280,6 @@ export default function AdminPage() {
             )}
           </>
         )}
-      </div>
-    </div>
+    </PageShell>
   );
 }

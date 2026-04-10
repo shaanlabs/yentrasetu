@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { chatsApi } from '../services/api';
-import { ArrowLeft, Loader2, Send, MessageCircle } from 'lucide-react';
+import { Loader2, Send, MessageCircle } from 'lucide-react';
+import PageShell from '../components/PageShell';
 
 export default function ChatsPage() {
   const navigate = useNavigate();
@@ -41,24 +42,14 @@ export default function ChatsPage() {
 
   const getOtherUser = (chat: any) => chat.buyerId === user?.id ? chat.seller : chat.buyer;
 
-  if (authLoading) return <div className="min-h-screen bg-[#E9E3DA] flex items-center justify-center"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div>;
+  if (authLoading) return <PageShell breadcrumb="Messages"><div className="flex items-center justify-center py-32"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div></PageShell>;
 
   return (
-    <div className="min-h-screen bg-[#E9E3DA]">
-      <div className="bg-white/80 backdrop-blur-md border-b border-[#E9E3DA] sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214' }}>YantraSetu</Link>
-            <span className="text-[#6F757C] text-sm">/ Messages</span>
-          </div>
-          <Link to="/" className="flex items-center gap-1.5 text-sm text-[#6F757C] hover:text-[#101214]"><ArrowLeft size={16} /> Home</Link>
-        </div>
-      </div>
-      <div className="max-w-5xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-lg shadow-sm border border-[#E9E3DA] overflow-hidden" style={{ height: '70vh' }}>
+    <PageShell breadcrumb="Messages" backTo="/" backLabel="Home">
+        <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] overflow-hidden" style={{ height: 'calc(100vh - 200px)', minHeight: '400px' }}>
           <div className="flex h-full">
             {/* Sidebar */}
-            <div className="w-80 border-r border-[#E9E3DA] flex flex-col">
+            <div className={`${activeChat ? 'hidden sm:flex' : 'flex'} w-full sm:w-72 md:w-80 border-r border-[#E9E3DA] flex-col`}>
               <div className="p-4 border-b border-[#E9E3DA]"><h2 className="font-bold text-sm" style={{ fontFamily: 'Sora, sans-serif' }}>Conversations</h2></div>
               <div className="flex-1 overflow-y-auto">
                 {loading ? <div className="p-4 text-center"><Loader2 size={20} className="animate-spin text-[#FF6A00] mx-auto" /></div>
@@ -76,7 +67,7 @@ export default function ChatsPage() {
               </div>
             </div>
             {/* Chat area */}
-            <div className="flex-1 flex flex-col">
+            <div className={`${activeChat ? 'flex' : 'hidden sm:flex'} flex-1 flex-col`}>
               {activeChat ? (
                 <>
                   <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -94,10 +85,10 @@ export default function ChatsPage() {
                     ))}
                     <div ref={msgEnd} />
                   </div>
-                  <div className="p-4 border-t border-[#E9E3DA] flex gap-2">
+                  <div className="p-3 sm:p-4 border-t border-[#E9E3DA] flex gap-2">
                     <input value={newMsg} onChange={e => setNewMsg(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()}
-                      placeholder="Type a message…" className="flex-1 px-4 py-3 bg-[#E9E3DA]/40 border border-[#E9E3DA] rounded text-sm focus:outline-none focus:border-[#FF6A00]" />
-                    <button onClick={handleSend} disabled={sending || !newMsg.trim()} className="btn-primary px-4 disabled:opacity-50"><Send size={16} /></button>
+                      placeholder="Type a message…" className="flex-1 px-4 py-3 bg-[#E9E3DA]/40 border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] min-h-[44px]" />
+                    <button onClick={handleSend} disabled={sending || !newMsg.trim()} className="btn-primary px-4 disabled:opacity-50 min-h-[44px]"><Send size={16} /></button>
                   </div>
                 </>
               ) : (
@@ -111,7 +102,6 @@ export default function ChatsPage() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </PageShell>
   );
 }

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { authApi } from '../services/api';
-import { Lock, Eye, EyeOff, Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Lock, Eye, EyeOff, Loader2, CheckCircle } from 'lucide-react';
+import PageShell from '../components/PageShell';
 
 export default function ChangePasswordPage() {
   const navigate = useNavigate();
@@ -54,28 +55,15 @@ export default function ChangePasswordPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#E9E3DA] flex items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-[#FF6A00]" />
-      </div>
-    );
+    return <PageShell breadcrumb="Password" backTo="/profile" backLabel="Profile"><div className="flex items-center justify-center py-32"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div></PageShell>;
   }
 
-  const inputClass = 'w-full pl-11 pr-12 py-3.5 bg-white border border-[#E9E3DA] rounded text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm';
+  const inputClass = 'w-full pl-11 pr-12 py-3.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm min-h-[48px]';
   const labelClass = 'block text-xs font-medium text-[#6F757C] mb-1.5 uppercase tracking-wider';
 
   return (
-    <div className="min-h-screen bg-[#E9E3DA]">
-      {/* Top bar */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-[#E9E3DA] sticky top-0 z-50">
-        <div className="max-w-lg mx-auto px-6 py-4 flex items-center">
-          <Link to="/profile" className="flex items-center gap-2 text-sm text-[#6F757C] hover:text-[#101214] transition-colors">
-            <ArrowLeft size={16} /> Back to Profile
-          </Link>
-        </div>
-      </div>
-
-      <div className="max-w-lg mx-auto px-6 py-10">
+    <PageShell breadcrumb="Change Password" backTo="/profile" backLabel="Profile">
+      <div className="max-w-lg mx-auto">
         <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.5rem', color: '#101214', marginBottom: '0.5rem' }}>
           Change Password
         </h1>
@@ -84,16 +72,16 @@ export default function ChangePasswordPage() {
         </p>
 
         {error && (
-          <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">{error}</div>
+          <div className="mb-6 p-3.5 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>
         )}
         {success && (
-          <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded text-green-700 text-sm flex items-center gap-2">
+          <div className="mb-6 p-3.5 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm flex items-center gap-2">
             <CheckCircle size={16} /> Password changed successfully.
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="bg-white rounded-lg shadow-sm border border-[#E9E3DA] p-6 space-y-5">
+          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 space-y-5">
             <div>
               <label className={labelClass} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Current Password</label>
               <div className="relative">
@@ -143,6 +131,6 @@ export default function ChangePasswordPage() {
           </button>
         </form>
       </div>
-    </div>
+    </PageShell>
   );
 }

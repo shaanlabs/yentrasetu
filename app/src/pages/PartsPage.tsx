@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { partsApi } from '../services/api';
-import { ArrowLeft, ArrowRight, Loader2, Eye, MapPin, Gauge } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2, Eye, MapPin, Gauge, Search, Phone } from 'lucide-react';
+import PageShell from '../components/PageShell';
 
 const CATS = ['engine', 'hydraulics', 'electrical', 'undercarriage', 'cab', 'attachments', 'other'];
 const CONDS = ['new', 'used', 'oem', 'aftermarket', 'refurbished'];
@@ -10,82 +10,159 @@ export default function PartsPage() {
   const [parts, setParts] = useState<any[]>([]);
   const [pagination, setPagination] = useState({ total: 0, page: 1, pages: 1 });
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({ page: 1, category: '', condition: '' });
+  const [filters, setFilters] = useState({ page: 1, category: '', condition: '', query: '' });
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilters(prev => ({ ...prev, query: searchQuery, page: 1 }));
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   useEffect(() => {
     setLoading(true);
-    partsApi.getParts(filters).then(d => { setParts(d.parts); setPagination(d.pagination); }).catch(() => setParts([])).finally(() => setLoading(false));
+    partsApi.getParts(filters).then(d => {
+      setParts(d.parts);
+      setPagination(d.pagination);
+    }).catch(() => setParts([])).finally(() => setLoading(false));
   }, [filters]);
 
   const setF = (k: string, v: any) => setFilters(p => ({ ...p, [k]: v, page: k === 'page' ? v : 1 }));
   const fmt = (p: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(p);
 
   return (
-    <div className="min-h-screen bg-[#E9E3DA]">
-      <div className="bg-white/80 backdrop-blur-md border-b border-[#E9E3DA] sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214' }}>YantraSetu</Link>
-            <span className="text-[#6F757C] text-sm">/ Parts</span>
-          </div>
-          <Link to="/" className="flex items-center gap-1.5 text-sm text-[#6F757C] hover:text-[#101214]"><ArrowLeft size={16} /> Home</Link>
+    <PageShell breadcrumb="Parts" backTo="/" backLabel="Home" title="Spare Parts Marketplace">
+      {/* Search bar */}
+      <div className="relative mb-6">
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#6F757C]">
+          <Search size={20} />
         </div>
-      </div>
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.75rem', marginBottom: '1.5rem' }}>Spare Parts Marketplace</h1>
-        <div className="flex flex-wrap gap-2 mb-6">
-          {CATS.map(c => (
-            <button key={c} onClick={() => setF('category', filters.category === c ? '' : c)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-full capitalize ${filters.category === c ? 'bg-[#FF6A00] text-white' : 'bg-white border border-[#E9E3DA] text-[#6F757C]'}`}
-              style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{c}</button>
-          ))}
-          <select value={filters.condition} onChange={e => setF('condition', e.target.value)}
-            className="ml-auto px-3 py-1.5 bg-white border border-[#E9E3DA] rounded text-sm text-[#6F757C]">
-            <option value="">All Conditions</option>{CONDS.map(c => <option key={c} value={c} className="capitalize">{c}</option>)}
-          </select>
-        </div>
-        {loading ? <div className="flex justify-center py-32"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div>
-        : parts.length === 0 ? (
-          <div className="text-center py-32">
-            <Gauge size={48} className="mx-auto text-[#6F757C] mb-4 opacity-40" />
-            <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1.25rem' }}>No parts found</h2>
-            <p className="text-sm text-[#6F757C] mt-2">Check back later or try different filters.</p>
-          </div>
-        ) : (
-          <>
-            <p className="text-sm text-[#6F757C] mb-4">{pagination.total} part{pagination.total !== 1 ? 's' : ''}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {parts.map(part => (
-                <div key={part.id} className="bg-white rounded-lg shadow-sm border border-[#E9E3DA] overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="h-40 bg-[#E9E3DA] flex items-center justify-center">
-                    {part.images?.[0] ? <img src={part.images[0]} className="w-full h-full object-cover" /> : <Gauge size={32} className="text-[#6F757C] opacity-30" />}
-                  </div>
-                  <div className="p-5">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-bold text-sm" style={{ fontFamily: 'Sora, sans-serif' }}>{part.partName}</h3>
-                      <span className="px-2 py-0.5 bg-[#E9E3DA] text-[10px] font-semibold rounded capitalize" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{part.condition}</span>
-                    </div>
-                    <p className="text-xs text-[#6F757C] capitalize mb-2">{part.category} {part.partNumber && `· #${part.partNumber}`}</p>
-                    <div className="flex items-center gap-2 text-xs text-[#6F757C] mb-3">
-                      {part.city && <span className="flex items-center gap-1"><MapPin size={11} />{part.city}</span>}
-                      <span className="flex items-center gap-1"><Eye size={11} />{part.viewCount}</span>
-                      {part.quantity > 1 && <span>Qty: {part.quantity}</span>}
-                    </div>
-                    <p className="text-lg font-bold text-[#FF6A00]" style={{ fontFamily: 'Sora, sans-serif' }}>{fmt(part.price)}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            {pagination.pages > 1 && (
-              <div className="flex items-center justify-center gap-3 mt-10">
-                <button disabled={pagination.page <= 1} onClick={() => setF('page', pagination.page - 1)} className="p-2.5 bg-white border border-[#E9E3DA] rounded shadow-sm disabled:opacity-40"><ArrowLeft size={16} /></button>
-                <span className="text-sm text-[#6F757C]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{pagination.page}/{pagination.pages}</span>
-                <button disabled={pagination.page >= pagination.pages} onClick={() => setF('page', pagination.page + 1)} className="p-2.5 bg-white border border-[#E9E3DA] rounded shadow-sm disabled:opacity-40"><ArrowRight size={16} /></button>
-              </div>
-            )}
-          </>
+        <input
+          type="text"
+          placeholder="Search by part name, number, or OEM..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full bg-white border border-[#E9E3DA] py-3.5 pl-12 pr-10 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:border-transparent transition-all min-h-[48px]"
+          style={{ fontFamily: 'Inter, sans-serif' }}
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery('')}
+            className="absolute inset-y-0 right-0 pr-4 flex items-center text-[#6F757C] hover:text-[#101214]"
+          >
+            ×
+          </button>
         )}
       </div>
-    </div>
+
+      {/* Filters row — horizontal scroll on mobile */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+        <div className="chip-scroll">
+          {CATS.map(c => (
+            <button
+              key={c}
+              onClick={() => setF('category', filters.category === c ? '' : c)}
+              className={`px-3 py-2 text-xs font-medium rounded-full capitalize whitespace-nowrap ${
+                filters.category === c
+                  ? 'bg-[#FF6A00] text-white'
+                  : 'bg-white border border-[#E9E3DA] text-[#6F757C] hover:text-[#101214]'
+              }`}
+              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+        <select
+          value={filters.condition}
+          onChange={e => setF('condition', e.target.value)}
+          className="sm:ml-auto px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#6F757C] focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
+        >
+          <option value="">All Conditions</option>
+          {CONDS.map(c => <option key={c} value={c} className="capitalize">{c}</option>)}
+        </select>
+      </div>
+
+      {/* Results */}
+      {loading ? (
+        <div className="flex justify-center py-32">
+          <Loader2 size={32} className="animate-spin text-[#FF6A00]" />
+        </div>
+      ) : parts.length === 0 ? (
+        <div className="text-center py-24 sm:py-32">
+          <Gauge size={48} className="mx-auto text-[#6F757C] mb-4 opacity-40" />
+          <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1.25rem' }}>No parts found</h2>
+          <p className="text-sm text-[#6F757C] mt-2">Check back later or try different filters.</p>
+        </div>
+      ) : (
+        <>
+          <p className="text-sm text-[#6F757C] mb-4">{pagination.total} part{pagination.total !== 1 ? 's' : ''}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {parts.map(part => (
+              <div key={part.id} className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] overflow-hidden hover:shadow-md transition-all group">
+                <div className="h-44 sm:h-40 bg-[#E9E3DA] flex items-center justify-center relative">
+                  {part.images?.[0] ? (
+                    <img src={part.images[0]} className="w-full h-full object-cover" alt={part.partName} />
+                  ) : (
+                    <Gauge size={32} className="text-[#6F757C] opacity-30" />
+                  )}
+                  <span
+                    className="absolute top-3 right-3 px-2 py-1 bg-white/90 text-[10px] font-semibold rounded capitalize shadow-sm"
+                    style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                  >
+                    {part.condition}
+                  </span>
+                </div>
+                <div className="p-4 sm:p-5">
+                  <h3 className="font-bold text-sm mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>
+                    {part.partName}
+                  </h3>
+                  <p className="text-xs text-[#6F757C] capitalize mb-2">
+                    {part.category} {part.partNumber && `· #${part.partNumber}`}
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-[#6F757C] mb-3 flex-wrap">
+                    {part.city && <span className="flex items-center gap-1"><MapPin size={11} />{part.city}</span>}
+                    <span className="flex items-center gap-1"><Eye size={11} />{part.viewCount}</span>
+                    {part.quantity > 1 && <span>Qty: {part.quantity}</span>}
+                  </div>
+                  <div className="flex items-end justify-between">
+                    <p className="text-lg font-bold text-[#FF6A00]" style={{ fontFamily: 'Sora, sans-serif' }}>
+                      {fmt(part.price)}
+                    </p>
+                    <button className="p-2 bg-[#FF6A00]/10 rounded-lg text-[#FF6A00] hover:bg-[#FF6A00] hover:text-white transition-all" title="Contact Seller">
+                      <Phone size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {pagination.pages > 1 && (
+            <div className="flex items-center justify-center gap-4 mt-10">
+              <button
+                disabled={pagination.page <= 1}
+                onClick={() => setF('page', pagination.page - 1)}
+                className="p-3 bg-white border border-[#E9E3DA] rounded-lg shadow-sm disabled:opacity-40 min-h-[44px] min-w-[44px] flex items-center justify-center"
+              >
+                <ArrowLeft size={18} />
+              </button>
+              <span className="text-sm text-[#6F757C]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                {pagination.page}/{pagination.pages}
+              </span>
+              <button
+                disabled={pagination.page >= pagination.pages}
+                onClick={() => setF('page', pagination.page + 1)}
+                className="p-3 bg-white border border-[#E9E3DA] rounded-lg shadow-sm disabled:opacity-40 min-h-[44px] min-w-[44px] flex items-center justify-center"
+              >
+                <ArrowRight size={18} />
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </PageShell>
   );
 }

@@ -19,6 +19,10 @@ import LoanEligibilityPage from './pages/LoanEligibilityPage';
 import AboutPage from './pages/AboutPage';
 import TermsPage from './pages/TermsPage';
 import CertificationsPage from './pages/CertificationsPage';
+import SampleReportPage from './pages/SampleReportPage';
+import InspectionStandardsPage from './pages/InspectionStandardsPage';
+import ContactSpecialistPage from './pages/ContactSpecialistPage';
+import SubscriptionPage from './pages/SubscriptionPage';
 
 export const router = createBrowserRouter([
   { path: '/', element: <App /> },
@@ -47,10 +51,14 @@ export const router = createBrowserRouter([
 
   // Phase 2
   { path: '/certifications', element: <CertificationsPage /> },
+  { path: '/subscriptions', element: <SubscriptionPage /> },
 
   // Info pages
   { path: '/about', element: <AboutPage /> },
   { path: '/terms', element: <TermsPage /> },
+  { path: '/sample-report', element: <SampleReportPage /> },
+  { path: '/inspection-standards', element: <InspectionStandardsPage /> },
+  { path: '/contact-specialist', element: <ContactSpecialistPage /> },
 
   // 404
   {

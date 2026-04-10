@@ -10,6 +10,9 @@ if (databaseUrl) {
   sequelize = new Sequelize(databaseUrl, {
     dialect: 'postgres',
     logging: false,
+    define: {
+      freezeTableName: true,
+    },
     dialectOptions: isProduction ? {
       ssl: {
         require: true,
@@ -22,6 +25,9 @@ if (databaseUrl) {
     dialect: 'sqlite',
     storage: './database.sqlite',
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    define: {
+      freezeTableName: true,
+    },
     dialectOptions: {
       foreignKeys: false,
     },

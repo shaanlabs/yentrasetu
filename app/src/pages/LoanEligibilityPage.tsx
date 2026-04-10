@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, XCircle, IndianRupee, Calculator, Building2, CreditCard } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { CheckCircle, XCircle, IndianRupee, Calculator, Building2, CreditCard } from 'lucide-react';
+import PageShell from '../components/PageShell';
 
 interface FormData {
   fullName: string;
@@ -153,13 +154,14 @@ export default function LoanEligibilityPage() {
   const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '12px 16px',
-    borderRadius: '6px',
+    borderRadius: '10px',
     border: '1.5px solid #ddd',
     fontFamily: 'Inter, sans-serif',
     fontSize: '14px',
     outline: 'none',
     transition: 'border-color 0.2s',
     background: '#fff',
+    minHeight: '48px',
   };
 
   const labelStyle: React.CSSProperties = {
@@ -179,21 +181,8 @@ export default function LoanEligibilityPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#E9E3DA' }}>
-      {/* Header */}
-      <div style={{ background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #E9E3DA', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: '720px', margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Link to="/" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214', textDecoration: 'none' }}>YantraSetu</Link>
-            <span style={{ color: '#6F757C', fontSize: '14px' }}>/ Loan Eligibility</span>
-          </div>
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', color: '#6F757C', textDecoration: 'none' }}>
-            <ArrowLeft size={16} /> Home
-          </Link>
-        </div>
-      </div>
-
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '40px 24px 80px' }}>
+    <PageShell breadcrumb="Loan Eligibility" backTo="/" backLabel="Home">
+      <div style={{ maxWidth: '720px', margin: '0 auto' }}>
         {/* Page title */}
         <div style={{ marginBottom: '32px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
@@ -511,6 +500,6 @@ export default function LoanEligibilityPage() {
           box-shadow: 0 0 0 3px rgba(255,106,0,0.1);
         }
       `}</style>
-    </div>
+    </PageShell>
   );
 }

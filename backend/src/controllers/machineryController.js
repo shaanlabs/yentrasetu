@@ -5,6 +5,22 @@ const { sequelize } = require('../config/database');
 // Create new machinery listing
 const createListing = async (req, res) => {
   try {
+    // Enforce listing limits based on subscription/accountTier
+    const user = await User.findByPk(req.userId);
+    const listingCount = await MachineryListing.count({ where: { userId: req.userId } });
+    
+    let maxListings = 5; // Default for free
+    if (user.accountTier === 'starter') maxListings = 20;
+    if (user.accountTier === 'growth') maxListings = 100;
+    if (user.accountTier === 'enterprise') maxListings = -1; // unlimited
+
+    if (maxListings !== -1 && listingCount >= maxListings) {
+      return res.status(403).json({ 
+        success: false, 
+        message: `Plan limit reached. Your current plan (${user.accountTier}) allows only ${maxListings} listings. Please upgrade your subscription to post more.` 
+      });
+    }
+
     const listingData = {
       ...req.body,
       userId: req.userId,

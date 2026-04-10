@@ -1,96 +1,18 @@
-/* App-specific styles */
+/* ═══════════════════════════════════════════════════════════════
+   App.css — Homepage-specific styles + animations
+   ═══════════════════════════════════════════════════════════════ */
 
-/* Smooth scroll behavior */
+/* Smooth scroll */
 html {
   scroll-behavior: smooth;
 }
 
-/* Ensure pinned sections stack correctly */
+/* Pinned sections GPU compositing */
 .pinned-section {
   will-change: transform;
 }
 
-/* Hero responsive adjustments */
-@media (max-width: 768px) {
-  .hero-image {
-    position: relative !important;
-    width: 100% !important;
-    height: 50vh !important;
-  }
-  
-  .hero-content {
-    position: relative !important;
-    width: 100% !important;
-    height: auto !important;
-    padding: 40px 24px !important;
-  }
-}
-
-/* Category tiles responsive */
-@media (max-width: 768px) {
-  .cat-tile-top-left,
-  .cat-tile-top-right,
-  .cat-tile-bottom-center {
-    height: 40vh !important;
-  }
-  
-  .cat-text-tile {
-    height: auto !important;
-    padding: 32px 24px !important;
-  }
-}
-
-/* Featured panels responsive */
-@media (max-width: 768px) {
-  .featured-panel {
-    height: 33vh !important;
-  }
-}
-
-/* How it works responsive */
-@media (max-width: 768px) {
-  .hiw-image {
-    position: relative !important;
-    width: 100% !important;
-    height: 40vh !important;
-  }
-}
-
-/* Value props responsive */
-@media (max-width: 768px) {
-  .vp-image {
-    position: relative !important;
-    width: 100% !important;
-    height: 40vh !important;
-  }
-}
-
-/* Safety responsive */
-@media (max-width: 768px) {
-  .safety-image {
-    position: relative !important;
-    width: 100% !important;
-    height: 40vh !important;
-  }
-}
-
-/* Financing responsive */
-@media (max-width: 768px) {
-  .fin-image {
-    position: relative !important;
-    width: 100% !important;
-    height: 40vh !important;
-  }
-  
-  .fin-panel {
-    position: relative !important;
-    width: 100% !important;
-    height: auto !important;
-    padding: 60px 24px !important;
-  }
-}
-
-/* Animation performance */
+/* ─── Animation performance ─────────────────────────────────── */
 .hero-image,
 .hero-content,
 .cat-tile-top-left,
@@ -110,7 +32,7 @@ html {
   will-change: transform, opacity;
 }
 
-/* Card hover effects */
+/* ─── Card hover ────────────────────────────────────────────── */
 .value-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -120,28 +42,20 @@ html {
   box-shadow: 0 14px 40px rgba(16, 18, 20, 0.12);
 }
 
-/* Button pulse animation for financing CTA */
+/* ─── Financing CTA pulse ───────────────────────────────────── */
 @keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.02);
-  }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
 }
 
 .fin-cta {
   animation: pulse 3s ease-in-out infinite;
 }
 
-/* Border accent pulse for step cards */
+/* ─── Step card border pulse ────────────────────────────────── */
 @keyframes borderPulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
 
 .hiw-card {
@@ -159,7 +73,7 @@ html {
   animation: borderPulse 3s ease-in-out infinite;
 }
 
-/* Image parallax container */
+/* ─── Image parallax ────────────────────────────────────────── */
 .image-parallax {
   overflow: hidden;
 }
@@ -168,18 +82,12 @@ html {
   will-change: transform;
 }
 
-/* Navigation transitions */
+/* ─── Nav transitions ───────────────────────────────────────── */
 .nav-fixed {
   transition: background-color 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Footer input focus */
-.footer-input:focus {
-  outline: none;
-  border-color: #FF6A00;
-}
-
-/* Link hover underline effect */
+/* ─── Link hover underline ──────────────────────────────────── */
 .link-arrow {
   position: relative;
 }
@@ -190,7 +98,7 @@ html {
   bottom: -2px;
   left: 0;
   width: 0;
-  height: 1px;
+  height: 1.5px;
   background-color: currentColor;
   transition: width 0.3s ease;
 }
@@ -199,44 +107,16 @@ html {
   width: 100%;
 }
 
-/* Dark section link styles */
 .dark-section .link-arrow::after {
   background-color: white;
 }
 
-/* Price badge shadow */
-.price-badge {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Stat number gradient effect */
-.stat-number {
-  background: linear-gradient(135deg, #FF6A00 0%, #FF8533 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Testimonial quote styling */
+/* ─── Testimonial quote ─────────────────────────────────────── */
 .quote-mark {
-  font-family: 'Sora', sans-serif;
-  font-weight: 800;
   line-height: 0.8;
 }
 
-/* Mobile menu animation */
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* Grid line styling */
+/* ─── Grid lines ────────────────────────────────────────────── */
 .grid-lines {
   position: relative;
 }
@@ -244,25 +124,24 @@ html {
 .grid-lines::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   border: 2px solid rgba(16, 18, 20, 0.08);
   pointer-events: none;
 }
 
-/* Ensure proper z-index stacking for pinned sections */
-.pinned-section:nth-child(1) { z-index: 10; }
-.pinned-section:nth-child(2) { z-index: 20; }
-.pinned-section:nth-child(3) { z-index: 30; }
-.pinned-section:nth-child(4) { z-index: 40; }
-.pinned-section:nth-child(5) { z-index: 50; }
-.pinned-section:nth-child(6) { z-index: 60; }
-.pinned-section:nth-child(7) { z-index: 70; }
-.pinned-section:nth-child(8) { z-index: 80; }
+/* ─── Desktop pinned section z-stacking ─────────────────────── */
+@media (min-width: 769px) {
+  .pinned-section:nth-child(1) { z-index: 10; }
+  .pinned-section:nth-child(2) { z-index: 20; }
+  .pinned-section:nth-child(3) { z-index: 30; }
+  .pinned-section:nth-child(4) { z-index: 40; }
+  .pinned-section:nth-child(5) { z-index: 50; }
+  .pinned-section:nth-child(6) { z-index: 60; }
+  .pinned-section:nth-child(7) { z-index: 70; }
+  .pinned-section:nth-child(8) { z-index: 80; }
+}
 
-/* Loading state for images */
+/* ─── Image loading ─────────────────────────────────────────── */
 img {
   opacity: 1;
   transition: opacity 0.3s ease;
@@ -272,30 +151,221 @@ img[loading] {
   opacity: 0;
 }
 
-/* Focus states for accessibility */
-button:focus-visible,
-a:focus-visible,
-input:focus-visible {
-  outline: 2px solid #FF6A00;
-  outline-offset: 2px;
+/* ─── Mobile menu animation ─────────────────────────────────── */
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
-/* Reduced motion preferences */
+/* ─── Mobile bottom navigation bar ──────────────────────────── */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(16, 18, 20, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: var(--mobile-bottom-nav-h, 64px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.mobile-bottom-nav .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  color: #6F757C;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: color 0.2s ease;
+  min-width: 56px;
+}
+
+.mobile-bottom-nav .nav-item.active {
+  color: #FF6A00;
+}
+
+.mobile-bottom-nav .nav-item:hover {
+  color: #FF6A00;
+}
+
+.mobile-bottom-nav .nav-item-post {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+}
+
+.mobile-bottom-nav .nav-item-post .post-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF6A00, #FF8533);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(255, 106, 0, 0.35);
+  transform: translateY(-12px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mobile-bottom-nav .nav-item-post .post-circle:active {
+  transform: translateY(-10px) scale(0.95);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE LAYOUT: HOMEPAGE SECTIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  /* Hero */
+  .hero-image {
+    position: relative !important;
+    width: 100% !important;
+    height: 45vh !important;
+    min-height: 280px !important;
+  }
+
+  .hero-content {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 32px 20px 40px !important;
+  }
+
+  .hero-headline {
+    margin-bottom: 12px !important;
+  }
+
+  /* ALL pinned sections → natural flow */
+  .pinned-section {
+    position: relative !important;
+    height: auto !important;
+    width: 100% !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .pinned-section > div.absolute.inset-0,
+  .pinned-section > div[class*="absolute inset-0"] {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    inset: auto !important;
+    width: 100% !important;
+  }
+
+  /* GSAP pin-spacer cleanup */
+  .pin-spacer {
+    display: block !important;
+    height: auto !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Category tiles */
+  .cat-tile-top-left,
+  .cat-tile-top-right,
+  .cat-tile-bottom-center {
+    height: 35vh !important;
+    min-height: 220px !important;
+  }
+
+  .cat-text-tile {
+    height: auto !important;
+    padding: 28px 20px !important;
+  }
+
+  /* Featured panels */
+  .featured-panel {
+    height: auto !important;
+    min-height: 300px !important;
+    width: 100% !important;
+    position: relative !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* How It Works / Value Props / Safety / Financing — split panels */
+  .hiw-image,
+  .vp-image,
+  .safety-image,
+  .fin-image {
+    position: relative !important;
+    width: 100% !important;
+    height: 40vh !important;
+    min-height: 240px !important;
+  }
+
+  .hiw-image img,
+  .vp-image img,
+  .safety-image img,
+  .fin-image img {
+    object-fit: cover !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* The right-side content panels in split sections */
+  .pinned-section > div.absolute.right-0,
+  .pinned-section > div[class*="absolute right-0"] {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 32px 20px !important;
+  }
+
+  /* Financing panel */
+  .fin-panel {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 40px 20px !important;
+    background: #101214 !important;
+    color: white !important;
+  }
+
+  /* Safety items */
+  .safety-item {
+    margin-bottom: 12px !important;
+    align-items: flex-start !important;
+  }
+
+  /* Footer adjustments */
+  .footer-input {
+    width: 100% !important;
+    border-radius: 6px !important;
+    margin-bottom: 8px !important;
+  }
+}
+
+/* ─── Bottom nav page spacing ───────────────────────────────── */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: calc(var(--mobile-bottom-nav-h, 64px) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ─── Reduced motion ────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-  
-  .fin-cta {
-    animation: none;
-  }
-  
-  .hiw-card::before {
-    animation: none;
+  .fin-cta { animation: none; }
+  .hiw-card::before { animation: none; }
+  .mobile-bottom-nav .nav-item-post .post-circle {
+    transform: translateY(-12px);
   }
 }

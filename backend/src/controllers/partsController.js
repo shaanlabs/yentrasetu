@@ -10,13 +10,41 @@ exports.createPart = async (req, res) => {
 
 exports.getParts = async (req, res) => {
   try {
-    const { page = 1, limit = 12, category, condition, minPrice, maxPrice, city, state, sortBy = 'createdAt', sortOrder = 'DESC' } = req.query;
+    const { 
+      page = 1, 
+      limit = 12, 
+      category, 
+      condition, 
+      minPrice, 
+      maxPrice, 
+      city, 
+      state, 
+      query,
+      sortBy = 'createdAt', 
+      sortOrder = 'DESC' 
+    } = req.query;
+
     const where = { status: 'active', isActive: true };
+    
     if (category) where.category = category;
     if (condition) where.condition = condition;
     if (city) where.city = { [Op.iLike]: `%${city}%` };
     if (state) where.state = { [Op.iLike]: `%${state}%` };
-    if (minPrice || maxPrice) { where.price = {}; if (minPrice) where.price[Op.gte] = minPrice; if (maxPrice) where.price[Op.lte] = maxPrice; }
+    
+    if (minPrice || maxPrice) { 
+      where.price = {}; 
+      if (minPrice) where.price[Op.gte] = minPrice; 
+      if (maxPrice) where.price[Op.lte] = maxPrice; 
+    }
+
+    if (query) {
+      where[Op.or] = [
+        { partName: { [Op.iLike]: `%${query}%` } },
+        { partNumber: { [Op.iLike]: `%${query}%` } },
+        { oemPartNumber: { [Op.iLike]: `%${query}%` } },
+        { compatibleMakes: { [Op.iLike]: `%${query}%` } }
+      ];
+    }
 
     const offset = (page - 1) * limit;
     const { count, rows } = await PartListing.findAndCountAll({

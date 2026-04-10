@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { certificationsApi } from '../services/api';
-import { ArrowLeft, Loader2, Upload, FileCheck, Clock, CheckCircle, XCircle, Plus, X, Shield } from 'lucide-react';
+import { Loader2, Upload, FileCheck, Clock, CheckCircle, XCircle, Plus, X, Shield } from 'lucide-react';
+import PageShell from '../components/PageShell';
 
 const CERT_TYPES = [
   { value: 'DGMS', label: 'DGMS Certificate' },
@@ -78,22 +79,10 @@ export default function CertificationsPage() {
     finally { setSubmitting(false); }
   };
 
-  if (authLoading || loading) return <div className="min-h-screen bg-[#E9E3DA] flex items-center justify-center"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div>;
+  if (authLoading || loading) return <PageShell breadcrumb="Certifications"><div className="flex items-center justify-center py-32"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div></PageShell>;
 
   return (
-    <div className="min-h-screen bg-[#E9E3DA]">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-[#E9E3DA] sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214' }}>YantraSetu</Link>
-            <span className="text-[#6F757C] text-sm">/ Certifications</span>
-          </div>
-          <Link to="/profile" className="flex items-center gap-1.5 text-sm text-[#6F757C] hover:text-[#101214]"><ArrowLeft size={16} /> Profile</Link>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-6 py-8">
+    <PageShell breadcrumb="Certifications" backTo="/profile" backLabel="Profile">
         {/* Title + CTA */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -227,7 +216,6 @@ export default function CertificationsPage() {
             })}
           </div>
         )}
-      </div>
-    </div>
+    </PageShell>
   );
 }

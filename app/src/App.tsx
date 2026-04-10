@@ -4,16 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { 
-  Search, 
-  User, 
-  Plus, 
-  ArrowRight, 
-  Menu,
-  X,
-  Shield,
-  Clock,
-  Wrench,
-  LogIn
+  Search, Menu, X, Plus, User, LogIn, ArrowRight, Shield, Truck as TruckIcon, Clock, Wrench, MapPin, 
+  IndianRupee, Calculator, Building2, CreditCard, Home, ShoppingBag, CalendarDays
 } from 'lucide-react';
 import { useAuth } from './contexts/AuthContext';
 import { apiClient } from './services/api';
@@ -85,42 +77,42 @@ function App() {
     return () => ctx.revert();
   }, []);
 
-  // Pinned sections scroll animations — desktop only
+  // Responsive Animations via gsap.matchMedia
   useLayoutEffect(() => {
-    if (isMobile()) {
+    const mm = gsap.matchMedia();
+
+    mm.add("(max-width: 768px)", () => {
       // Mobile: simple fade-in-on-scroll for all sections
-      const ctx = gsap.context(() => {
-        const mobileFadeSelectors = [
-          '.hero-image', '.hero-content',
-          '.cat-tile-top-left', '.cat-tile-top-right', '.cat-tile-bottom-center', '.cat-text-tile',
-          '.hiw-image', '.hiw-heading', '.hiw-card',
-          '.featured-panel',
-          '.vp-image', '.vp-card',
-          '.safety-image', '.safety-heading', '.safety-item',
-          '.fin-image', '.fin-panel', '.fin-content',
-          '.testimonial-content', '.network-heading', '.stat-item',
-          '.footer-left', '.footer-right',
-        ];
+      const mobileFadeSelectors = [
+        '.hero-image', '.hero-content',
+        '.cat-tile-top-left', '.cat-tile-top-right', '.cat-tile-bottom-center', '.cat-text-tile',
+        '.hiw-image', '.hiw-heading', '.hiw-card',
+        '.featured-panel',
+        '.vp-image', '.vp-card',
+        '.safety-image', '.safety-heading', '.safety-item',
+        '.fin-image', '.fin-panel', '.fin-content',
+        '.testimonial-content', '.network-heading', '.stat-item',
+        '.footer-left', '.footer-right',
+      ];
 
-        mobileFadeSelectors.forEach((sel) => {
-          gsap.fromTo(sel,
-            { y: 30, opacity: 0 },
-            {
-              y: 0, opacity: 1, duration: 0.5, stagger: 0.08,
-              scrollTrigger: {
-                trigger: sel,
-                start: 'top 88%',
-                toggleActions: 'play none none none',
-              }
+      mobileFadeSelectors.forEach((sel) => {
+        gsap.fromTo(sel,
+          { y: 30, opacity: 0 },
+          {
+            y: 0, opacity: 1, duration: 0.5, stagger: 0.08,
+            scrollTrigger: {
+              trigger: sel,
+              start: 'top 92%',
+              toggleActions: 'play none none none',
             }
-          );
-        });
+          }
+        );
       });
-      return () => ctx.revert();
-    }
+    });
 
-    // Desktop: pinned scrub animations with faster exits
-    const ctx = gsap.context(() => {
+    mm.add("(min-width: 769px)", () => {
+      // Desktop: pinned scrub animations with faster exits
+      
       // Hero scroll animation
       const heroScrollTl = gsap.timeline({
         scrollTrigger: {
@@ -129,11 +121,6 @@ function App() {
           end: '+=100%',
           pin: true,
           scrub: 0.4,
-          onLeaveBack: () => {
-            gsap.set('.hero-image, .hero-content, .hero-headline-word, .hero-cta', { 
-              opacity: 1, x: 0, y: 0, scale: 1 
-            });
-          }
         }
       });
 
@@ -244,7 +231,7 @@ function App() {
         scrollTrigger: {
           trigger: featuredRef.current,
           start: 'top top',
-          end: '+=100%',
+          end: '+=110%', // Small buffer for exit
           pin: true,
           scrub: 0.4,
         }
@@ -382,86 +369,49 @@ function App() {
           0.85
         );
 
-      // Flowing sections animations
+      // Staggered reveal for non-pinned sections
       gsap.fromTo('.testimonial-content',
         { y: 30, opacity: 0 },
         {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
+          y: 0, opacity: 1, duration: 0.6,
           scrollTrigger: {
             trigger: testimonialRef.current,
-            start: 'top 80%',
-            end: 'top 55%',
-            scrub: true,
+            start: 'top 85%',
+            toggleActions: 'play none none none',
           }
         }
       );
 
-      gsap.fromTo('.network-heading',
+      gsap.fromTo('.network-heading, .stat-item',
         { y: 20, opacity: 0 },
         {
-          y: 0,
-          opacity: 1,
-          duration: 0.4,
+          y: 0, opacity: 1, duration: 0.5, stagger: 0.05,
           scrollTrigger: {
             trigger: networkRef.current,
-            start: 'top 80%',
-            end: 'top 60%',
-            scrub: true,
+            start: 'top 85%',
+            toggleActions: 'play none none none',
           }
         }
       );
 
-      gsap.fromTo('.stat-item',
-        { y: 15, opacity: 0 },
+      gsap.fromTo('.footer-left, .footer-right',
+        { y: 20, opacity: 0 },
         {
-          y: 0,
-          opacity: 1,
-          stagger: 0.08,
-          scrollTrigger: {
-            trigger: networkRef.current,
-            start: 'top 70%',
-            end: 'top 50%',
-            scrub: true,
-          }
-        }
-      );
-
-      gsap.fromTo('.footer-left',
-        { x: -30, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.4,
+          y: 0, opacity: 1, duration: 0.6, stagger: 0.1,
           scrollTrigger: {
             trigger: footerRef.current,
-            start: 'top 85%',
-            end: 'top 65%',
-            scrub: true,
+            start: 'top 95%',
+            toggleActions: 'play none none none',
           }
         }
       );
-
-      gsap.fromTo('.footer-right',
-        { x: 30, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.4,
-          scrollTrigger: {
-            trigger: footerRef.current,
-            start: 'top 85%',
-            end: 'top 65%',
-            scrub: true,
-          }
-        }
-      );
-
     });
 
-    return () => ctx.revert();
-  }, []);
+    return () => {
+      mm.revert();
+      ScrollTrigger.getAll().forEach(st => st.kill());
+    };
+  }, [heroRef, categoryRef, howItWorksRef, featuredRef, valuePropsRef, testimonialRef, safetyRef, financingRef, networkRef, footerRef]);
 
   // Global snap for pinned sections — desktop only
   useEffect(() => {
@@ -520,6 +470,7 @@ function App() {
           <a onClick={() => navigate(isAuthenticated ? '/sell' : '/login')} style={{ cursor: 'pointer' }}>Sell</a>
           <a onClick={() => navigate('/parts')} style={{ cursor: 'pointer' }}>Parts</a>
           <a onClick={() => navigate('/operators')} style={{ cursor: 'pointer' }}>Services</a>
+          <a onClick={() => navigate('/subscriptions')} style={{ cursor: 'pointer' }}>Plans</a>
         </div>
 
         <div className="nav-actions">
@@ -574,6 +525,7 @@ function App() {
             <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/sell' : '/login'); }}>Sell</a>
             <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/parts'); }}>Parts</a>
             <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/operators'); }}>Services</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/subscriptions'); }}>Plans</a>
             <button 
               className="btn-primary flex items-center justify-center gap-2 mt-4"
               onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/sell' : '/login'); }}
@@ -771,7 +723,7 @@ function App() {
               </div>
             </div>
 
-            <a href="#sample-report" className="link-arrow mt-6 inline-flex">
+            <a href="/sample-report" onClick={(e) => { e.preventDefault(); navigate('/sample-report'); }} className="link-arrow mt-6 inline-flex">
               See a sample report
               <ArrowRight size={16} />
             </a>
@@ -856,10 +808,10 @@ function App() {
             <div className="space-y-4">
               <div className="vp-card value-card">
                 <div className="flex items-start gap-4">
-                  <Shield className="text-[#FF6A00] shrink-0" size={24} />
+                  <TruckIcon className="text-[#FF6A00] shrink-0" size={24} />
                   <div>
-                    <h3 className="font-bold text-lg mb-1">Verified Listings</h3>
-                    <p className="text-[#6F757C] text-sm">Photos, documents, and inspection reports on every machine.</p>
+                    <h3 className="font-bold text-lg mb-1">Nationwide Delivery</h3>
+                    <p className="text-[#6F757C] text-sm">Safe transport from any hub directly to your project site.</p>
                   </div>
                 </div>
               </div>
@@ -885,7 +837,7 @@ function App() {
               </div>
             </div>
 
-            <a href="#specialist" className="link-arrow mt-6 inline-flex">
+            <a href="/contact-specialist" onClick={(e) => { e.preventDefault(); navigate('/contact-specialist'); }} className="link-arrow mt-6 inline-flex">
               Talk to a specialist
               <ArrowRight size={16} />
             </a>
@@ -958,7 +910,7 @@ function App() {
               </div>
             </div>
 
-            <a href="#standards" className="link-arrow mt-8 inline-flex">
+            <a href="/inspection-standards" onClick={(e) => { e.preventDefault(); navigate('/inspection-standards'); }} className="link-arrow mt-8 inline-flex">
               Read our inspection standards
               <ArrowRight size={16} />
             </a>
@@ -1026,7 +978,51 @@ function App() {
         </div>
       </section>
 
-      {/* Section 10: Footer */}
+      {/* Section 10: Coverage Map */}
+      <section id="coverage" className="relative z-[90] bg-white py-20 md:py-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center gap-16">
+          <div className="flex-1">
+            <h2 className="section-heading mb-6">Our Growing Footprint.</h2>
+            <p className="text-[#6F757C] text-lg mb-8 leading-relaxed max-w-xl">
+              From the mines of Jharkhand to the infrastructure projects of Mumbai, YantraSetu is bridging the gap. Our network of verified inspection hubs and delivery partners ensures you're never too far from your next machine.
+            </p>
+            <div className="space-y-6">
+              {[
+                { region: 'West', hubs: 'Mumbai, Pune, Ahmedabad, Nagpur', coverage: '95%' },
+                { region: 'South', hubs: 'Bengaluru, Chennai, Hyderabad, Kochi', coverage: '88%' },
+                { region: 'North', hubs: 'Delhi NCR, Lucknow, Jaipur, Chandigarh', coverage: '92%' },
+                { region: 'East', hubs: 'Kolkata, Jamshedpur, Bhubaneswar, Guwahati', coverage: '75%' },
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-center justify-between border-b border-[#E9E3DA] pb-4 group hover:border-[#FF6A00] transition-colors cursor-default">
+                  <div>
+                    <h4 className="font-bold text-lg mb-1">{item.region} Hubs</h4>
+                    <p className="text-sm text-[#6F757C]">{item.hubs}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-mono text-[#FF6A00] font-bold text-xl">{item.coverage}</p>
+                    <p className="text-[10px] text-[#6F757C] uppercase tracking-wider">Operational</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="flex-1 relative">
+            <div className="relative aspect-square w-full bg-[#E9E3DA] rounded-2xl overflow-hidden border border-[#101214]/5 flex items-center justify-center p-8">
+              {/* Map Placeholder Graphic */}
+              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#FF6A00_1.5px,transparent_1.5px)] [background-size:24px_24px]" />
+              <div className="relative z-10 w-full h-full flex items-center justify-center">
+                <img 
+                  src="/images/coverage_map.png" 
+                  alt="YantraSetu Coverage Map" 
+                  className="w-full h-full object-cover rounded-xl"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 11: Footer */}
       <footer ref={footerRef} className="footer relative z-[100] py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
@@ -1103,6 +1099,31 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="mobile-bottom-nav md:hidden" aria-label="Mobile navigation">
+        <button className="nav-item active" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <Home size={20} />
+          <span>Home</span>
+        </button>
+        <button className="nav-item" onClick={() => navigate('/browse?type=sale')}>
+          <ShoppingBag size={20} />
+          <span>Buy</span>
+        </button>
+        <button className="nav-item-post" onClick={() => navigate(isAuthenticated ? '/sell' : '/login')}>
+          <div className="post-circle">
+            <Plus size={24} color="white" strokeWidth={2.5} />
+          </div>
+        </button>
+        <button className="nav-item" onClick={() => navigate('/browse?type=rent')}>
+          <CalendarDays size={20} />
+          <span>Rent</span>
+        </button>
+        <button className="nav-item" onClick={() => navigate(isAuthenticated ? '/profile' : '/login')}>
+          <User size={20} />
+          <span>{isAuthenticated ? 'Profile' : 'Sign In'}</span>
+        </button>
+      </nav>
     </div>
   );
 }

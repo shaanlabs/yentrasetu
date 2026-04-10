@@ -63,7 +63,7 @@ export default function RegisterPage() {
     }
   };
 
-  const inputClass = 'w-full pl-11 pr-4 py-3.5 bg-white border border-[#E9E3DA] rounded text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm';
+  const inputClass = 'w-full pl-11 pr-4 py-3.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm min-h-[48px]';
   const labelClass = 'block text-xs font-medium text-[#6F757C] mb-1.5 uppercase tracking-wider';
 
   return (
@@ -87,7 +87,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Right panel */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 overflow-y-auto">
+      <div className="flex-1 flex flex-col justify-center items-center px-5 sm:px-6 py-16 sm:py-12 overflow-y-auto">
         <div className="w-full max-w-[420px]">
           <Link to="/" className="block mb-8">
             <span style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.5rem', color: '#101214' }}>
@@ -103,7 +103,7 @@ export default function RegisterPage() {
           </p>
 
           {error && (
-            <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+            <div className="mb-6 p-3.5 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
               {error}
             </div>
           )}
@@ -170,7 +170,7 @@ export default function RegisterPage() {
                 {USER_TYPES.map((t) => (
                   <button key={t.value} type="button"
                     onClick={() => update('userType', t.value)}
-                    className={`p-3 rounded border text-left transition-all ${
+                    className={`p-3 rounded-lg border text-left transition-all min-h-[56px] ${
                       form.userType === t.value
                         ? 'border-[#FF6A00] bg-[#FF6A00]/5 shadow-sm'
                         : 'border-[#E9E3DA] bg-white hover:border-[#6F757C]'

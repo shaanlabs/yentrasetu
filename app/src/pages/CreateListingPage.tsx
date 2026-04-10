@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { machineryApi } from '../services/api';
 import { ArrowLeft, ArrowRight, Plus, Loader2, MapPin, IndianRupee, ImagePlus, X } from 'lucide-react';
+import PageShell from '../components/PageShell';
 
 const CATEGORIES: Record<string, string[]> = {
   construction: ['Excavators', 'Cranes', 'Bulldozers', 'Graders', 'Compactors', 'Tower Cranes', 'Concrete Pumps'],
@@ -40,7 +41,7 @@ export default function CreateListingPage() {
   const u = (f: string, v: string) => { setForm(p => ({ ...p, [f]: v })); setError(''); };
   const subCats = form.category ? CATEGORIES[form.category] || [] : [];
   const lbl = 'block text-xs font-medium text-[#6F757C] mb-1.5 uppercase tracking-wider';
-  const inp = 'w-full px-4 py-3.5 bg-white border border-[#E9E3DA] rounded text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none shadow-sm';
+  const inp = 'w-full px-4 py-3.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none shadow-sm min-h-[48px]';
 
   const handleSubmit = async () => {
     if (!form.make || !form.model || !form.price || !form.category) { setError('Fill all required fields.'); return; }
@@ -59,25 +60,18 @@ export default function CreateListingPage() {
     finally { setLoading(false); }
   };
 
-  if (authLoading) return <div className="min-h-screen bg-[#E9E3DA] flex items-center justify-center"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div>;
+  if (authLoading) return <PageShell breadcrumb="Loading..." backTo="/" backLabel="Cancel"><div className="flex items-center justify-center py-32"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div></PageShell>;
 
   return (
-    <div className="min-h-screen bg-[#E9E3DA]">
-      <div className="bg-white/80 backdrop-blur-md border-b border-[#E9E3DA] sticky top-0 z-50">
-        <div className="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214' }}>YantraSetu</Link>
-          <Link to="/" className="flex items-center gap-1.5 text-sm text-[#6F757C] hover:text-[#101214]"><ArrowLeft size={16} /> Cancel</Link>
-        </div>
-      </div>
-
-      <div className="max-w-2xl mx-auto px-6 py-10">
+    <PageShell breadcrumb="New Listing" backTo="/" backLabel="Cancel">
+      <div className="max-w-2xl mx-auto">
         <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.5rem', color: '#101214' }}>Post a Listing</h1>
         <p className="text-[#6F757C] text-sm mb-8">Create a new machinery listing. It will be reviewed before going live.</p>
         <div className="flex gap-2 mb-8">{[1,2,3].map(s => <div key={s} className={`flex-1 h-1.5 rounded-full ${s <= step ? 'bg-[#FF6A00]' : 'bg-[#E9E3DA]'}`} />)}</div>
-        {error && <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">{error}</div>}
+        {error && <div className="mb-6 p-3.5 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>}
 
         {step === 1 && (
-          <div className="bg-white rounded-lg shadow-sm border border-[#E9E3DA] p-6 space-y-5">
+          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 space-y-5">
             <h2 className="font-semibold text-sm text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Machine Information</h2>
             <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Type *</label>
               <div className="flex gap-3">{(['sale','rent'] as const).map(t => (
@@ -91,7 +85,7 @@ export default function CreateListingPage() {
               <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Make *</label><input value={form.make} onChange={e => u('make', e.target.value)} placeholder="e.g. Tata Hitachi" className={inp} /></div>
               <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Model *</label><input value={form.model} onChange={e => u('model', e.target.value)} placeholder="e.g. EX200" className={inp} /></div>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Year</label><input type="number" value={form.year} onChange={e => u('year', e.target.value)} placeholder="2020" className={inp} /></div>
               <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Hours</label><input type="number" value={form.hoursUsed} onChange={e => u('hoursUsed', e.target.value)} placeholder="5000" className={inp} /></div>
               <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Condition</label>
@@ -102,11 +96,11 @@ export default function CreateListingPage() {
         )}
 
         {step === 2 && (
-          <div className="bg-white rounded-lg shadow-sm border border-[#E9E3DA] p-6 space-y-5">
+          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 space-y-5">
             <h2 className="font-semibold text-sm text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Pricing & Location</h2>
             <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{form.listingType === 'rent' ? 'Base Price *' : 'Sale Price *'}</label>
               <div className="relative"><IndianRupee size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F757C]" /><input type="number" value={form.price} onChange={e => u('price', e.target.value)} placeholder="Price" className={`${inp} pl-10`} /></div></div>
-            {form.listingType === 'rent' && <div className="grid grid-cols-3 gap-4">
+            {form.listingType === 'rent' && <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Daily</label><input type="number" value={form.rentalRateDaily} onChange={e => u('rentalRateDaily', e.target.value)} placeholder="₹/day" className={inp} /></div>
               <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Weekly</label><input type="number" value={form.rentalRateWeekly} onChange={e => u('rentalRateWeekly', e.target.value)} placeholder="₹/week" className={inp} /></div>
               <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Monthly</label><input type="number" value={form.rentalRateMonthly} onChange={e => u('rentalRateMonthly', e.target.value)} placeholder="₹/mo" className={inp} /></div>
@@ -121,12 +115,12 @@ export default function CreateListingPage() {
         )}
 
         {step === 3 && (
-          <div className="bg-white rounded-lg shadow-sm border border-[#E9E3DA] p-6 space-y-5">
+          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 space-y-5">
             <h2 className="font-semibold text-sm text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Photos & Description</h2>
             {/* Image upload */}
             <div>
               <label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Photos (up to 5)</label>
-              <div className="grid grid-cols-5 gap-3">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
                 {images.map((img, i) => (
                   <div key={i} className="relative aspect-square rounded border border-[#E9E3DA] overflow-hidden group">
                     <img src={img} className="w-full h-full object-cover" />
@@ -157,6 +151,6 @@ export default function CreateListingPage() {
           </div>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }
