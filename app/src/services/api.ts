@@ -410,9 +410,32 @@ export const chatsApi = {
 export const adminApi = {
   getDashboard: () => request<{ stats: any }>('/admin/dashboard'),
   getPendingListings: () => request<{ listings: any[] }>('/admin/pending-listings'),
+  getAllListings: (filters?: Record<string, any>) => {
+    const p = new URLSearchParams();
+    if (filters) Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') p.set(k, String(v)); });
+    return request<{ listings: any[]; pagination: any }>(`/admin/listings${p.toString() ? `?${p}` : ''}`);
+  },
   approveListing: (id: string) => request<{ message: string }>(`/admin/listings/${id}/approve`, { method: 'PUT' }),
   rejectListing: (id: string) => request<{ message: string }>(`/admin/listings/${id}/reject`, { method: 'PUT' }),
-  getUsers: () => request<{ users: any[] }>('/admin/users'),
+  toggleFeatured: (id: string) => request<{ message: string; listing: any }>(`/admin/listings/${id}/feature`, { method: 'PUT' }),
+  getUsers: (filters?: Record<string, any>) => {
+    const p = new URLSearchParams();
+    if (filters) Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') p.set(k, String(v)); });
+    return request<{ users: any[]; pagination: any }>(`/admin/users${p.toString() ? `?${p}` : ''}`);
+  },
+  banUser: (id: string, ban: boolean, reason?: string) =>
+    request<{ message: string }>(`/admin/users/${id}/ban`, { method: 'PUT', body: JSON.stringify({ ban, reason }) }),
+  changeUserRole: (id: string, role: string) =>
+    request<{ message: string }>(`/admin/users/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) }),
+  verifyUser: (id: string) =>
+    request<{ message: string }>(`/admin/users/${id}/verify`, { method: 'PUT' }),
+  deactivateUser: (id: string) =>
+    request<{ message: string }>(`/admin/users/${id}`, { method: 'DELETE' }),
+  getActivityLog: (filters?: Record<string, any>) => {
+    const p = new URLSearchParams();
+    if (filters) Object.entries(filters).forEach(([k, v]) => { if (v !== undefined && v !== '') p.set(k, String(v)); });
+    return request<{ logs: any[]; pagination: any }>(`/admin/activity-log${p.toString() ? `?${p}` : ''}`);
+  },
 };
 
 // ─── Certifications API ────────────────────────────────
@@ -441,3 +464,12 @@ export const subscriptionsApi = {
   subscribe: (planId: string) => request<{ message: string; subscription: any }>('/subscriptions/subscribe', { method: 'POST', body: JSON.stringify({ planId }) }),
   cancel: () => request<{ message: string }>('/subscriptions/cancel', { method: 'PUT' }),
 };
+
+// ─── Notifications API ─────────────────────────────────
+export const notificationsApi = {
+  getAll: (page = 1) => request<{ notifications: any[]; pagination: any }>(`/notifications?page=${page}`),
+  getUnreadCount: () => request<{ count: number }>('/notifications/unread-count'),
+  markAsRead: (id: string) => request<{ message: string }>(`/notifications/${id}/read`, { method: 'PUT' }),
+  markAllAsRead: () => request<{ message: string }>('/notifications/read-all', { method: 'PUT' }),
+};
+

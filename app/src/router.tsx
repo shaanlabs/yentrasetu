@@ -23,6 +23,9 @@ import SampleReportPage from './pages/SampleReportPage';
 import InspectionStandardsPage from './pages/InspectionStandardsPage';
 import ContactSpecialistPage from './pages/ContactSpecialistPage';
 import SubscriptionPage from './pages/SubscriptionPage';
+import NotificationsPage from './pages/NotificationsPage';
+import SavedListingsPage from './pages/SavedListingsPage';
+import DashboardPage from './pages/DashboardPage';
 
 export const router = createBrowserRouter([
   { path: '/', element: <App /> },
@@ -53,6 +56,11 @@ export const router = createBrowserRouter([
   { path: '/certifications', element: <CertificationsPage /> },
   { path: '/subscriptions', element: <SubscriptionPage /> },
 
+  // New: Real-world features
+  { path: '/notifications', element: <NotificationsPage /> },
+  { path: '/saved', element: <SavedListingsPage /> },
+  { path: '/dashboard', element: <DashboardPage /> },
+
   // Info pages
   { path: '/about', element: <AboutPage /> },
   { path: '/terms', element: <TermsPage /> },
@@ -72,4 +80,5 @@ export const router = createBrowserRouter([
     ),
   },
 ]);
+
 

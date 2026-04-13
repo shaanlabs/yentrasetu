@@ -102,7 +102,7 @@ const User = sequelize.define('User', {
     defaultValue: 0
   },
   profileImage: {
-    type: DataTypes.STRING(500),
+    type: DataTypes.TEXT,
     allowNull: true
   },
   otpCode: {
@@ -120,6 +120,17 @@ const User = sequelize.define('User', {
   subscriptionExpiry: {
     type: DataTypes.DATE,
     allowNull: true
+  },
+  // Referral system
+  referralCode: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+    unique: true
+  },
+  referredBy: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+    comment: 'Referral code of the user who referred this user'
   },
   metadata: {
     type: DataTypes.JSONB,

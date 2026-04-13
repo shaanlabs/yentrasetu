@@ -79,8 +79,8 @@ const getListings = async (req, res) => {
     // Apply filters
     if (category) where.category = category;
     if (subCategory) where.subCategory = subCategory;
-    if (make) where.make = { [Op.iLike]: `%${make}%` };
-    if (model) where.model = { [Op.iLike]: `%${model}%` };
+    if (make) where.make = { [Op.like]: `%${make}%` };
+    if (model) where.model = { [Op.like]: `%${model}%` };
     if (listingType) where.listingType = listingType;
     if (condition) where.condition = condition;
     if (isVerified !== undefined) where.isVerified = isVerified === 'true';
@@ -98,8 +98,8 @@ const getListings = async (req, res) => {
       if (maxYear) where.year[Op.lte] = maxYear;
     }
 
-    if (city) where.city = { [Op.iLike]: `%${city}%` };
-    if (state) where.state = { [Op.iLike]: `%${state}%` };
+    if (city) where.city = { [Op.like]: `%${city}%` };
+    if (state) where.state = { [Op.like]: `%${state}%` };
 
     // Location-based search
     let locationFilter = {};

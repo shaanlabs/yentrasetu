@@ -5,10 +5,10 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { 
   Search, Menu, X, Plus, User, LogIn, ArrowRight, Shield, Truck as TruckIcon, Clock, Wrench, MapPin, 
-  IndianRupee, Calculator, Building2, CreditCard, Home, ShoppingBag, CalendarDays
+  IndianRupee, Calculator, Building2, CreditCard, Home, ShoppingBag, CalendarDays, Bell, Heart, LayoutDashboard
 } from 'lucide-react';
 import { useAuth } from './contexts/AuthContext';
-import { apiClient } from './services/api';
+import { apiClient, notificationsApi } from './services/api';
 import SearchOverlay from './components/SearchOverlay';
 import './App.css';
 
@@ -22,6 +22,16 @@ function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterMsg, setNewsletterMsg] = useState('');
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Poll unread notification count
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const fetchCount = () => notificationsApi.getUnreadCount().then(d => setUnreadCount(d.count)).catch(() => {});
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
   
   // Section refs
   const heroRef = useRef<HTMLDivElement>(null);
@@ -477,6 +487,31 @@ function App() {
           <button className="p-2 hover:text-[#FF6A00] transition-colors" onClick={() => setSearchOpen(true)}>
             <Search size={20} />
           </button>
+          {/* Notification bell */}
+          {isAuthenticated && (
+            <button
+              className="p-2 hover:text-[#FF6A00] transition-colors hidden sm:block relative"
+              onClick={() => navigate('/notifications')}
+              title="Notifications"
+            >
+              <Bell size={20} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#FF6A00] text-white text-[9px] font-bold flex items-center justify-center rounded-full">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+          )}
+          {/* Saved listings */}
+          {isAuthenticated && (
+            <button
+              className="p-2 hover:text-[#FF6A00] transition-colors hidden sm:block"
+              onClick={() => navigate('/saved')}
+              title="Saved Listings"
+            >
+              <Heart size={20} />
+            </button>
+          )}
           <button 
             className="p-2 hover:text-[#FF6A00] transition-colors hidden sm:block"
             onClick={() => navigate(isAuthenticated ? '/profile' : '/login')}
@@ -533,6 +568,28 @@ function App() {
               <Plus size={18} />
               Post a Listing
             </button>
+            {isAuthenticated && (
+              <>
+                <button
+                  className="btn-secondary flex items-center justify-center gap-2"
+                  onClick={() => { setMobileMenuOpen(false); navigate('/dashboard'); }}
+                >
+                  <LayoutDashboard size={18} /> Dashboard
+                </button>
+                <button
+                  className="btn-secondary flex items-center justify-center gap-2"
+                  onClick={() => { setMobileMenuOpen(false); navigate('/notifications'); }}
+                >
+                  <Bell size={18} /> Notifications {unreadCount > 0 && `(${unreadCount})`}
+                </button>
+                <button
+                  className="btn-secondary flex items-center justify-center gap-2"
+                  onClick={() => { setMobileMenuOpen(false); navigate('/saved'); }}
+                >
+                  <Heart size={18} /> Saved Listings
+                </button>
+              </>
+            )}
             <button
               className="btn-secondary flex items-center justify-center gap-2"
               onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/profile' : '/login'); }}
@@ -582,10 +639,10 @@ function App() {
               INSPECTED LISTINGS • NATIONWIDE DELIVERY
             </p>
 
-            <a href="#categories" className="link-arrow">
+            <button onClick={() => { const el = document.getElementById('categories'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} className="link-arrow">
               Explore categories
               <ArrowRight size={16} />
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -759,10 +816,10 @@ function App() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             <div className="absolute top-6 right-6">
-              <a href="#featured" className="text-white text-sm font-medium flex items-center gap-2 hover:text-[#FF6A00] transition-colors">
+              <button onClick={() => navigate('/browse?sortBy=viewCount')} className="text-white text-sm font-medium flex items-center gap-2 hover:text-[#FF6A00] transition-colors">
                 View all featured
                 <ArrowRight size={14} />
-              </a>
+              </button>
             </div>
             <div className="absolute bottom-6 left-6 text-white">
               <p className="font-bold text-xl md:text-2xl">ACE 14XW Tower Crane</p>
@@ -940,10 +997,10 @@ function App() {
               Check Loan Eligibility
             </button>
 
-            <a href="#checklist" className="link-arrow text-white block">
+            <button onClick={() => navigate('/loan-eligibility')} className="link-arrow text-white block">
               Download requirements checklist
               <ArrowRight size={16} />
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -971,10 +1028,10 @@ function App() {
             </div>
           </div>
 
-          <a href="#coverage" className="link-arrow">
+          <button onClick={() => { const el = document.getElementById('coverage'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} className="link-arrow">
             See coverage map
             <ArrowRight size={16} />
-          </a>
+          </button>
         </div>
       </section>
 

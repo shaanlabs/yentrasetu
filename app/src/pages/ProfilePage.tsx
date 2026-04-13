@@ -5,7 +5,8 @@ import { authApi } from '../services/api';
 import {
   User, Phone, Mail, Building2, MapPin, FileText, Hash,
   Save, Loader2, LogOut, Lock, CheckCircle,
-  Camera, Star, Calendar, Shield, Award
+  Camera, Star, Calendar, Shield, Award,
+  LayoutDashboard, Heart, Bell, MessageCircle, Package, ShoppingBag
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
@@ -191,6 +192,32 @@ export default function ProfilePage() {
                 </span>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Quick Links */}
+        <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 mb-6">
+          <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1rem', color: '#101214', marginBottom: '1rem' }}
+            className="flex items-center gap-2">
+            <ShoppingBag size={18} className="text-[#FF6A00]" /> Quick Links
+          </h2>
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+            {[
+              { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', color: 'bg-blue-50 text-blue-600' },
+              { to: '/my-listings', icon: Package, label: 'My Listings', color: 'bg-orange-50 text-orange-600' },
+              { to: '/bookings', icon: Calendar, label: 'Bookings', color: 'bg-green-50 text-green-600' },
+              { to: '/saved', icon: Heart, label: 'Saved', color: 'bg-red-50 text-red-500' },
+              { to: '/chats', icon: MessageCircle, label: 'Chats', color: 'bg-purple-50 text-purple-600' },
+              { to: '/notifications', icon: Bell, label: 'Alerts', color: 'bg-yellow-50 text-yellow-600' },
+            ].map(link => (
+              <Link key={link.to} to={link.to}
+                className="flex flex-col items-center gap-2 p-3 rounded-xl border border-[#E9E3DA] hover:border-[#FF6A00] transition-all hover:shadow-sm">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${link.color}`}>
+                  <link.icon size={18} />
+                </div>
+                <span className="text-[11px] font-medium text-[#6F757C]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{link.label}</span>
+              </Link>
+            ))}
           </div>
         </div>
 

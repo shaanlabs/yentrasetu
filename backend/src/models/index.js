@@ -10,6 +10,9 @@ const RentalBooking = require('./RentalBooking');
 const CertificationRequest = require('./CertificationRequest');
 const FraudReport = require('./FraudReport');
 const Subscription = require('./Subscription');
+const Notification = require('./Notification');
+const ActivityLog = require('./ActivityLog');
+const CampaignVisit = require('./CampaignVisit');
 const { sequelize } = require('../config/database');
 
 // Define associations
@@ -74,6 +77,18 @@ FraudReport.belongsTo(User, { foreignKey: 'reporterId', as: 'reporter' });
 User.hasMany(Subscription, { foreignKey: 'userId', as: 'subscriptions' });
 Subscription.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
+// Notification associations
+User.hasMany(Notification, { foreignKey: 'userId', as: 'notifications' });
+Notification.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// ActivityLog associations
+User.hasMany(ActivityLog, { foreignKey: 'userId', as: 'activityLogs' });
+ActivityLog.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// CampaignVisit associations
+User.hasMany(CampaignVisit, { foreignKey: 'userId', as: 'campaignVisits' });
+CampaignVisit.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
 module.exports = {
   User,
   MachineryListing,
@@ -88,5 +103,8 @@ module.exports = {
   CertificationRequest,
   FraudReport,
   Subscription,
+  Notification,
+  ActivityLog,
+  CampaignVisit,
   sequelize
 };

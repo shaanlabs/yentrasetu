@@ -28,8 +28,8 @@ exports.getParts = async (req, res) => {
     
     if (category) where.category = category;
     if (condition) where.condition = condition;
-    if (city) where.city = { [Op.iLike]: `%${city}%` };
-    if (state) where.state = { [Op.iLike]: `%${state}%` };
+    if (city) where.city = { [Op.like]: `%${city}%` };
+    if (state) where.state = { [Op.like]: `%${state}%` };
     
     if (minPrice || maxPrice) { 
       where.price = {}; 
@@ -39,10 +39,10 @@ exports.getParts = async (req, res) => {
 
     if (query) {
       where[Op.or] = [
-        { partName: { [Op.iLike]: `%${query}%` } },
-        { partNumber: { [Op.iLike]: `%${query}%` } },
-        { oemPartNumber: { [Op.iLike]: `%${query}%` } },
-        { compatibleMakes: { [Op.iLike]: `%${query}%` } }
+        { partName: { [Op.like]: `%${query}%` } },
+        { partNumber: { [Op.like]: `%${query}%` } },
+        { oemPartNumber: { [Op.like]: `%${query}%` } },
+        { compatibleMakes: { [Op.like]: `%${query}%` } }
       ];
     }
 

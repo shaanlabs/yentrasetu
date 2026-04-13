@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Bot, Send, Phone, Mail, MessageSquare, Headphones, CheckCircle, Zap, Clock } from 'lucide-react';
-import PageShell from '../components/PageShell';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, Bot, Send, Phone, Mail, MessageSquare, Headphones, CheckCircle, Zap, Clock } from 'lucide-react';
 
 const FAQ_ITEMS = [
   { q: 'How do I list my machine?', a: 'Go to "Post a Listing", upload photos & documents. Our AI will verify and publish it in under 3 minutes.' },
@@ -12,7 +12,7 @@ const FAQ_ITEMS = [
 ];
 
 export default function ContactSpecialistPage() {
-  const [chatMessages, setChatMessages] = useState<{role: string; text: string}[]>([
+  const [chatMessages, setChatMessages] = useState<{ role: string; text: string }[]>([
     { role: 'bot', text: 'Hi! 👋 I\'m YantraSetu\'s AI assistant. I can help you find machines, check prices, explain our inspection process, or connect you with a human specialist. What do you need?' },
   ]);
   const [input, setInput] = useState('');
@@ -50,8 +50,21 @@ export default function ContactSpecialistPage() {
   };
 
   return (
-    <PageShell breadcrumb="Help & Support" backTo="/" backLabel="Home">
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+    <div style={{ minHeight: '100vh', background: '#E9E3DA' }}>
+      {/* Header */}
+      <div style={{ background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #E9E3DA', position: 'sticky', top: 0, zIndex: 50 }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Link to="/" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214', textDecoration: 'none' }}>YantraSetu</Link>
+            <span style={{ color: '#6F757C', fontSize: '14px' }}>/ Help & Support</span>
+          </div>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', color: '#6F757C', textDecoration: 'none' }}>
+            <ArrowLeft size={16} /> Home
+          </Link>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '48px 24px 80px' }}>
         {/* Hero */}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <Bot size={40} color="#FF6A00" style={{ margin: '0 auto 16px' }} />
@@ -123,15 +136,15 @@ export default function ContactSpecialistPage() {
               type="text" value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Ask about machines, pricing, rentals..."
+              placeholder="Ask about machines, pricing, rentals, financing..."
               style={{
-                flex: 1, padding: '12px 14px', borderRadius: '8px', border: '1px solid #ddd',
-                fontSize: '14px', outline: 'none', minHeight: '48px',
+                flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #ddd',
+                fontSize: '14px', outline: 'none',
               }}
             />
             <button onClick={handleSend} style={{
-              padding: '12px 16px', background: '#FF6A00', color: '#fff', border: 'none',
-              borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', minHeight: '48px',
+              padding: '10px 16px', background: '#FF6A00', color: '#fff', border: 'none',
+              borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
             }}>
               <Send size={16} />
             </button>
@@ -161,6 +174,7 @@ export default function ContactSpecialistPage() {
               <div>
                 <p style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '13px' }}>{item.label}</p>
                 <p style={{ color: '#FF6A00', fontSize: '12px', fontWeight: 600 }}>{item.value}</p>
+
                 <p style={{ color: '#999', fontSize: '11px' }}>{item.desc}</p>
               </div>
             </a>
@@ -193,6 +207,6 @@ export default function ContactSpecialistPage() {
           ))}
         </div>
       </div>
-    </PageShell>
+    </div>
   );
 }

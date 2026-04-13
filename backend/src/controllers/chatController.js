@@ -1,5 +1,6 @@
 const { Chat, Message, User } = require('../models');
 const { Op } = require('sequelize');
+const { createNotification } = require('./notificationController');
 
 exports.startOrGetChat = async (req, res) => {
   try {
@@ -50,6 +51,18 @@ exports.sendMessage = async (req, res) => {
     const unreadField = chat.buyerId === req.user.id ? 'sellerUnreadCount' : 'buyerUnreadCount';
     await chat.update({ lastMessageAt: new Date(), lastMessagePreview: req.body.content.substring(0, 200), [unreadField]: chat[unreadField] + 1 });
     const message = await Message.findByPk(msg.id, { include: [{ model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName'] }] });
+
+    // Notify the other person in the chat
+    const recipientId = chat.buyerId === req.user.id ? chat.sellerId : chat.buyerId;
+    const sender = await User.findByPk(req.user.id, { attributes: ['firstName', 'lastName'] });
+    createNotification({
+      userId: recipientId,
+      type: 'message_received',
+      title: 'New Message',
+      body: `${sender?.firstName || 'Someone'}: ${req.body.content.substring(0, 100)}`,
+      data: { chatId: chat.id },
+    });
+
     res.status(201).json({ message: message });
   } catch (err) { res.status(400).json({ message: err.message }); }
 };

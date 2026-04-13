@@ -15,8 +15,8 @@ exports.getOperators = async (req, res) => {
   try {
     const { page = 1, limit = 12, city, state, equipmentType, minRate, maxRate, isAvailable, sortBy = 'rating', sortOrder = 'DESC' } = req.query;
     const where = { isActive: true };
-    if (city) where.city = { [Op.iLike]: `%${city}%` };
-    if (state) where.state = { [Op.iLike]: `%${state}%` };
+    if (city) where.city = { [Op.like]: `%${city}%` };
+    if (state) where.state = { [Op.like]: `%${state}%` };
     if (isAvailable !== undefined) where.isAvailable = isAvailable === 'true';
     if (minRate || maxRate) { where.dayRate = {}; if (minRate) where.dayRate[Op.gte] = minRate; if (maxRate) where.dayRate[Op.lte] = maxRate; }
 

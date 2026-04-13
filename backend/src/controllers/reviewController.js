@@ -1,11 +1,20 @@
 const { Review, User } = require('../models');
 const { Op } = require('sequelize');
+const { createNotification } = require('./notificationController');
 
 exports.createReview = async (req, res) => {
   try {
     const { revieweeId, reviewType, entityId, rating, title, comment, punctualityRating, qualityRating, communicationRating, valueRating } = req.body;
     if (req.user.id === revieweeId) return res.status(400).json({ message: 'Cannot review yourself' });
     const review = await Review.create({ reviewerId: req.user.id, revieweeId, reviewType, entityId, rating, title, comment, punctualityRating, qualityRating, communicationRating, valueRating });
+    const reviewer = await User.findByPk(req.user.id, { attributes: ['firstName', 'lastName'] });
+    createNotification({
+      userId: revieweeId,
+      type: 'review_received',
+      title: 'New Review Received ⭐',
+      body: `${reviewer?.firstName || 'Someone'} gave you a ${rating}-star review.`,
+      data: { reviewId: review.id },
+    });
     res.status(201).json({ message: 'Review submitted', review });
   } catch (err) { res.status(400).json({ message: err.message }); }
 };

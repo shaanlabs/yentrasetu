@@ -95,7 +95,7 @@ export default function PageShell({
           </button>
 
           <button
-            className={`nav-item ${isActive('/browse') && location.search.includes('sale') ? 'active' : ''}`}
+            className={`nav-item ${location.pathname.startsWith('/browse') && (!location.search.includes('type=rent')) ? 'active' : ''}`}
             onClick={() => navigate('/browse?type=sale')}
           >
             <ShoppingBag size={20} />
@@ -112,7 +112,7 @@ export default function PageShell({
           </button>
 
           <button
-            className={`nav-item ${isActive('/browse') && location.search.includes('rent') ? 'active' : ''}`}
+            className={`nav-item ${location.pathname.startsWith('/browse') && location.search.includes('type=rent') ? 'active' : ''}`}
             onClick={() => navigate('/browse?type=rent')}
           >
             <CalendarDays size={20} />

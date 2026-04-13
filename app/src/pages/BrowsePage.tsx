@@ -3,9 +3,10 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { machineryApi, type MachineryListing, type MachineryFilters, type CategoriesResponse } from '../services/api';
 import {
   Search, SlidersHorizontal, MapPin, ArrowLeft, ArrowRight,
-  Loader2, X, ChevronDown, Eye, Calendar, Gauge
+  Loader2, X, ChevronDown, Eye, Calendar, Gauge, Heart
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
+import { isSaved, toggleSaved } from './SavedListingsPage';
 
 export default function BrowsePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,6 +16,18 @@ export default function BrowsePage() {
   const [categories, setCategories] = useState<CategoriesResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [savedIds, setSavedIds] = useState<string[]>(isSaved ? getSavedIds() : []);
+
+  // Listen for saved listings changes
+  useEffect(() => {
+    const handler = () => setSavedIds(getSavedIds());
+    window.addEventListener('savedListingsChanged', handler);
+    return () => window.removeEventListener('savedListingsChanged', handler);
+  }, []);
+
+  function getSavedIds(): string[] {
+    try { return JSON.parse(localStorage.getItem('ys_saved_listings') || '[]'); } catch { return []; }
+  }
 
   // Read filters from URL
   const getFilters = (): MachineryFilters => ({
@@ -258,6 +271,21 @@ export default function BrowsePage() {
                       FEATURED
                     </div>
                   )}
+                  {/* Save button */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleSaved(listing.id);
+                      setSavedIds(getSavedIds());
+                    }}
+                    className={`absolute top-3 right-3 p-2 rounded-full shadow-sm transition-colors ${
+                      savedIds.includes(listing.id) ? 'bg-red-50 text-red-500' : 'bg-white/80 text-[#6F757C] hover:text-red-500'
+                    }`}
+                    title={savedIds.includes(listing.id) ? 'Saved' : 'Save'}
+                  >
+                    <Heart size={14} className={savedIds.includes(listing.id) ? 'fill-red-500' : ''} />
+                  </button>
                 </div>
 
                 {/* Content */}
@@ -291,7 +319,10 @@ export default function BrowsePage() {
                       style={{ fontFamily: 'Sora, sans-serif' }}
                     >
                       {listing.listingType === 'rent'
-                        ? `${listing.rentalRateMonthly ? formatPrice(listing.rentalRateMonthly) + '/mo' : formatPrice(listing.price)}`
+                        ? (listing.rentalRateDaily ? `${formatPrice(listing.rentalRateDaily)}/day`
+                          : listing.rentalRateMonthly ? `${formatPrice(listing.rentalRateMonthly)}/mo`
+                          : listing.rentalRateWeekly ? `${formatPrice(listing.rentalRateWeekly)}/wk`
+                          : `${formatPrice(listing.price)}/day`)
                         : formatPrice(listing.price)}
                     </p>
                     <span className="flex items-center gap-1 text-xs text-[#6F757C]">

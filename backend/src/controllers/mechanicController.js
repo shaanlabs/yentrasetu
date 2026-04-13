@@ -15,8 +15,8 @@ exports.getMechanics = async (req, res) => {
   try {
     const { page = 1, limit = 12, city, state, specialization, minRate, maxRate, isAvailable, sortBy = 'rating', sortOrder = 'DESC' } = req.query;
     const where = { isActive: true };
-    if (city) where.city = { [Op.iLike]: `%${city}%` };
-    if (state) where.state = { [Op.iLike]: `%${state}%` };
+    if (city) where.city = { [Op.like]: `%${city}%` };
+    if (state) where.state = { [Op.like]: `%${state}%` };
     if (isAvailable !== undefined) where.isAvailable = isAvailable === 'true';
     if (minRate || maxRate) { where.hourlyRate = {}; if (minRate) where.hourlyRate[Op.gte] = minRate; if (maxRate) where.hourlyRate[Op.lte] = maxRate; }
 

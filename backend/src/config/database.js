@@ -24,7 +24,7 @@ if (databaseUrl) {
   sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: './database.sqlite',
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    logging: false,
     define: {
       freezeTableName: true,
     },
