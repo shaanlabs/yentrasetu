@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { 
-  Search, Menu, X, Plus, User, LogIn, ArrowRight, Shield, Truck as TruckIcon, Clock, Wrench, MapPin, 
-  IndianRupee, Calculator, Building2, CreditCard, Home, ShoppingBag, CalendarDays, Bell, Heart, LayoutDashboard
+  Search, Menu, X, Plus, User, LogIn, ArrowRight, Truck as TruckIcon, Clock, Wrench,
+  Home, ShoppingBag, CalendarDays, Bell, Heart, LayoutDashboard
 } from 'lucide-react';
 import { useAuth } from './contexts/AuthContext';
 import { apiClient, notificationsApi } from './services/api';
+import { useUtmTracker } from './hooks/useUtmTracker';
+import { useSEO } from './hooks/useSEO';
 import SearchOverlay from './components/SearchOverlay';
 import './App.css';
 
@@ -23,6 +25,15 @@ function App() {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterMsg, setNewsletterMsg] = useState('');
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // UTM campaign tracking (captures utm_source etc. from URL)
+  useUtmTracker();
+
+  // Homepage SEO meta tags
+  useSEO({
+    title: "India's Heavy Equipment Marketplace",
+    description: 'Buy, sell, and rent verified excavators, cranes, loaders, and trucks on India\'s largest heavy equipment marketplace.',
+  });
 
   // Poll unread notification count
   useEffect(() => {

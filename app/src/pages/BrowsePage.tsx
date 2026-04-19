@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { machineryApi, type MachineryListing, type MachineryFilters, type CategoriesResponse } from '../services/api';
 import {
   Search, SlidersHorizontal, MapPin, ArrowLeft, ArrowRight,
-  Loader2, X, ChevronDown, Eye, Calendar, Gauge, Heart
+  Loader2, X, ChevronDown, Eye, Calendar, Gauge, Heart, Navigation
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
-import { isSaved, toggleSaved } from './SavedListingsPage';
+import { toggleSaved } from './SavedListingsPage';
 
 export default function BrowsePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,7 +16,9 @@ export default function BrowsePage() {
   const [categories, setCategories] = useState<CategoriesResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [savedIds, setSavedIds] = useState<string[]>(isSaved ? getSavedIds() : []);
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
+  const [savedIds, setSavedIds] = useState<string[]>(getSavedIds());
 
   // Listen for saved listings changes
   useEffect(() => {
@@ -29,6 +31,32 @@ export default function BrowsePage() {
     try { return JSON.parse(localStorage.getItem('ys_saved_listings') || '[]'); } catch { return []; }
   }
 
+  // Detect user location via browser geolocation
+  const detectLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setGeoError('Geolocation is not supported by your browser');
+      return;
+    }
+    setGeoLoading(true);
+    setGeoError(null);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const params = new URLSearchParams(searchParams);
+        params.set('lat', position.coords.latitude.toFixed(6));
+        params.set('lng', position.coords.longitude.toFixed(6));
+        params.set('sortBy', 'nearest');
+        params.delete('page');
+        setSearchParams(params);
+        setGeoLoading(false);
+      },
+      (err) => {
+        setGeoError(err.code === 1 ? 'Location access denied' : 'Could not detect location');
+        setGeoLoading(false);
+      },
+      { enableHighAccuracy: false, timeout: 10000 }
+    );
+  }, [searchParams, setSearchParams]);
+
   // Read filters from URL
   const getFilters = (): MachineryFilters => ({
     page: Number(searchParams.get('page')) || 1,
@@ -36,9 +64,12 @@ export default function BrowsePage() {
     listingType: (searchParams.get('type') as 'sale' | 'rent') || undefined,
     category: searchParams.get('category') || undefined,
     make: searchParams.get('make') || undefined,
+    query: searchParams.get('query') || undefined,
     minPrice: searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined,
     maxPrice: searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined,
     state: searchParams.get('state') || undefined,
+    lat: searchParams.get('lat') ? Number(searchParams.get('lat')) : undefined,
+    lng: searchParams.get('lng') ? Number(searchParams.get('lng')) : undefined,
     sortBy: searchParams.get('sortBy') || 'createdAt',
     sortOrder: (searchParams.get('sortOrder') as 'ASC' | 'DESC') || 'DESC',
   });
@@ -76,6 +107,8 @@ export default function BrowsePage() {
 
   const activeType = searchParams.get('type');
   const activeCategory = searchParams.get('category');
+  const activeQuery = searchParams.get('query');
+  const hasLocation = searchParams.has('lat') && searchParams.has('lng');
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price);
@@ -112,10 +145,21 @@ export default function BrowsePage() {
         </div>
       </div>
 
+      {/* Active search query badge */}
+      {activeQuery && (
+        <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-white rounded-lg shadow-sm border border-[#E9E3DA]">
+          <Search size={14} className="text-[#6F757C]" />
+          <span className="text-sm text-[#101214]" style={{ fontFamily: 'Inter, sans-serif' }}>Results for &ldquo;<strong>{activeQuery}</strong>&rdquo;</span>
+          <button onClick={() => setFilter('query', undefined)} className="ml-auto p-1 text-[#6F757C] hover:text-[#101214] transition-colors">
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
       {/* Filters bar */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
-        {/* Top row: filter button + sort */}
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        {/* Top row: filter button + near me + sort */}
+        <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap">
           <button
             onClick={() => setFiltersOpen(!filtersOpen)}
             className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E9E3DA] rounded-lg shadow-sm text-sm font-medium hover:border-[#6F757C] transition-colors min-h-[44px]"
@@ -124,6 +168,21 @@ export default function BrowsePage() {
             <SlidersHorizontal size={16} /> Filters
             {filtersOpen ? <X size={14} /> : <ChevronDown size={14} />}
           </button>
+          {/* Near Me button */}
+          <button
+            onClick={hasLocation ? () => { setFilter('lat', undefined); setFilter('lng', undefined); if (searchParams.get('sortBy') === 'nearest') setFilter('sortBy', 'createdAt'); } : detectLocation}
+            disabled={geoLoading}
+            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg shadow-sm text-sm font-medium transition-colors min-h-[44px] ${
+              hasLocation
+                ? 'bg-[#FF6A00] text-white border border-[#FF6A00]'
+                : 'bg-white text-[#6F757C] border border-[#E9E3DA] hover:border-[#FF6A00] hover:text-[#FF6A00]'
+            }`}
+            style={{ fontFamily: 'Sora, sans-serif' }}
+          >
+            {geoLoading ? <Loader2 size={14} className="animate-spin" /> : <Navigation size={14} />}
+            {hasLocation ? 'Near Me ✓' : 'Near Me'}
+          </button>
+          {geoError && <span className="text-xs text-red-500">{geoError}</span>}
           <select
             value={searchParams.get('sortBy') || 'createdAt'}
             onChange={(e) => setFilter('sortBy', e.target.value)}
@@ -133,6 +192,7 @@ export default function BrowsePage() {
             <option value="createdAt">Newest</option>
             <option value="price">Price</option>
             <option value="year">Year</option>
+            {hasLocation && <option value="nearest">Nearest</option>}
           </select>
         </div>
 

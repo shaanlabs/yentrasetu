@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { notificationsApi } from '../services/api';
-import { Loader2, Bell, BellOff, Check, CheckCheck, MessageCircle, Calendar, ShieldCheck, Star, AlertTriangle, Package } from 'lucide-react';
+import { Loader2, Bell, BellOff, Check, CheckCheck, MessageCircle, Calendar, ShieldCheck, Star, AlertTriangle } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
 const ICON_MAP: Record<string, any> = {

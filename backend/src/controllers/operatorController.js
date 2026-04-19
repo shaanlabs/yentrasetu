@@ -3,10 +3,14 @@ const { Op } = require('sequelize');
 
 exports.createOrUpdateProfile = async (req, res) => {
   try {
+    const allowed = ['name', 'specialization', 'equipmentTypes', 'experience', 'description', 'dayRate', 'city', 'state', 'latitude', 'longitude', 'certifications', 'isAvailable', 'profileImage'];
+    const data = {};
+    allowed.forEach(f => { if (req.body[f] !== undefined) data[f] = req.body[f]; });
+
     const [profile, created] = await OperatorProfile.findOrCreate({
-      where: { userId: req.user.id }, defaults: { ...req.body, userId: req.user.id },
+      where: { userId: req.userId }, defaults: { ...data, userId: req.userId },
     });
-    if (!created) { await profile.update(req.body); }
+    if (!created) { await profile.update(data); }
     res.status(created ? 201 : 200).json({ message: created ? 'Profile created' : 'Profile updated', profile });
   } catch (err) { res.status(400).json({ message: err.message }); }
 };
@@ -42,7 +46,7 @@ exports.getOperator = async (req, res) => {
 
 exports.getMyProfile = async (req, res) => {
   try {
-    const profile = await OperatorProfile.findOne({ where: { userId: req.user.id } });
+    const profile = await OperatorProfile.findOne({ where: { userId: req.userId } });
     res.json({ profile });
   } catch (err) { res.status(500).json({ message: err.message }); }
 };

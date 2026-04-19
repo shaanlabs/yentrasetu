@@ -13,7 +13,7 @@ exports.submitReport = async (req, res) => {
 
     // Prevent duplicate pending reports from the same user on the same target
     const existing = await FraudReport.findOne({
-      where: { reporterId: req.user.id, targetType, targetId, status: { [Op.in]: ['pending', 'investigating'] } }
+      where: { reporterId: req.userId, targetType, targetId, status: { [Op.in]: ['pending', 'investigating'] } }
     });
     if (existing) {
       return res.status(409).json({ message: 'You already have an open report on this item.' });
@@ -29,7 +29,7 @@ exports.submitReport = async (req, res) => {
     }
 
     const report = await FraudReport.create({
-      reporterId: req.user.id,
+      reporterId: req.userId,
       targetType,
       targetId,
       reason,
@@ -47,7 +47,7 @@ exports.submitReport = async (req, res) => {
 exports.getMyReports = async (req, res) => {
   try {
     const reports = await FraudReport.findAll({
-      where: { reporterId: req.user.id },
+      where: { reporterId: req.userId },
       order: [['createdAt', 'DESC']],
       attributes: { exclude: ['evidenceImages'] }
     });
@@ -86,7 +86,7 @@ exports.reviewReport = async (req, res) => {
       status,
       adminNotes,
       resolution: resolution || null,
-      reviewedBy: req.user.id,
+      reviewedBy: req.userId,
       reviewedAt: new Date()
     });
 

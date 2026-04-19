@@ -6,6 +6,7 @@
 const { MachineryListing, User } = require('../models');
 const { Op, fn, col, literal } = require('sequelize');
 const { sequelize } = require('../config/database');
+const { iLikeFilter } = require('../config/dbHelpers');
 
 // ─── Content-Based: Similar Listings ──────────────────
 async function getSimilarListings(listingId, limit = 6) {
@@ -132,13 +133,14 @@ async function getTrendingListings({ city, state, lat, lng, radius = 100, limit 
 
   // Location filter
   if (lat && lng) {
-    const radiusDeg = radius / 111;
-    where.latitude = { [Op.between]: [lat - radiusDeg, lat + radiusDeg] };
-    where.longitude = { [Op.between]: [lng - radiusDeg, lng + radiusDeg] };
+    const latDeg = radius / 111;
+    const lngDeg = radius / (111 * Math.cos(lat * Math.PI / 180));
+    where.latitude = { [Op.between]: [lat - latDeg, lat + latDeg] };
+    where.longitude = { [Op.between]: [lng - lngDeg, lng + lngDeg] };
   } else if (city) {
-    where.city = { [Op.iLike || Op.like]: `%${city}%` };
+    where.city = iLikeFilter(city);
   } else if (state) {
-    where.state = { [Op.iLike || Op.like]: `%${state}%` };
+    where.state = iLikeFilter(state);
   }
 
   // Time-decay weighted: recent views count more

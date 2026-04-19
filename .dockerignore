@@ -1,0 +1,15 @@
+node_modules
+.git
+.github
+*.md
+.env
+.env.*
+*.sqlite
+database.sqlite
+backend/node_modules
+app/node_modules
+app/dist
+uploads
+.vscode
+.idea
+*.log

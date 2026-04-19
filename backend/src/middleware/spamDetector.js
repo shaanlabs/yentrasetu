@@ -1,5 +1,6 @@
 const { MachineryListing, FraudReport } = require('../models');
 const { Op } = require('sequelize');
+const { iLikeFilter } = require('../config/dbHelpers');
 
 /**
  * Anti-spam middleware suite for preventing abuse.
@@ -63,8 +64,8 @@ const detectDuplicateListings = async (req, res, next) => {
     const duplicate = await MachineryListing.findOne({
       where: {
         userId: req.userId,
-        make: { [Op.iLike]: req.body.make },
-        model: { [Op.iLike]: req.body.model },
+        make: iLikeFilter(req.body.make),
+        model: iLikeFilter(req.body.model),
         createdAt: { [Op.gte]: twentyFourHoursAgo },
         status: { [Op.ne]: 'rejected' },
       }

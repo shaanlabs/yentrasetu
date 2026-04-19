@@ -261,6 +261,7 @@ export interface MachineryFilters {
   maxYear?: number;
   city?: string;
   state?: string;
+  query?: string;
   isVerified?: boolean;
   isFeatured?: boolean;
   sortBy?: string;
@@ -473,3 +474,66 @@ export const notificationsApi = {
   markAllAsRead: () => request<{ message: string }>('/notifications/read-all', { method: 'PUT' }),
 };
 
+// ─── ML / AI API ───────────────────────────────────────
+export const mlApi = {
+  predictPrice: (params: { category: string; condition?: string; listingType?: string; year?: number; hoursUsed?: number; city?: string }) => {
+    const p = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => { if (v !== undefined && v !== null) p.set(k, String(v)); });
+    return request<{ prediction: any }>(`/ml/predict-price?${p}`);
+  },
+
+  predictPriceInline: (data: any) =>
+    request<{ prediction: any; seoScore: any }>('/ml/predict-inline', { method: 'POST', body: JSON.stringify(data) }),
+
+  analyzeListing: (id: string) =>
+    request<{ analysis: any; percentile: number; verdict: string }>(`/ml/price-analysis/${id}`),
+
+  getSimilar: (id: string, limit = 6) =>
+    request<{ listings: any[] }>(`/ml/similar/${id}?limit=${limit}`),
+
+  getRecommendations: (params?: { city?: string; state?: string; lat?: number; lng?: number }) => {
+    const p = new URLSearchParams();
+    if (params) Object.entries(params).forEach(([k, v]) => { if (v !== undefined && v !== null) p.set(k, String(v)); });
+    return request<{ forYou: any[]; trending: any[] }>(`/ml/recommendations${p.toString() ? `?${p}` : ''}`);
+  },
+
+  getTrending: (params?: { city?: string; state?: string; lat?: number; lng?: number; limit?: number }) => {
+    const p = new URLSearchParams();
+    if (params) Object.entries(params).forEach(([k, v]) => { if (v !== undefined && v !== null) p.set(k, String(v)); });
+    return request<{ listings: any[] }>(`/ml/trending${p.toString() ? `?${p}` : ''}`);
+  },
+
+  getSellerTrust: (userId: string) =>
+    request<{ userId: string; trustScore: number; sentimentSummary: any; reviewCount: number; avgRating: number }>(`/ml/trust/${userId}`),
+
+  getSeoScore: (id: string) =>
+    request<{ seo: any; schema: any; metaTags: any }>(`/ml/seo/${id}`),
+
+  trackView: (listingId: string) =>
+    request<{ ok: boolean }>('/ml/track-view', { method: 'POST', body: JSON.stringify({ listingId }) }),
+};
+
+// ─── Analytics / Marketing API ─────────────────────────
+export const analyticsApi = {
+  getMarketTrends: (category?: string, months = 6) => {
+    const p = new URLSearchParams();
+    if (category) p.set('category', category);
+    p.set('months', String(months));
+    return request<{ priceTrends: any; demand: any }>(`/analytics/market-trends?${p}`);
+  },
+
+  getReferralStats: () =>
+    request<{ referralCode: string; referralLink: string; referredCount: number; referredUsers: any[] }>('/analytics/referral-stats'),
+
+  getReferralLeaderboard: () =>
+    request<{ leaderboard: any[] }>('/analytics/referral-leaderboard'),
+
+  getDemandForecast: (category?: string) => {
+    const p = new URLSearchParams();
+    if (category) p.set('category', category);
+    return request<{ gaps: any; priceTrends: any; seasonal: any }>(`/analytics/demand-forecast?${p}`);
+  },
+
+  getCampaignAnalytics: (days = 30) =>
+    request<{ funnel: any; bySource: any[]; byCampaign: any[]; byDevice: any[]; conversionRate: number }>(`/analytics/campaigns?days=${days}`),
+};

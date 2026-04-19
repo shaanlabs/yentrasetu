@@ -1,22 +1,38 @@
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'yantrasetu-secret-key-change-in-production';
+// In production, JWT secrets MUST be set via environment variables
+const isProduction = process.env.NODE_ENV === 'production';
+if (isProduction && !process.env.JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is required in production');
+}
+
+const JWT_SECRET = process.env.JWT_SECRET || 'yantrasetu-dev-secret-key';
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || (JWT_SECRET + '-refresh');
 
 // Generate JWT token
 const generateToken = (userId) => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign({ userId, type: 'access' }, JWT_SECRET, { expiresIn: '7d' });
 };
 
-// Generate refresh token
+// Generate refresh token (uses separate secret)
 const generateRefreshToken = (userId) => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '30d' });
+  return jwt.sign({ userId, type: 'refresh' }, JWT_REFRESH_SECRET, { expiresIn: '30d' });
 };
 
-// Verify JWT token
+// Verify JWT token (access)
 const verifyToken = (token) => {
   try {
     return jwt.verify(token, JWT_SECRET);
+  } catch (error) {
+    return null;
+  }
+};
+
+// Verify refresh token (uses separate secret)
+const verifyRefreshToken = (token) => {
+  try {
+    return jwt.verify(token, JWT_REFRESH_SECRET);
   } catch (error) {
     return null;
   }
@@ -129,6 +145,7 @@ module.exports = {
   generateToken,
   generateRefreshToken,
   verifyToken,
+  verifyRefreshToken,
   authenticate,
   optionalAuth,
   requireAdmin,

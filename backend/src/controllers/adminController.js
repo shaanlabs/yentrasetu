@@ -5,6 +5,8 @@ const {
   Notification, ActivityLog, sequelize
 } = require('../models');
 const { createNotification } = require('./notificationController');
+const { iLikeFilter } = require('../config/dbHelpers');
+const { parsePagination } = require('../config/pagination');
 
 // ─── Helper: log admin actions ─────────────────────────
 async function logAction(req, action, targetType, targetId, metadata = {}, severity = 'info') {
@@ -199,18 +201,16 @@ exports.toggleFeatured = async (req, res) => {
 // ─── 6. Get All Users (paginated, filterable) ──────────
 exports.getAllUsers = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 25;
-    const offset = (page - 1) * limit;
+    const { page, limit, offset } = parsePagination(req.query, { defaultLimit: 25 });
     const { search, role, status, sortBy = 'createdAt', sortOrder = 'DESC' } = req.query;
 
     const where = {};
     if (search) {
       where[Op.or] = [
-        { firstName: { [Op.iLike || Op.like]: `%${search}%` } },
-        { lastName: { [Op.iLike || Op.like]: `%${search}%` } },
-        { phone: { [Op.iLike || Op.like]: `%${search}%` } },
-        { email: { [Op.iLike || Op.like]: `%${search}%` } },
+        { firstName: iLikeFilter(search) },
+        { lastName: iLikeFilter(search) },
+        { phone: iLikeFilter(search) },
+        { email: iLikeFilter(search) },
       ];
     }
     if (role) where.userType = role;
@@ -309,9 +309,7 @@ exports.deactivateUser = async (req, res) => {
 // ─── 11. Activity Log ──────────────────────────────────
 exports.getActivityLog = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 50;
-    const offset = (page - 1) * limit;
+    const { page, limit, offset } = parsePagination(req.query, { defaultLimit: 50 });
     const { action, severity, userId } = req.query;
 
     const where = {};
@@ -337,9 +335,7 @@ exports.getActivityLog = async (req, res) => {
 // ─── 12. All Listings (admin view — all statuses) ──────
 exports.getAllListings = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 25;
-    const offset = (page - 1) * limit;
+    const { page, limit, offset } = parsePagination(req.query, { defaultLimit: 25 });
     const { status, category, search } = req.query;
 
     const where = {};
@@ -347,13 +343,14 @@ exports.getAllListings = async (req, res) => {
     if (category) where.category = category;
     if (search) {
       where[Op.or] = [
-        { make: { [Op.iLike || Op.like]: `%${search}%` } },
-        { model: { [Op.iLike || Op.like]: `%${search}%` } },
+        { make: iLikeFilter(search) },
+        { model: iLikeFilter(search) },
       ];
     }
 
     const { rows: listings, count: total } = await MachineryListing.findAndCountAll({
       where,
+      attributes: { exclude: ['images'] },
       include: [{ model: User, as: 'owner', attributes: ['id', 'firstName', 'lastName', 'phone'] }],
       order: [['createdAt', 'DESC']],
       limit,

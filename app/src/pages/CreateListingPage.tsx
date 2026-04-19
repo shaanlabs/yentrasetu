@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { machineryApi } from '../services/api';
-import { ArrowLeft, ArrowRight, Plus, Loader2, MapPin, IndianRupee, ImagePlus, X } from 'lucide-react';
+import { machineryApi, mlApi } from '../services/api';
+import { ArrowLeft, ArrowRight, Plus, Loader2, MapPin, IndianRupee, ImagePlus, X, Navigation, Sparkles, BarChart3 } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
 const CATEGORIES: Record<string, string[]> = {
@@ -26,6 +26,26 @@ export default function CreateListingPage() {
     price: '', rentalRateDaily: '', rentalRateWeekly: '', rentalRateMonthly: '', city: '', state: '',
   });
   const [images, setImages] = useState<string[]>([]);
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [geoStatus, setGeoStatus] = useState<'idle' | 'loading' | 'done' | 'denied'>('idle');
+  const [aiPrediction, setAiPrediction] = useState<any>(null);
+  const [seoScore, setSeoScore] = useState<any>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  // Auto-detect location on mount
+  useEffect(() => {
+    if (navigator.geolocation) {
+      setGeoStatus('loading');
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          setGeoStatus('done');
+        },
+        () => setGeoStatus('denied'),
+        { enableHighAccuracy: false, timeout: 8000 }
+      );
+    }
+  }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -43,6 +63,32 @@ export default function CreateListingPage() {
   const lbl = 'block text-xs font-medium text-[#6F757C] mb-1.5 uppercase tracking-wider';
   const inp = 'w-full px-4 py-3.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none shadow-sm min-h-[48px]';
 
+  // Fetch AI price estimate and SEO score
+  const fetchAiEstimate = async () => {
+    if (!form.category || !form.make) return;
+    setAiLoading(true);
+    try {
+      const res = await mlApi.predictPriceInline({
+        category: form.category,
+        subCategory: form.subCategory,
+        make: form.make,
+        model: form.model,
+        condition: form.condition,
+        listingType: form.listingType,
+        year: form.year ? Number(form.year) : undefined,
+        hoursUsed: form.hoursUsed ? Number(form.hoursUsed) : undefined,
+        city: form.city,
+        description: form.description,
+      });
+      setAiPrediction(res.prediction);
+      setSeoScore(res.seoScore);
+    } catch {
+      // Silent fail — AI features are optional
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!form.make || !form.model || !form.price || !form.category) { setError('Fill all required fields.'); return; }
     setLoading(true);
@@ -54,6 +100,7 @@ export default function CreateListingPage() {
       if (form.rentalRateWeekly) d.rentalRateWeekly = Number(form.rentalRateWeekly);
       if (form.rentalRateMonthly) d.rentalRateMonthly = Number(form.rentalRateMonthly);
       if (images.length > 0) d.images = images;
+      if (coords) { d.latitude = coords.lat; d.longitude = coords.lng; }
       await machineryApi.createListing(d);
       navigate('/my-listings');
     } catch (err: any) { setError(err.message || 'Failed to create listing.'); }
@@ -91,7 +138,7 @@ export default function CreateListingPage() {
               <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Condition</label>
                 <select value={form.condition} onChange={e => u('condition', e.target.value)} className={inp}><option value="new">New</option><option value="used">Used</option><option value="refurbished">Refurbished</option></select></div>
             </div>
-            <button onClick={() => setStep(2)} className="btn-primary w-full flex items-center justify-center gap-2 mt-4">Next <ArrowRight size={16} /></button>
+            <button onClick={() => { setStep(2); fetchAiEstimate(); }} className="btn-primary w-full flex items-center justify-center gap-2 mt-4">Next <ArrowRight size={16} /></button>
           </div>
         )}
 
@@ -109,6 +156,49 @@ export default function CreateListingPage() {
               <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>City</label><div className="relative"><MapPin size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F757C]" /><input value={form.city} onChange={e => u('city', e.target.value)} placeholder="City" className={`${inp} pl-10`} /></div></div>
               <div><label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>State</label><div className="relative"><MapPin size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F757C]" /><input value={form.state} onChange={e => u('state', e.target.value)} placeholder="State" className={`${inp} pl-10`} /></div></div>
             </div>
+            {/* Location auto-detect indicator */}
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs ${
+              geoStatus === 'done' ? 'bg-green-50 text-green-700' :
+              geoStatus === 'loading' ? 'bg-blue-50 text-blue-600' :
+              geoStatus === 'denied' ? 'bg-yellow-50 text-yellow-700' : 'bg-gray-50 text-[#6F757C]'
+            }`}>
+              {geoStatus === 'done' && <><Navigation size={12} /> GPS coordinates detected — your listing will appear in "Near Me" searches</>}
+              {geoStatus === 'loading' && <><Loader2 size={12} className="animate-spin" /> Detecting your location…</>}
+              {geoStatus === 'denied' && <><MapPin size={12} /> Location access denied — listing won't appear in proximity searches</>}
+              {geoStatus === 'idle' && <><MapPin size={12} /> Geolocation unavailable</>}
+            </div>
+            {/* AI Price Estimate */}
+            {aiLoading && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg text-xs text-blue-600">
+                <Loader2 size={12} className="animate-spin" /> Getting AI price estimate...
+              </div>
+            )}
+            {aiPrediction && !aiLoading && (
+              <div className="bg-gradient-to-r from-[#FF6A00]/5 to-[#FF8C38]/5 border border-[#FF6A00]/20 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles size={16} className="text-[#FF6A00]" />
+                  <span className="text-xs font-semibold text-[#FF6A00] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>AI Price Estimate</span>
+                </div>
+                <p className="text-lg font-bold text-[#101214]" style={{ fontFamily: 'Sora, sans-serif' }}>
+                  ₹{Number(aiPrediction.predictedPrice || aiPrediction.min || 0).toLocaleString('en-IN')}
+                  {aiPrediction.max && <span className="text-sm font-normal text-[#6F757C]"> — ₹{Number(aiPrediction.max).toLocaleString('en-IN')}</span>}
+                </p>
+                {aiPrediction.confidence && (
+                  <p className="text-xs text-[#6F757C] mt-1">Confidence: {Math.round(aiPrediction.confidence * 100)}% · Based on {aiPrediction.sampleSize || 'similar'} listings</p>
+                )}
+              </div>
+            )}
+            {seoScore && !aiLoading && (
+              <div className="flex items-center gap-3 px-3 py-2 bg-[#F9F7F4] rounded-lg">
+                <BarChart3 size={16} className={seoScore.overall >= 70 ? 'text-green-600' : seoScore.overall >= 40 ? 'text-yellow-600' : 'text-red-500'} />
+                <div>
+                  <span className="text-xs font-semibold" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>SEO Score: {seoScore.overall || seoScore.score || '—'}/100</span>
+                  {seoScore.tips && seoScore.tips.length > 0 && (
+                    <p className="text-xs text-[#6F757C] mt-0.5">{seoScore.tips[0]}</p>
+                  )}
+                </div>
+              </div>
+            )}
             <div className="flex gap-3"><button onClick={() => setStep(1)} className="btn-secondary flex-1 flex items-center justify-center gap-2"><ArrowLeft size={16} /> Back</button>
               <button onClick={() => setStep(3)} className="btn-primary flex-1 flex items-center justify-center gap-2">Next <ArrowRight size={16} /></button></div>
           </div>

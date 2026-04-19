@@ -3,10 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { adminApi, certificationsApi, fraudApi } from '../services/api';
 import {
-  ArrowLeft, Loader2, Users, Package, Wrench, Gauge, Calendar, Star, CheckCircle, XCircle, Clock,
-  Shield, AlertTriangle, Eye, TrendingUp, TrendingDown, Activity, BarChart3, Search,
+  ArrowLeft, Loader2, Users, Package, Wrench, Calendar, Star, CheckCircle, XCircle, Clock,
+  Shield, AlertTriangle, Eye, TrendingUp, Activity, BarChart3, Search,
   Ban, UserCheck, Settings, ChevronLeft, ChevronRight, RefreshCw, Filter, Award,
-  Zap, MapPin, DollarSign, FileText, Globe, Bell, Lock, Unlock, ChevronDown
+  MapPin, DollarSign, Globe, Unlock
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
 

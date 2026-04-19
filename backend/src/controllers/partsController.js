@@ -1,9 +1,14 @@
 const { PartListing, User } = require('../models');
 const { Op } = require('sequelize');
+const { iLikeFilter } = require('../config/dbHelpers');
+const { parsePagination } = require('../config/pagination');
 
 exports.createPart = async (req, res) => {
   try {
-    const part = await PartListing.create({ ...req.body, userId: req.user.id });
+    const allowed = ['partName', 'partNumber', 'oemPartNumber', 'category', 'condition', 'compatibleMakes', 'compatibleModels', 'price', 'quantity', 'description', 'images', 'city', 'state', 'warranty'];
+    const data = { userId: req.userId };
+    allowed.forEach(f => { if (req.body[f] !== undefined) data[f] = req.body[f]; });
+    const part = await PartListing.create(data);
     res.status(201).json({ message: 'Part listed successfully', part });
   } catch (err) { res.status(400).json({ message: err.message }); }
 };
@@ -11,8 +16,6 @@ exports.createPart = async (req, res) => {
 exports.getParts = async (req, res) => {
   try {
     const { 
-      page = 1, 
-      limit = 12, 
       category, 
       condition, 
       minPrice, 
@@ -39,19 +42,20 @@ exports.getParts = async (req, res) => {
 
     if (query) {
       where[Op.or] = [
-        { partName: { [Op.like]: `%${query}%` } },
-        { partNumber: { [Op.like]: `%${query}%` } },
-        { oemPartNumber: { [Op.like]: `%${query}%` } },
-        { compatibleMakes: { [Op.like]: `%${query}%` } }
+        { partName: iLikeFilter(query) },
+        { partNumber: iLikeFilter(query) },
+        { oemPartNumber: iLikeFilter(query) },
+        { compatibleMakes: iLikeFilter(query) }
       ];
     }
 
-    const offset = (page - 1) * limit;
+    const { page, limit, offset } = parsePagination(req.query);
     const { count, rows } = await PartListing.findAndCountAll({
-      where, include: [{ model: User, as: 'seller', attributes: ['id', 'firstName', 'lastName', 'phone'] }],
-      order: [[sortBy, sortOrder]], limit: parseInt(limit), offset, 
+      where, attributes: { exclude: ['images'] },
+      include: [{ model: User, as: 'seller', attributes: ['id', 'firstName', 'lastName', 'phone'] }],
+      order: [[sortBy, sortOrder]], limit, offset, 
     });
-    res.json({ parts: rows, pagination: { total: count, page: parseInt(page), pages: Math.ceil(count / limit), limit: parseInt(limit) } });
+    res.json({ parts: rows, pagination: { total: count, page, pages: Math.ceil(count / limit), limit } });
   } catch (err) { res.status(500).json({ message: err.message }); }
 };
 
@@ -68,7 +72,7 @@ exports.getPart = async (req, res) => {
 
 exports.deletePart = async (req, res) => {
   try {
-    const part = await PartListing.findOne({ where: { id: req.params.id, userId: req.user.id } });
+    const part = await PartListing.findOne({ where: { id: req.params.id, userId: req.userId } });
     if (!part) return res.status(404).json({ message: 'Part not found' });
     await part.destroy();
     res.json({ message: 'Part deleted' });
@@ -77,7 +81,7 @@ exports.deletePart = async (req, res) => {
 
 exports.getMyParts = async (req, res) => {
   try {
-    const parts = await PartListing.findAll({ where: { userId: req.user.id }, order: [['createdAt', 'DESC']] });
+    const parts = await PartListing.findAll({ where: { userId: req.userId }, order: [['createdAt', 'DESC']] });
     res.json({ parts });
   } catch (err) { res.status(500).json({ message: err.message }); }
 };

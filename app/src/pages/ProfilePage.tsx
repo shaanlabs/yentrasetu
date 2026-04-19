@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { authApi } from '../services/api';
+import { authApi, analyticsApi } from '../services/api';
 import {
   User, Phone, Mail, Building2, MapPin, FileText, Hash,
   Save, Loader2, LogOut, Lock, CheckCircle,
   Camera, Star, Calendar, Shield, Award,
-  LayoutDashboard, Heart, Bell, MessageCircle, Package, ShoppingBag
+  LayoutDashboard, Heart, Bell, MessageCircle, Package, ShoppingBag, Gift, Copy, TrendingUp
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
@@ -30,6 +30,8 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [referral, setReferral] = useState<{ referralCode: string; referralLink: string; referredCount: number } | null>(null);
+  const [referralCopied, setReferralCopied] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) navigate('/login');
@@ -51,6 +53,15 @@ export default function ProfilePage() {
       });
     }
   }, [user]);
+
+  // Load referral stats
+  useEffect(() => {
+    if (isAuthenticated) {
+      analyticsApi.getReferralStats()
+        .then(data => setReferral(data))
+        .catch(() => {});
+    }
+  }, [isAuthenticated]);
 
   const update = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -220,6 +231,50 @@ export default function ProfilePage() {
             ))}
           </div>
         </div>
+
+        {/* Referral Section */}
+        {referral && (
+          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 mb-6">
+            <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1rem', color: '#101214', marginBottom: '1rem' }}
+              className="flex items-center gap-2">
+              <Gift size={18} className="text-[#FF6A00]" /> Refer & Earn
+            </h2>
+            <p className="text-sm text-[#6F757C] mb-4">Share your referral link and grow the YantraSetu community.</p>
+            
+            <div className="bg-[#F9F7F4] rounded-lg p-4 mb-4">
+              <p className="text-xs font-medium text-[#6F757C] uppercase tracking-wider mb-2"
+                style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Your Referral Code</p>
+              <div className="flex items-center gap-3">
+                <span className="text-lg font-bold text-[#FF6A00] tracking-widest"
+                  style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{referral.referralCode}</span>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(referral.referralLink);
+                    setReferralCopied(true);
+                    setTimeout(() => setReferralCopied(false), 2000);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E9E3DA] rounded-lg text-xs font-medium text-[#6F757C] hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors"
+                >
+                  <Copy size={12} />
+                  {referralCopied ? 'Copied!' : 'Copy Link'}
+                </button>
+              </div>
+              <p className="text-xs text-[#6F757C] mt-2 break-all">{referral.referralLink}</p>
+            </div>
+
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+                  <TrendingUp size={18} className="text-green-600" />
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-[#101214]">{referral.referredCount}</p>
+                  <p className="text-xs text-[#6F757C]">People referred</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Messages */}
         {error && (

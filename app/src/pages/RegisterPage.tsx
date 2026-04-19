@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ArrowRight, Phone, Lock, Mail, User, Eye, EyeOff, Loader2, Building2 } from 'lucide-react';
+import { ArrowRight, Phone, Lock, Mail, User, Eye, EyeOff, Loader2, Building2, Gift } from 'lucide-react';
 
 const USER_TYPES = [
   { value: 'individual', label: 'Individual', desc: 'Buy, sell, or rent machinery' },
@@ -14,6 +14,7 @@ const USER_TYPES = [
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { register } = useAuth();
+  const [searchParams] = useSearchParams();
 
   const [form, setForm] = useState({
     firstName: '',
@@ -22,10 +23,19 @@ export default function RegisterPage() {
     email: '',
     password: '',
     userType: 'individual',
+    referralCode: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Pre-fill referral code from URL ?ref=XXXX
+  useEffect(() => {
+    const ref = searchParams.get('ref');
+    if (ref && !form.referralCode) {
+      setForm(prev => ({ ...prev, referralCode: ref }));
+    }
+  }, [searchParams]);
 
   const update = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -54,7 +64,8 @@ export default function RegisterPage() {
         email: form.email || undefined,
         password: form.password,
         userType: form.userType,
-      });
+        referralCode: form.referralCode || undefined,
+      } as any);
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'Registration failed.');
@@ -181,6 +192,20 @@ export default function RegisterPage() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Referral Code */}
+            <div className="mb-6">
+              <label className={labelClass} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Referral Code (Optional)</label>
+              <div className="relative">
+                <Gift size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F757C]" />
+                <input type="text" value={form.referralCode} onChange={(e) => update('referralCode', e.target.value.toUpperCase())}
+                  placeholder="e.g. AB12CD34" className={inputClass} style={{ fontFamily: 'Inter, sans-serif' }}
+                  maxLength={20} />
+              </div>
+              {form.referralCode && (
+                <p className="text-xs text-green-600 mt-1 ml-1">Referral code applied ✓</p>
+              )}
             </div>
 
             <button type="submit" disabled={loading}

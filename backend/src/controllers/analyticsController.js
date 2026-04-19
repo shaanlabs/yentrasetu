@@ -207,19 +207,34 @@ exports.getReferralStats = async (req, res) => {
 // ─── Referral Leaderboard ────────────────────────────
 exports.getReferralLeaderboard = async (req, res) => {
   try {
-    const users = await User.findAll({
-      attributes: ['id', 'firstName', 'lastName', 'referralCode', 'city'],
-      where: { referralCode: { [Op.ne]: null } },
+    // Single query: count referrals grouped by referredBy code
+    const referralCounts = await User.findAll({
+      attributes: ['referredBy', [fn('COUNT', col('id')), 'referralCount']],
+      where: { referredBy: { [Op.ne]: null } },
+      group: ['referredBy'],
+      having: literal('COUNT("id") > 0'),
+      order: [[literal('referralCount'), 'DESC']],
+      limit: 20,
       raw: true,
     });
 
-    const scored = await Promise.all(users.map(async u => {
-      const count = await User.count({ where: { referredBy: u.referralCode } }).catch(() => 0);
-      return { ...u, referralCount: count };
-    }));
+    // Fetch user details for top referrers in one query
+    const codes = referralCounts.map(r => r.referredBy);
+    if (codes.length === 0) return res.json({ leaderboard: [] });
 
-    scored.sort((a, b) => b.referralCount - a.referralCount);
-    res.json({ leaderboard: scored.filter(u => u.referralCount > 0).slice(0, 20) });
+    const referrers = await User.findAll({
+      attributes: ['id', 'firstName', 'lastName', 'referralCode', 'city'],
+      where: { referralCode: { [Op.in]: codes } },
+      raw: true,
+    });
+
+    // Merge counts with user info
+    const referrerMap = Object.fromEntries(referrers.map(u => [u.referralCode, u]));
+    const leaderboard = referralCounts
+      .map(r => ({ ...referrerMap[r.referredBy], referralCount: parseInt(r.referralCount) }))
+      .filter(r => r.id);
+
+    res.json({ leaderboard });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Shield, Zap, ScanLine, Bot, FileCheck, Camera, CheckCircle2, Cpu } from 'lucide-react';
+import { Shield, Zap, ScanLine, Bot, FileCheck, Camera, Cpu } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
 const STANDARDS = [

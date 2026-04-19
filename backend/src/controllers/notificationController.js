@@ -1,5 +1,4 @@
 const { Notification } = require('../models');
-const { Op } = require('sequelize');
 
 /**
  * Helper: Create a notification for a user.
@@ -23,7 +22,7 @@ exports.getMyNotifications = async (req, res) => {
     const offset = (page - 1) * limit;
 
     const { count, rows } = await Notification.findAndCountAll({
-      where: { userId: req.user.id },
+      where: { userId: req.userId },
       order: [['isRead', 'ASC'], ['createdAt', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset),
@@ -47,7 +46,7 @@ exports.getMyNotifications = async (req, res) => {
  */
 exports.getUnreadCount = async (req, res) => {
   try {
-    const count = await Notification.count({ where: { userId: req.user.id, isRead: false } });
+    const count = await Notification.count({ where: { userId: req.userId, isRead: false } });
     res.json({ count });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -59,7 +58,7 @@ exports.getUnreadCount = async (req, res) => {
  */
 exports.markAsRead = async (req, res) => {
   try {
-    const notification = await Notification.findOne({ where: { id: req.params.id, userId: req.user.id } });
+    const notification = await Notification.findOne({ where: { id: req.params.id, userId: req.userId } });
     if (!notification) return res.status(404).json({ message: 'Notification not found' });
     await notification.update({ isRead: true });
     res.json({ message: 'Marked as read' });
@@ -73,7 +72,7 @@ exports.markAsRead = async (req, res) => {
  */
 exports.markAllAsRead = async (req, res) => {
   try {
-    await Notification.update({ isRead: true }, { where: { userId: req.user.id, isRead: false } });
+    await Notification.update({ isRead: true }, { where: { userId: req.userId, isRead: false } });
     res.json({ message: 'All marked as read' });
   } catch (err) {
     res.status(500).json({ message: err.message });

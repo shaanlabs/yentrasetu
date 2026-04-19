@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { machineryApi, bookingsApi, chatsApi, type MachineryListing } from '../services/api';
 import {
   Loader2, Package, Eye, MessageCircle, Calendar, Plus, ArrowRight,
-  TrendingUp, BarChart3, CheckCircle, Clock, XCircle
+  TrendingUp, BarChart3, CheckCircle, Clock
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
 

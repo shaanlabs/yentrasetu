@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { isSaved, toggleSaved } from './SavedListingsPage';
 import {
   MapPin, Calendar, Gauge, Shield, User,
-  Phone, Loader2, Share2, ChevronLeft, ChevronRight, IndianRupee,
+  Loader2, Share2, ChevronLeft, ChevronRight,
   Flag, X, Upload, AlertTriangle, Heart, MessageCircle,
   Star, Calculator, ExternalLink, ZoomIn, Copy, Check
 } from 'lucide-react';
@@ -107,7 +107,7 @@ export default function ListingDetailPage() {
     if (!listing?.owner?.id) return;
     setContactLoading(true);
     try {
-      const { chat } = await chatsApi.startOrGet(listing.owner.id, listing.listingType, listing.id);
+      await chatsApi.startOrGet(listing.owner.id, listing.listingType, listing.id);
       navigate('/chats');
     } catch (err: any) {
       alert(err.message || 'Failed to start chat');

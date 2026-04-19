@@ -1,5 +1,5 @@
 const { User } = require('../models');
-const { generateToken, generateRefreshToken } = require('../middleware/auth');
+const { generateToken, generateRefreshToken, verifyRefreshToken } = require('../middleware/auth');
 
 // Generate random 6-digit OTP
 const generateOTP = () => {
@@ -144,6 +144,7 @@ const sendOTP = async (req, res) => {
 };
 
 // Verify OTP
+const MAX_OTP_ATTEMPTS = 5;
 const verifyOTP = async (req, res) => {
   try {
     const { phone, otp } = req.body;
@@ -153,19 +154,44 @@ const verifyOTP = async (req, res) => {
       return res.status(404).json({ message: 'User not found.' });
     }
 
-    if (user.otpCode !== otp) {
-      return res.status(400).json({ message: 'Invalid OTP.' });
+    // Check if OTP exists
+    if (!user.otpCode) {
+      return res.status(400).json({ message: 'No OTP pending. Please request a new one.' });
     }
 
+    // Check if OTP has expired
     if (user.otpExpiresAt < new Date()) {
-      return res.status(400).json({ message: 'OTP has expired.' });
+      user.otpCode = null;
+      user.otpExpiresAt = null;
+      await user.save();
+      return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
     }
 
-    // Clear OTP
+    // Track attempts via metadata
+    const meta = user.metadata || {};
+    const attempts = (meta.otpAttempts || 0) + 1;
+
+    if (user.otpCode !== otp) {
+      // Wrong OTP — increment attempts
+      if (attempts >= MAX_OTP_ATTEMPTS) {
+        // Too many failures — invalidate OTP
+        user.otpCode = null;
+        user.otpExpiresAt = null;
+        user.metadata = { ...meta, otpAttempts: 0 };
+        await user.save();
+        return res.status(429).json({ message: 'Too many failed attempts. OTP invalidated. Please request a new one.' });
+      }
+      user.metadata = { ...meta, otpAttempts: attempts };
+      await user.save();
+      return res.status(400).json({ message: `Invalid OTP. ${MAX_OTP_ATTEMPTS - attempts} attempts remaining.` });
+    }
+
+    // Correct OTP — clear everything
     user.otpCode = null;
     user.otpExpiresAt = null;
     user.isVerified = true;
     user.lastLoginAt = new Date();
+    user.metadata = { ...meta, otpAttempts: 0 };
     await user.save();
 
     const token = generateToken(user.id);
@@ -201,8 +227,8 @@ const refreshToken = async (req, res) => {
       return res.status(401).json({ message: 'Refresh token required.' });
     }
 
-    const { verifyToken } = require('../middleware/auth');
-    const decoded = verifyToken(refreshToken);
+    const { verifyRefreshToken: verifyRefresh } = require('../middleware/auth');
+    const decoded = verifyRefresh(refreshToken);
 
     if (!decoded) {
       return res.status(401).json({ message: 'Invalid refresh token.' });

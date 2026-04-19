@@ -11,7 +11,7 @@ exports.submitCertification = async (req, res) => {
     }
 
     const cert = await CertificationRequest.create({
-      userId: req.user.id,
+      userId: req.userId,
       certificationType,
       documentName,
       documentNumber,
@@ -31,7 +31,7 @@ exports.submitCertification = async (req, res) => {
 exports.getMyCertifications = async (req, res) => {
   try {
     const certs = await CertificationRequest.findAll({
-      where: { userId: req.user.id },
+      where: { userId: req.userId },
       order: [['createdAt', 'DESC']],
       attributes: { exclude: ['documentImage'] }
     });
@@ -51,7 +51,7 @@ exports.getCertification = async (req, res) => {
 
     // Only owner or admin can view full details
     const isAdmin = req.user.userType === 'admin' || req.user.userType === 'super_admin';
-    if (cert.userId !== req.user.id && !isAdmin) {
+    if (cert.userId !== req.userId && !isAdmin) {
       return res.status(403).json({ message: 'Access denied.' });
     }
 
@@ -89,7 +89,7 @@ exports.reviewCertification = async (req, res) => {
     await cert.update({
       status,
       adminNotes,
-      reviewedBy: req.user.id,
+      reviewedBy: req.userId,
       reviewedAt: new Date()
     });
 

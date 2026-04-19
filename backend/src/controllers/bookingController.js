@@ -7,7 +7,7 @@ exports.createBooking = async (req, res) => {
     const listing = await MachineryListing.findByPk(req.body.listingId);
     if (!listing) return res.status(404).json({ message: 'Listing not found' });
     if (listing.listingType !== 'rent') return res.status(400).json({ message: 'Listing is not for rent' });
-    if (listing.userId === req.user.id) return res.status(400).json({ message: 'Cannot book your own listing' });
+    if (listing.userId === req.userId) return res.status(400).json({ message: 'Cannot book your own listing' });
 
     const { startDate, endDate, withOperator, renterNotes } = req.body;
     const start = new Date(startDate); const end = new Date(endDate);
@@ -17,7 +17,7 @@ exports.createBooking = async (req, res) => {
     const deposit = total * 0.2; const commission = total * 0.1;
 
     const booking = await RentalBooking.create({
-      listingId: listing.id, ownerId: listing.userId, renterId: req.user.id,
+      listingId: listing.id, ownerId: listing.userId, renterId: req.userId,
       startDate, endDate, duration: days, rentalRate: rate, rentalUnit: 'daily',
       totalRentalAmount: total, securityDeposit: deposit, platformCommission: commission,
       commissionPercentage: 10, totalAmount: total + deposit + commission,
@@ -25,7 +25,7 @@ exports.createBooking = async (req, res) => {
     });
 
     // Notify the listing owner about the new booking
-    const renter = await User.findByPk(req.user.id, { attributes: ['firstName', 'lastName'] });
+    const renter = await User.findByPk(req.userId, { attributes: ['firstName', 'lastName'] });
     createNotification({
       userId: listing.userId,
       type: 'booking_created',
@@ -41,7 +41,7 @@ exports.createBooking = async (req, res) => {
 exports.getMyBookings = async (req, res) => {
   try {
     const { role = 'renter' } = req.query;
-    const where = role === 'owner' ? { ownerId: req.user.id } : { renterId: req.user.id };
+    const where = role === 'owner' ? { ownerId: req.userId } : { renterId: req.userId };
     const bookings = await RentalBooking.findAll({
       where, include: [
         { model: MachineryListing, as: 'listing', attributes: ['id', 'make', 'model', 'images', 'price'] },
@@ -57,16 +57,16 @@ exports.updateBookingStatus = async (req, res) => {
   try {
     const booking = await RentalBooking.findByPk(req.params.id);
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
-    if (booking.ownerId !== req.user.id && booking.renterId !== req.user.id) return res.status(403).json({ message: 'Not authorized' });
+    if (booking.ownerId !== req.userId && booking.renterId !== req.userId) return res.status(403).json({ message: 'Not authorized' });
     const { status } = req.body;
     const allowed = ['confirmed', 'active', 'completed', 'cancelled'];
     if (!allowed.includes(status)) return res.status(400).json({ message: 'Invalid status' });
-    if (status === 'cancelled') { booking.cancelledBy = req.user.id; booking.cancelledAt = new Date(); booking.cancellationReason = req.body.reason; }
+    if (status === 'cancelled') { booking.cancelledBy = req.userId; booking.cancelledAt = new Date(); booking.cancellationReason = req.body.reason; }
     booking.status = status;
     await booking.save();
 
     // Notify the other party
-    const notifyUserId = req.user.id === booking.ownerId ? booking.renterId : booking.ownerId;
+    const notifyUserId = req.userId === booking.ownerId ? booking.renterId : booking.ownerId;
     const statusLabels = { confirmed: 'Booking Confirmed', cancelled: 'Booking Cancelled', active: 'Booking Active', completed: 'Booking Completed' };
     createNotification({
       userId: notifyUserId,

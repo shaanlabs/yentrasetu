@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const { MachineryListing, User, Review } = require('../models');
 const { sequelize } = require('../config/database');
+const { parsePagination } = require('../config/pagination');
 
 // Create new machinery listing
 const createListing = async (req, res) => {
@@ -21,11 +22,16 @@ const createListing = async (req, res) => {
       });
     }
 
-    const listingData = {
-      ...req.body,
-      userId: req.userId,
-      status: 'pending' // Requires admin approval
-    };
+    const allowedFields = [
+      'listingType', 'category', 'subCategory', 'make', 'model', 'year',
+      'condition', 'hoursUsed', 'description', 'price', 'rentalRateDaily',
+      'rentalRateWeekly', 'rentalRateMonthly', 'city', 'state', 'pincode',
+      'latitude', 'longitude', 'images', 'specifications', 'features',
+      'availableFrom', 'availableTo', 'operatorAvailable', 'deliveryAvailable',
+      'insuranceValid', 'registrationNumber'
+    ];
+    const listingData = { userId: req.userId, status: 'pending' };
+    allowedFields.forEach(f => { if (req.body[f] !== undefined) listingData[f] = req.body[f]; });
 
     // Set expiry date (30 days from now)
     const expiresAt = new Date();
@@ -48,8 +54,6 @@ const createListing = async (req, res) => {
 const getListings = async (req, res) => {
   try {
     const {
-      page = 1,
-      limit = 20,
       category,
       subCategory,
       make,
@@ -62,6 +66,7 @@ const getListings = async (req, res) => {
       maxYear,
       city,
       state,
+      query,
       isVerified,
       isFeatured,
       sortBy = 'createdAt',
@@ -73,8 +78,13 @@ const getListings = async (req, res) => {
 
     const where = {
       status: 'approved',
-      isActive: true
+      isActive: true,
     };
+
+    // Exclude expired listings
+    where[Op.and] = [
+      { [Op.or]: [{ expiresAt: null }, { expiresAt: { [Op.gt]: new Date() } }] }
+    ];
 
     // Apply filters
     if (category) where.category = category;
@@ -101,19 +111,31 @@ const getListings = async (req, res) => {
     if (city) where.city = { [Op.like]: `%${city}%` };
     if (state) where.state = { [Op.like]: `%${state}%` };
 
-    // Location-based search
-    let locationFilter = {};
+    // Full-text search across make, model, description, city
+    if (query) {
+      where[Op.or] = [
+        { make: { [Op.like]: `%${query}%` } },
+        { model: { [Op.like]: `%${query}%` } },
+        { description: { [Op.like]: `%${query}%` } },
+        { city: { [Op.like]: `%${query}%` } },
+        { subCategory: { [Op.like]: `%${query}%` } },
+      ];
+    }
+
+    // Location-based search with correct lat/lng bounding box
     if (lat && lng) {
-      // Using PostgreSQL's earthdistance or simple bounding box
       const latFloat = parseFloat(lat);
       const lngFloat = parseFloat(lng);
-      const radiusDegrees = radius / 111; // Approximate conversion
+      const radiusKm = parseFloat(radius);
+      const latDegrees = radiusKm / 111; // 1° latitude ≈ 111 km
+      // Correct longitude conversion: depends on latitude
+      const lngDegrees = radiusKm / (111 * Math.cos(latFloat * Math.PI / 180));
       
       where.latitude = {
-        [Op.between]: [latFloat - radiusDegrees, latFloat + radiusDegrees]
+        [Op.between]: [latFloat - latDegrees, latFloat + latDegrees]
       };
       where.longitude = {
-        [Op.between]: [lngFloat - radiusDegrees, lngFloat + radiusDegrees]
+        [Op.between]: [lngFloat - lngDegrees, lngFloat + lngDegrees]
       };
     }
 
@@ -124,16 +146,35 @@ const getListings = async (req, res) => {
     } else if (sortBy === 'year') {
       order.push(['year', sortOrder]);
     } else if (sortBy === 'nearest' && lat && lng) {
-      // Custom ordering by distance would require raw SQL
-      order.push(['createdAt', 'DESC']);
+      // Haversine distance sort via raw SQL
+      const latFloat = parseFloat(lat);
+      const lngFloat = parseFloat(lng);
+      const dialect = sequelize.getDialect();
+      if (dialect === 'postgres') {
+        order.push([
+          sequelize.literal(
+            `(6371 * acos(cos(radians(${latFloat})) * cos(radians("latitude")) * cos(radians("longitude") - radians(${lngFloat})) + sin(radians(${latFloat})) * sin(radians("latitude"))))`
+          ),
+          'ASC'
+        ]);
+      } else {
+        // SQLite fallback: approximate Euclidean distance
+        order.push([
+          sequelize.literal(
+            `((${latFloat} - CAST("latitude" AS REAL)) * (${latFloat} - CAST("latitude" AS REAL)) + (${lngFloat} - CAST("longitude" AS REAL)) * (${lngFloat} - CAST("longitude" AS REAL)))`
+          ),
+          'ASC'
+        ]);
+      }
     } else {
       order.push([sortBy, sortOrder]);
     }
 
-    const offset = (page - 1) * limit;
+    const { page, limit, offset } = parsePagination(req.query);
 
     const { count, rows: listings } = await MachineryListing.findAndCountAll({
       where,
+      // Note: images included for card thumbnails on the frontend
       include: [
         {
           model: User,
@@ -142,17 +183,17 @@ const getListings = async (req, res) => {
         }
       ],
       order,
-      limit: parseInt(limit),
-      offset: parseInt(offset)
+      limit,
+      offset
     });
 
     res.json({
       listings,
       pagination: {
         total: count,
-        page: parseInt(page),
+        page,
         pages: Math.ceil(count / limit),
-        limit: parseInt(limit)
+        limit
       }
     });
   } catch (error) {
@@ -160,6 +201,7 @@ const getListings = async (req, res) => {
     res.status(500).json({ message: 'Failed to get listings.', error: error.message });
   }
 };
+
 
 // Get single listing
 const getListing = async (req, res) => {
@@ -209,7 +251,6 @@ const getListing = async (req, res) => {
 const updateListing = async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
 
     const listing = await MachineryListing.findOne({
       where: { id, userId: req.userId }
@@ -219,12 +260,21 @@ const updateListing = async (req, res) => {
       return res.status(404).json({ message: 'Listing not found or not authorized.' });
     }
 
-    // Don't allow changing certain fields
-    delete updates.userId;
-    delete updates.status;
-    delete updates.isVerified;
-    delete updates.viewCount;
-    delete updates.contactUnlockCount;
+    // Allowlist: only these fields can be updated by the owner
+    const allowedFields = [
+      'listingType', 'category', 'subCategory', 'make', 'model', 'year',
+      'condition', 'hoursUsed', 'description', 'price', 'rentalRateDaily',
+      'rentalRateWeekly', 'rentalRateMonthly', 'withOperator', 'minimumRentalDays',
+      'securityDeposit', 'city', 'state', 'pincode', 'address', 'latitude',
+      'longitude', 'images', 'rcDocument', 'insuranceDocument', 'inspectionReport',
+    ];
+
+    const updates = {};
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        updates[field] = req.body[field];
+      }
+    }
 
     await listing.update(updates);
 

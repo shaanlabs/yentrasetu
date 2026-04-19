@@ -1,72 +1,105 @@
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import App from './App';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import VerifyOtpPage from './pages/VerifyOtpPage';
-import ProfilePage from './pages/ProfilePage';
-import ChangePasswordPage from './pages/ChangePasswordPage';
-import BrowsePage from './pages/BrowsePage';
-import ListingDetailPage from './pages/ListingDetailPage';
-import CreateListingPage from './pages/CreateListingPage';
-import MyListingsPage from './pages/MyListingsPage';
-import PartsPage from './pages/PartsPage';
-import OperatorsPage from './pages/OperatorsPage';
-import MechanicsPage from './pages/MechanicsPage';
-import BookingsPage from './pages/BookingsPage';
-import ChatsPage from './pages/ChatsPage';
-import AdminPage from './pages/AdminPage';
-import LoanEligibilityPage from './pages/LoanEligibilityPage';
-import AboutPage from './pages/AboutPage';
-import TermsPage from './pages/TermsPage';
-import CertificationsPage from './pages/CertificationsPage';
-import SampleReportPage from './pages/SampleReportPage';
-import InspectionStandardsPage from './pages/InspectionStandardsPage';
-import ContactSpecialistPage from './pages/ContactSpecialistPage';
-import SubscriptionPage from './pages/SubscriptionPage';
-import NotificationsPage from './pages/NotificationsPage';
-import SavedListingsPage from './pages/SavedListingsPage';
-import DashboardPage from './pages/DashboardPage';
+
+// ─── Lazy-loaded pages (code-split into separate chunks) ───────
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const VerifyOtpPage = lazy(() => import('./pages/VerifyOtpPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const ChangePasswordPage = lazy(() => import('./pages/ChangePasswordPage'));
+const BrowsePage = lazy(() => import('./pages/BrowsePage'));
+const ListingDetailPage = lazy(() => import('./pages/ListingDetailPage'));
+const CreateListingPage = lazy(() => import('./pages/CreateListingPage'));
+const MyListingsPage = lazy(() => import('./pages/MyListingsPage'));
+const PartsPage = lazy(() => import('./pages/PartsPage'));
+const OperatorsPage = lazy(() => import('./pages/OperatorsPage'));
+const MechanicsPage = lazy(() => import('./pages/MechanicsPage'));
+const BookingsPage = lazy(() => import('./pages/BookingsPage'));
+const ChatsPage = lazy(() => import('./pages/ChatsPage'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+const LoanEligibilityPage = lazy(() => import('./pages/LoanEligibilityPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const CertificationsPage = lazy(() => import('./pages/CertificationsPage'));
+const SampleReportPage = lazy(() => import('./pages/SampleReportPage'));
+const InspectionStandardsPage = lazy(() => import('./pages/InspectionStandardsPage'));
+const ContactSpecialistPage = lazy(() => import('./pages/ContactSpecialistPage'));
+const SubscriptionPage = lazy(() => import('./pages/SubscriptionPage'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+const SavedListingsPage = lazy(() => import('./pages/SavedListingsPage'));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const MarketInsightsPage = lazy(() => import('./pages/MarketInsightsPage'));
+
+// ─── Loading fallback ──────────────────────────────────────────
+function PageLoader() {
+  return (
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: '#E9E3DA',
+    }}>
+      <div style={{
+        width: 32,
+        height: 32,
+        border: '3px solid #E9E3DA',
+        borderTopColor: '#FF6A00',
+        borderRadius: '50%',
+        animation: 'spin 0.8s linear infinite',
+      }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
+
+/** Wrap a lazy component with Suspense */
+function SL({ children }: { children: React.ReactNode }) {
+  return <Suspense fallback={<PageLoader />}>{children}</Suspense>;
+}
 
 export const router = createBrowserRouter([
   { path: '/', element: <App /> },
 
   // Auth
-  { path: '/login', element: <LoginPage /> },
-  { path: '/register', element: <RegisterPage /> },
-  { path: '/verify-otp', element: <VerifyOtpPage /> },
-  { path: '/profile', element: <ProfilePage /> },
-  { path: '/change-password', element: <ChangePasswordPage /> },
+  { path: '/login', element: <SL><LoginPage /></SL> },
+  { path: '/register', element: <SL><RegisterPage /></SL> },
+  { path: '/verify-otp', element: <SL><VerifyOtpPage /></SL> },
+  { path: '/profile', element: <SL><ProfilePage /></SL> },
+  { path: '/change-password', element: <SL><ChangePasswordPage /></SL> },
 
   // Machinery
-  { path: '/browse', element: <BrowsePage /> },
-  { path: '/listing/:id', element: <ListingDetailPage /> },
-  { path: '/sell', element: <CreateListingPage /> },
-  { path: '/my-listings', element: <MyListingsPage /> },
+  { path: '/browse', element: <SL><BrowsePage /></SL> },
+  { path: '/listing/:id', element: <SL><ListingDetailPage /></SL> },
+  { path: '/sell', element: <SL><CreateListingPage /></SL> },
+  { path: '/my-listings', element: <SL><MyListingsPage /></SL> },
 
-  // P5 — Parts, Operators, Mechanics, Bookings, Chat, Admin
-  { path: '/parts', element: <PartsPage /> },
-  { path: '/operators', element: <OperatorsPage /> },
-  { path: '/mechanics', element: <MechanicsPage /> },
-  { path: '/bookings', element: <BookingsPage /> },
-  { path: '/chats', element: <ChatsPage /> },
-  { path: '/admin', element: <AdminPage /> },
-  { path: '/loan-eligibility', element: <LoanEligibilityPage /> },
+  // Marketplace services
+  { path: '/parts', element: <SL><PartsPage /></SL> },
+  { path: '/operators', element: <SL><OperatorsPage /></SL> },
+  { path: '/mechanics', element: <SL><MechanicsPage /></SL> },
+  { path: '/bookings', element: <SL><BookingsPage /></SL> },
+  { path: '/chats', element: <SL><ChatsPage /></SL> },
+  { path: '/admin', element: <SL><AdminPage /></SL> },
+  { path: '/loan-eligibility', element: <SL><LoanEligibilityPage /></SL> },
 
   // Phase 2
-  { path: '/certifications', element: <CertificationsPage /> },
-  { path: '/subscriptions', element: <SubscriptionPage /> },
+  { path: '/certifications', element: <SL><CertificationsPage /></SL> },
+  { path: '/subscriptions', element: <SL><SubscriptionPage /></SL> },
 
-  // New: Real-world features
-  { path: '/notifications', element: <NotificationsPage /> },
-  { path: '/saved', element: <SavedListingsPage /> },
-  { path: '/dashboard', element: <DashboardPage /> },
+  // User features
+  { path: '/notifications', element: <SL><NotificationsPage /></SL> },
+  { path: '/saved', element: <SL><SavedListingsPage /></SL> },
+  { path: '/dashboard', element: <SL><DashboardPage /></SL> },
+  { path: '/market-insights', element: <SL><MarketInsightsPage /></SL> },
 
   // Info pages
-  { path: '/about', element: <AboutPage /> },
-  { path: '/terms', element: <TermsPage /> },
-  { path: '/sample-report', element: <SampleReportPage /> },
-  { path: '/inspection-standards', element: <InspectionStandardsPage /> },
-  { path: '/contact-specialist', element: <ContactSpecialistPage /> },
+  { path: '/about', element: <SL><AboutPage /></SL> },
+  { path: '/terms', element: <SL><TermsPage /></SL> },
+  { path: '/sample-report', element: <SL><SampleReportPage /></SL> },
+  { path: '/inspection-standards', element: <SL><InspectionStandardsPage /></SL> },
+  { path: '/contact-specialist', element: <SL><ContactSpecialistPage /></SL> },
 
   // 404
   {
@@ -80,5 +113,3 @@ export const router = createBrowserRouter([
     ),
   },
 ]);
-
-

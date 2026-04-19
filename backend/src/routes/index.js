@@ -125,4 +125,29 @@ router.get('/notifications/unread-count', authenticate, notificationController.g
 router.put('/notifications/read-all', authenticate, notificationController.markAllAsRead);
 router.put('/notifications/:id/read', authenticate, notificationController.markAsRead);
 
+// ─── ML / AI routes ────────────────────────────────────
+const mlController = require('../controllers/mlController');
+router.get('/ml/predict-price', mlController.predictPriceEndpoint);
+router.get('/ml/price-analysis/:id', mlController.analyzePriceEndpoint);
+router.get('/ml/similar/:id', mlController.getSimilarEndpoint);
+router.get('/ml/recommendations', optionalAuth, mlController.getRecommendationsEndpoint);
+router.get('/ml/trending', mlController.getTrendingEndpoint);
+router.get('/ml/trust/:userId', mlController.getSellerTrustEndpoint);
+router.get('/ml/seo/:id', mlController.getSeoScoreEndpoint);
+router.post('/ml/predict-inline', authenticate, mlController.predictPriceInline);
+router.post('/ml/track-view', optionalAuth, mlController.trackView);
+router.get('/ml/leads', authenticate, requireAdmin, mlController.getLeadScoresEndpoint);
+
+// ─── Analytics / Marketing routes ──────────────────────
+const analyticsController = require('../controllers/analyticsController');
+router.post('/analytics/track-visit', optionalAuth, analyticsController.trackVisit);
+router.post('/analytics/track-conversion', optionalAuth, analyticsController.trackConversion);
+router.get('/analytics/campaigns', authenticate, requireAdmin, analyticsController.getCampaignAnalytics);
+router.get('/analytics/demand-forecast', authenticate, requireAdmin, analyticsController.getDemandForecast);
+router.get('/analytics/market-trends', analyticsController.getMarketTrends);
+router.get('/analytics/referral-stats', authenticate, analyticsController.getReferralStats);
+router.get('/analytics/referral-leaderboard', analyticsController.getReferralLeaderboard);
+router.get('/sitemap.xml', analyticsController.getSitemap);
+
 module.exports = router;
+

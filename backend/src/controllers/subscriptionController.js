@@ -49,7 +49,7 @@ exports.subscribe = async (req, res) => {
     const plan = PLANS[planId];
     if (!plan) return res.status(400).json({ success: false, message: 'Invalid plan' });
 
-    const user = await User.findByPk(req.user.id);
+    const user = await User.findByPk(req.userId);
     
     // Simulate subscription creation
     const endDate = new Date();
@@ -81,7 +81,7 @@ exports.subscribe = async (req, res) => {
 exports.getMySubscription = async (req, res) => {
   try {
     const subscription = await Subscription.findOne({
-      where: { userId: req.user.id, status: 'active' },
+      where: { userId: req.userId, status: 'active' },
       order: [['createdAt', 'DESC']]
     });
     
@@ -94,7 +94,7 @@ exports.getMySubscription = async (req, res) => {
 exports.cancelSubscription = async (req, res) => {
   try {
     const subscription = await Subscription.findOne({
-      where: { userId: req.user.id, status: 'active' }
+      where: { userId: req.userId, status: 'active' }
     });
 
     if (!subscription) return res.status(404).json({ success: false, message: 'No active subscription found' });
@@ -102,7 +102,7 @@ exports.cancelSubscription = async (req, res) => {
     await subscription.update({ status: 'cancelled' });
     
     // Revert user to free tier
-    await User.update({ accountTier: 'free' }, { where: { id: req.user.id } });
+    await User.update({ accountTier: 'free' }, { where: { id: req.userId } });
 
     res.json({ success: true, message: 'Subscription cancelled successfully' });
   } catch (error) {
