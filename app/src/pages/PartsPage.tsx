@@ -1,17 +1,36 @@
 import { useState, useEffect } from 'react';
-import { partsApi } from '../services/api';
-import { ArrowLeft, ArrowRight, Loader2, Eye, MapPin, Gauge, Search, Phone } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { partsApi, chatsApi } from '../services/api';
+import { ArrowLeft, ArrowRight, Loader2, Eye, MapPin, Gauge, Search, MessageCircle } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
 const CATS = ['engine', 'hydraulics', 'electrical', 'undercarriage', 'cab', 'attachments', 'other'];
 const CONDS = ['new', 'used', 'oem', 'aftermarket', 'refurbished'];
 
 export default function PartsPage() {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [parts, setParts] = useState<any[]>([]);
   const [pagination, setPagination] = useState({ total: 0, page: 1, pages: 1 });
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ page: 1, category: '', condition: '', query: '' });
   const [searchQuery, setSearchQuery] = useState('');
+  const [contactingId, setContactingId] = useState<string | null>(null);
+
+  const handleContactSeller = async (sellerId: string) => {
+    if (!isAuthenticated) { navigate('/login'); return; }
+    if (!sellerId) return;
+    setContactingId(sellerId);
+    try {
+      await chatsApi.startOrGet(sellerId, 'part');
+      navigate('/chats');
+    } catch (err: any) {
+      alert(err.message || 'Failed to start chat');
+    } finally {
+      setContactingId(null);
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -130,8 +149,13 @@ export default function PartsPage() {
                     <p className="text-lg font-bold text-[#FF6A00]" style={{ fontFamily: 'Sora, sans-serif' }}>
                       {fmt(part.price)}
                     </p>
-                    <button className="p-2 bg-[#FF6A00]/10 rounded-lg text-[#FF6A00] hover:bg-[#FF6A00] hover:text-white transition-all" title="Contact Seller">
-                      <Phone size={16} />
+                    <button
+                      onClick={() => handleContactSeller(part.seller?.id)}
+                      disabled={contactingId === part.seller?.id}
+                      className="p-2 bg-[#FF6A00]/10 rounded-lg text-[#FF6A00] hover:bg-[#FF6A00] hover:text-white transition-all flex items-center gap-1"
+                      title="Contact Seller"
+                    >
+                      {contactingId === part.seller?.id ? <Loader2 size={16} className="animate-spin" /> : <MessageCircle size={16} />}
                     </button>
                   </div>
                 </div>

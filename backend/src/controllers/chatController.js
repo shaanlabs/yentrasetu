@@ -30,15 +30,34 @@ exports.getMessages = async (req, res) => {
     const chat = await Chat.findByPk(req.params.chatId);
     if (!chat) return res.status(404).json({ message: 'Chat not found' });
     if (chat.buyerId !== req.userId && chat.sellerId !== req.userId) return res.status(403).json({ message: 'Not authorized' });
-    const messages = await Message.findAll({
+
+    // ─── Pagination support ───────────────────────────
+    const page = parseInt(req.query.page) || 1;
+    const limit = Math.min(parseInt(req.query.limit) || 50, 100);
+    const offset = (page - 1) * limit;
+
+    const { count, rows: messages } = await Message.findAndCountAll({
       where: { chatId: chat.id, isDeleted: false },
       include: [{ model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName'] }],
-      order: [['createdAt', 'ASC']], limit: 100,
+      order: [['createdAt', 'DESC']], // Newest first for pagination
+      limit,
+      offset,
     });
+
     // Mark as read
     const unreadField = chat.buyerId === req.userId ? 'buyerUnreadCount' : 'sellerUnreadCount';
     await chat.update({ [unreadField]: 0 });
-    res.json({ messages, chat });
+
+    res.json({
+      messages: messages.reverse(), // Return in chronological order
+      chat,
+      pagination: {
+        total: count,
+        page,
+        pages: Math.ceil(count / limit),
+        hasMore: page * limit < count,
+      },
+    });
   } catch (err) { res.status(500).json({ message: err.message }); }
 };
 

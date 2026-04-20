@@ -82,9 +82,9 @@ export default function BrowsePage() {
     setSearchParams(params);
   };
 
-  // Fetch listings
+  // Fetch listings (debounced to avoid hammering API on rapid filter changes)
   useEffect(() => {
-    const fetchListings = async () => {
+    const timer = setTimeout(async () => {
       setLoading(true);
       try {
         const filters = getFilters();
@@ -96,8 +96,9 @@ export default function BrowsePage() {
       } finally {
         setLoading(false);
       }
-    };
-    fetchListings();
+    }, 400);
+
+    return () => clearTimeout(timer);
   }, [searchParams]);
 
   // Fetch categories once

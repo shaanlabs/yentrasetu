@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { mechanicsApi } from '../services/api';
-import { Loader2, MapPin, Star, Wrench, CheckCircle, Plus, X, Save } from 'lucide-react';
+import { mechanicsApi, chatsApi } from '../services/api';
+import { Loader2, MapPin, Star, Wrench, CheckCircle, Plus, X, Save, MessageCircle } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
 const SPECIALIZATION_OPTIONS = ['Engine', 'Hydraulics', 'Electrical', 'Welding', 'Tyres', 'PMS', 'Gearbox', 'Body Work', 'AC/Cooling', 'Other'];
@@ -36,6 +36,7 @@ export default function MechanicsPage() {
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof MechanicForm, string>>>({});
+  const [contactingId, setContactingId] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -111,6 +112,20 @@ export default function MechanicsPage() {
   };
 
   const fmt = (p: number) => `₹${Number(p).toLocaleString('en-IN')}`;
+
+  const handleContact = async (mechanicUserId: string) => {
+    if (!isAuthenticated) { navigate('/login'); return; }
+    if (!mechanicUserId) return;
+    setContactingId(mechanicUserId);
+    try {
+      await chatsApi.startOrGet(mechanicUserId, 'mechanic');
+      navigate('/chats');
+    } catch (err: any) {
+      alert(err.message || 'Failed to start chat');
+    } finally {
+      setContactingId(null);
+    }
+  };
 
   return (
     <PageShell breadcrumb="Mechanics" backTo="/" backLabel="Home">
@@ -326,7 +341,14 @@ export default function MechanicsPage() {
                   {m.hourlyRate && <p className="text-xs text-[#6F757C]">{fmt(m.hourlyRate)}/hr</p>}
                   {m.dailyRate && <p className="text-base font-bold text-[#FF6A00]" style={{ fontFamily: 'Sora, sans-serif' }}>{fmt(m.dailyRate)}<span className="text-xs font-normal text-[#6F757C]">/day</span></p>}
                 </div>
-                <button className="btn-primary btn-small text-xs">Contact</button>
+                <button
+                  onClick={() => handleContact(m.user?.id)}
+                  disabled={contactingId === m.user?.id}
+                  className="btn-primary btn-small text-xs flex items-center gap-1.5"
+                >
+                  {contactingId === m.user?.id ? <Loader2 size={12} className="animate-spin" /> : <MessageCircle size={12} />}
+                  {contactingId === m.user?.id ? 'Connecting…' : 'Contact'}
+                </button>
               </div>
             </div>
           ))}

@@ -1,10 +1,26 @@
 const { User } = require('../models');
 const { generateToken, generateRefreshToken, verifyRefreshToken } = require('../middleware/auth');
+const bcrypt = require('bcryptjs');
 
 // Generate random 6-digit OTP
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
+
+// Password strength validation
+const PASSWORD_MIN_LENGTH = 8;
+function validatePassword(password) {
+  if (!password || password.length < PASSWORD_MIN_LENGTH) {
+    return `Password must be at least ${PASSWORD_MIN_LENGTH} characters long.`;
+  }
+  if (!/[a-zA-Z]/.test(password)) {
+    return 'Password must contain at least one letter.';
+  }
+  if (!/[0-9]/.test(password)) {
+    return 'Password must contain at least one number.';
+  }
+  return null; // valid
+}
 
 // Register new user
 const register = async (req, res) => {
@@ -22,6 +38,12 @@ const register = async (req, res) => {
       if (existingEmail) {
         return res.status(409).json({ message: 'Email already registered.' });
       }
+    }
+
+    // Validate password strength
+    if (password) {
+      const pwError = validatePassword(password);
+      if (pwError) return res.status(400).json({ message: pwError });
     }
 
     // Create user
@@ -118,13 +140,16 @@ const sendOTP = async (req, res) => {
     let user = await User.findOne({ where: { phone } });
     
     if (user) {
-      user.otpCode = otp;
+      // Hash OTP before storing
+      const hashedOtp = await bcrypt.hash(otp, 6);
+      user.otpCode = hashedOtp;
       user.otpExpiresAt = otpExpiresAt;
       await user.save();
     } else {
+      const hashedOtp = await bcrypt.hash(otp, 6);
       user = await User.create({
         phone,
-        otpCode: otp,
+        otpCode: hashedOtp,
         otpExpiresAt
       });
     }
@@ -171,7 +196,10 @@ const verifyOTP = async (req, res) => {
     const meta = user.metadata || {};
     const attempts = (meta.otpAttempts || 0) + 1;
 
-    if (user.otpCode !== otp) {
+    // Compare hashed OTP
+    const otpValid = await bcrypt.compare(otp, user.otpCode);
+
+    if (!otpValid) {
       // Wrong OTP — increment attempts
       if (attempts >= MAX_OTP_ATTEMPTS) {
         // Too many failures — invalidate OTP
@@ -336,6 +364,10 @@ const changePassword = async (req, res) => {
         return res.status(400).json({ message: 'Current password is incorrect.' });
       }
     }
+
+    // Validate new password strength
+    const pwError = validatePassword(newPassword);
+    if (pwError) return res.status(400).json({ message: pwError });
 
     user.password = newPassword;
     await user.save();

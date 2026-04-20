@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { operatorsApi } from '../services/api';
-import { Loader2, MapPin, Star, Briefcase, User, CheckCircle, Plus, X, Save } from 'lucide-react';
+import { operatorsApi, chatsApi } from '../services/api';
+import { Loader2, MapPin, Star, Briefcase, User, CheckCircle, Plus, X, Save, MessageCircle } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
 const EQUIPMENT_OPTIONS = ['Excavator', 'Crane', 'Loader', 'Bulldozer', 'Dumper', 'Backhoe Loader', 'Roller', 'Forklift', 'Tower Crane', 'Other'];
@@ -35,6 +35,7 @@ export default function OperatorsPage() {
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof OperatorForm, string>>>({});
+  const [contactingId, setContactingId] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -107,6 +108,20 @@ export default function OperatorsPage() {
   };
 
   const fmt = (p: number) => `₹${Number(p).toLocaleString('en-IN')}`;
+
+  const handleContact = async (operatorUserId: string) => {
+    if (!isAuthenticated) { navigate('/login'); return; }
+    if (!operatorUserId) return;
+    setContactingId(operatorUserId);
+    try {
+      await chatsApi.startOrGet(operatorUserId, 'operator');
+      navigate('/chats');
+    } catch (err: any) {
+      alert(err.message || 'Failed to start chat');
+    } finally {
+      setContactingId(null);
+    }
+  };
 
   return (
     <PageShell breadcrumb="Operators" backTo="/" backLabel="Home">
@@ -328,7 +343,14 @@ export default function OperatorsPage() {
                     {fmt(op.dayRate)}<span className="text-xs font-normal text-[#6F757C]">/day</span>
                   </p>
                 )}
-                <button className="btn-primary btn-small text-xs">Contact</button>
+                <button
+                  onClick={() => handleContact(op.user?.id)}
+                  disabled={contactingId === op.user?.id}
+                  className="btn-primary btn-small text-xs flex items-center gap-1.5"
+                >
+                  {contactingId === op.user?.id ? <Loader2 size={12} className="animate-spin" /> : <MessageCircle size={12} />}
+                  {contactingId === op.user?.id ? 'Connecting…' : 'Contact'}
+                </button>
               </div>
             </div>
           ))}

@@ -47,10 +47,20 @@ export default function CreateListingPage() {
     }
   }, []);
 
+  const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     files.forEach(file => {
       if (images.length >= 5) return;
+      if (file.size > MAX_IMAGE_SIZE) {
+        setError(`Image "${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum size is 5MB.`);
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        setError(`"${file.name}" is not a valid image file.`);
+        return;
+      }
       const reader = new FileReader();
       reader.onload = () => { if (reader.result) setImages(prev => [...prev.slice(0, 4), reader.result as string]); };
       reader.readAsDataURL(file);

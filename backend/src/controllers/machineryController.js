@@ -208,6 +208,7 @@ const getListing = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Also check soft-deleted listings with paranoid:false
     const listing = await MachineryListing.findByPk(id, {
       include: [
         {
@@ -215,11 +216,42 @@ const getListing = async (req, res) => {
           as: 'owner',
           attributes: ['id', 'firstName', 'lastName', 'companyName', 'rating', 'userType', 'city', 'state', 'createdAt']
         }
-      ]
+      ],
+      paranoid: false, // Include soft-deleted to show proper message
     });
 
     if (!listing) {
-      return res.status(404).json({ message: 'Listing not found.' });
+      return res.status(404).json({ message: 'Listing not found.', code: 'NOT_FOUND' });
+    }
+
+    // Check if soft-deleted
+    if (listing.deletedAt) {
+      return res.status(410).json({
+        message: 'This listing has been removed by the seller.',
+        code: 'DELETED',
+        category: listing.category,
+        make: listing.make,
+      });
+    }
+
+    // Check if expired
+    if (listing.expiresAt && new Date(listing.expiresAt) < new Date()) {
+      return res.status(410).json({
+        message: 'This listing has expired.',
+        code: 'EXPIRED',
+        category: listing.category,
+        make: listing.make,
+      });
+    }
+
+    // Check if rejected
+    if (listing.status === 'rejected') {
+      return res.status(410).json({
+        message: 'This listing is no longer available.',
+        code: 'REJECTED',
+        category: listing.category,
+        make: listing.make,
+      });
     }
 
     // Increment view count
@@ -248,6 +280,9 @@ const getListing = async (req, res) => {
 };
 
 // Update listing
+// Fields that require re-moderation when changed
+const MODERATION_FIELDS = ['description', 'images', 'price', 'make', 'model', 'category'];
+
 const updateListing = async (req, res) => {
   try {
     const { id } = req.params;
@@ -270,18 +305,32 @@ const updateListing = async (req, res) => {
     ];
 
     const updates = {};
+    let needsRemoderation = false;
+
     for (const field of allowedFields) {
       if (req.body[field] !== undefined) {
         updates[field] = req.body[field];
+        // Check if a moderation-sensitive field changed
+        if (MODERATION_FIELDS.includes(field)) {
+          const oldVal = JSON.stringify(listing[field]);
+          const newVal = JSON.stringify(req.body[field]);
+          if (oldVal !== newVal) needsRemoderation = true;
+        }
       }
+    }
+
+    // Re-trigger moderation if key fields changed
+    if (needsRemoderation && listing.status === 'approved') {
+      updates.status = 'pending';
     }
 
     await listing.update(updates);
 
-    res.json({
-      message: 'Listing updated successfully.',
-      listing
-    });
+    const message = needsRemoderation && listing.status === 'approved'
+      ? 'Listing updated. Key fields changed — listing sent back for review.'
+      : 'Listing updated successfully.';
+
+    res.json({ message, listing, remoderated: needsRemoderation });
   } catch (error) {
     console.error('Update listing error:', error);
     res.status(500).json({ message: 'Failed to update listing.', error: error.message });

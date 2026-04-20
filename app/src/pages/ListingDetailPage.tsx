@@ -149,6 +149,12 @@ export default function ListingDetailPage() {
   const handleBooking = async () => {
     if (!isAuthenticated) { navigate('/login'); return; }
     if (!bookingForm.startDate || !bookingForm.endDate) { setBookingMsg('Please select start and end dates.'); return; }
+
+    // Client-side date validation
+    const today = new Date().toISOString().split('T')[0];
+    if (bookingForm.startDate < today) { setBookingMsg('Start date cannot be in the past.'); return; }
+    if (bookingForm.endDate <= bookingForm.startDate) { setBookingMsg('End date must be after the start date.'); return; }
+
     setBookingLoading(true); setBookingMsg('');
     try {
       await bookingsApi.create({
@@ -229,15 +235,32 @@ export default function ListingDetailPage() {
   }
 
   if (error || !listing) {
+    // Parse structured error from backend (code: DELETED/EXPIRED/REJECTED)
+    const isGone = error?.includes('removed') || error?.includes('expired') || error?.includes('no longer');
     return (
-      <PageShell breadcrumb="Not Found" backTo="/browse" backLabel="Browse">
-        <div className="flex flex-col items-center justify-center py-32 gap-4">
-          <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.5rem' }}>
-            {error || 'Listing not found'}
+      <PageShell breadcrumb="Listing Unavailable" backTo="/browse" backLabel="Browse">
+        <div className="flex flex-col items-center justify-center py-24 gap-5 text-center max-w-md mx-auto">
+          <div className="w-20 h-20 rounded-full bg-[#E9E3DA] flex items-center justify-center">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6F757C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+          </div>
+          <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.5rem', color: '#101214' }}>
+            {isGone ? 'This Listing Is No Longer Available' : 'Listing Not Found'}
           </h1>
-          <Link to="/browse" className="text-[#FF6A00] hover:underline text-sm">
-            ← Back to browse
-          </Link>
+          <p className="text-sm text-[#6F757C]">
+            {isGone
+              ? 'This listing may have been sold, expired, or removed by the seller. Browse similar equipment below.'
+              : 'The listing you\'re looking for doesn\'t exist or the link may be broken.'}
+          </p>
+          <div className="flex gap-3 mt-2">
+            <Link to="/browse" className="btn-primary px-5 py-3 text-sm rounded-lg">
+              Browse All Listings
+            </Link>
+            <Link to="/" className="btn-secondary px-5 py-3 text-sm rounded-lg">
+              Back to Home
+            </Link>
+          </div>
         </div>
       </PageShell>
     );

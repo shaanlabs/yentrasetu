@@ -23,7 +23,7 @@ router.get('/machinery', optionalAuth, machineryController.getListings);
 router.get('/machinery/categories', machineryController.getCategories);
 router.get('/machinery/my-listings', authenticate, machineryController.getMyListings);
 router.get('/machinery/:id', optionalAuth, machineryController.getListing);
-router.put('/machinery/:id', authenticate, machineryController.updateListing);
+router.put('/machinery/:id', authenticate, analyzeListingContent, machineryController.updateListing);
 router.delete('/machinery/:id', authenticate, machineryController.deleteListing);
 router.put('/machinery/:id/mark-sold', authenticate, machineryController.markAsSold);
 router.put('/machinery/:id/renew', authenticate, machineryController.renewListing);
@@ -64,6 +64,7 @@ router.put('/reviews/:id/respond', authenticate, reviewController.respondToRevie
 router.post('/bookings', authenticate, bookingController.createBooking);
 router.get('/bookings', authenticate, bookingController.getMyBookings);
 router.put('/bookings/:id/status', authenticate, bookingController.updateBookingStatus);
+router.get('/bookings/availability/:listingId', bookingController.getAvailability);
 
 // Chat routes (with rate limiting on send)
 router.post('/chats', authenticate, chatController.startOrGetChat);
@@ -103,13 +104,33 @@ router.get('/fraud-reports/pending', authenticate, requireAdmin, fraudController
 router.put('/fraud-reports/:id/review', authenticate, requireAdmin, fraudController.reviewReport);
 
 // Newsletter
-router.post('/newsletter/subscribe', (req, res) => {
+const { sequelize: seqInstance } = require('../config/database');
+router.post('/newsletter/subscribe', async (req, res) => {
   const { email } = req.body;
   if (!email || !email.includes('@')) {
     return res.status(400).json({ success: false, message: 'Valid email is required.' });
   }
-  console.log(`📧 Newsletter subscription: ${email}`);
-  res.json({ success: true, message: 'Subscribed successfully!' });
+  try {
+    // Create newsletter_subscribers table if not exists (auto-migration for demo)
+    await seqInstance.query(`CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      subscribed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      is_active BOOLEAN DEFAULT 1
+    )`);
+    await seqInstance.query(
+      `INSERT OR IGNORE INTO newsletter_subscribers (email) VALUES (?)`,
+      { replacements: [email.toLowerCase().trim()] }
+    );
+    console.log(`📧 Newsletter subscription: ${email}`);
+    res.json({ success: true, message: 'Subscribed successfully!' });
+  } catch (err) {
+    // If UNIQUE constraint (PostgreSQL uses different syntax)
+    if (err.message?.includes('unique') || err.message?.includes('duplicate')) {
+      return res.json({ success: true, message: 'Already subscribed!' });
+    }
+    res.status(500).json({ success: false, message: 'Subscription failed.' });
+  }
 });
 
 // Subscription routes
@@ -137,6 +158,11 @@ router.get('/ml/seo/:id', mlController.getSeoScoreEndpoint);
 router.post('/ml/predict-inline', authenticate, mlController.predictPriceInline);
 router.post('/ml/track-view', optionalAuth, mlController.trackView);
 router.get('/ml/leads', authenticate, requireAdmin, mlController.getLeadScoresEndpoint);
+
+// ─── GST Invoice routes ───────────────────────────────
+const invoiceController = require('../controllers/invoiceController');
+router.get('/invoices/booking/:bookingId', authenticate, invoiceController.generateBookingInvoice);
+router.get('/invoices/subscription/:subscriptionId', authenticate, invoiceController.generateSubscriptionInvoice);
 
 // ─── Analytics / Marketing routes ──────────────────────
 const analyticsController = require('../controllers/analyticsController');

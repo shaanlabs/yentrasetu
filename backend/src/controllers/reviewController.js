@@ -1,4 +1,4 @@
-const { Review, User } = require('../models');
+const { Review, User, RentalBooking } = require('../models');
 const { Op, fn, col } = require('sequelize');
 const { createNotification } = require('./notificationController');
 
@@ -25,16 +25,69 @@ async function recalcUserRating(userId) {
 exports.createReview = async (req, res) => {
   try {
     const { revieweeId, reviewType, entityId, rating, title, comment, punctualityRating, qualityRating, communicationRating, valueRating } = req.body;
+
     if (req.userId === revieweeId) return res.status(400).json({ message: 'Cannot review yourself' });
-    const review = await Review.create({ reviewerId: req.userId, revieweeId, reviewType, entityId, rating, title, comment, punctualityRating, qualityRating, communicationRating, valueRating });
+
+    // ─── Review gating: verify transaction proof ──────
+    let isVerified = false;
+
+    if (reviewType === 'rental' || reviewType === 'listing') {
+      // Must have a completed booking between reviewer and reviewee
+      const completedBooking = await RentalBooking.findOne({
+        where: {
+          status: 'completed',
+          [Op.or]: [
+            { renterId: req.userId, ownerId: revieweeId },
+            { renterId: revieweeId, ownerId: req.userId },
+          ],
+          ...(entityId ? { listingId: entityId } : {}),
+        }
+      });
+
+      if (!completedBooking) {
+        return res.status(403).json({
+          message: 'You can only review someone after a completed rental transaction with them.'
+        });
+      }
+      isVerified = true;
+
+      // Prevent duplicate reviews for the same booking/entity
+      const existingReview = await Review.findOne({
+        where: {
+          reviewerId: req.userId,
+          revieweeId,
+          reviewType,
+          ...(entityId ? { entityId } : {}),
+        }
+      });
+      if (existingReview) {
+        return res.status(409).json({ message: 'You have already reviewed this transaction.' });
+      }
+    }
+
+    // For 'user', 'operator', 'mechanic' types — allow without transaction proof but mark unverified
+    if (reviewType === 'operator' || reviewType === 'mechanic') {
+      // Check if there's any interaction (chat started, booking, etc.)
+      // For demo: allow but mark as unverified
+      isVerified = false;
+    }
+
+    const review = await Review.create({
+      reviewerId: req.userId, revieweeId, reviewType, entityId,
+      rating, title, comment,
+      punctualityRating, qualityRating, communicationRating, valueRating,
+      isVerified,
+    });
+
     const reviewer = await User.findByPk(req.userId, { attributes: ['firstName', 'lastName'] });
     createNotification({
       userId: revieweeId,
       type: 'review_received',
       title: 'New Review Received ⭐',
-      body: `${reviewer?.firstName || 'Someone'} gave you a ${rating}-star review.`,
+      body: `${reviewer?.firstName || 'Someone'} gave you a ${rating}-star review.${isVerified ? ' (Verified Transaction)' : ''}`,
       data: { reviewId: review.id },
     });
+
     // Recalculate reviewee's aggregate rating
     await recalcUserRating(revieweeId);
     res.status(201).json({ message: 'Review submitted', review });
@@ -53,7 +106,7 @@ exports.getReviews = async (req, res) => {
       where, include: [
         { model: User, as: 'reviewer', attributes: ['id', 'firstName', 'lastName'] },
         { model: User, as: 'reviewee', attributes: ['id', 'firstName', 'lastName'] },
-      ], order: [['createdAt', 'DESC']], limit: parseInt(limit), offset,
+      ], order: [['isVerified', 'DESC'], ['createdAt', 'DESC']], limit: parseInt(limit), offset,
     });
     res.json({ reviews: rows, pagination: { total: count, page: parseInt(page), pages: Math.ceil(count / limit) } });
   } catch (err) { res.status(500).json({ message: err.message }); }

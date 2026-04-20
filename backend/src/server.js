@@ -14,6 +14,7 @@ const { sequelize } = require('./config/database');
 const routes = require('./routes');
 const errorHandler = require('./middleware/errorHandler');
 const createIndexes = require('./config/dbIndexes');
+const { startExpiryScheduler } = require('./services/subscriptionCron');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -101,6 +102,30 @@ const startServer = async () => {
     // PostgreSQL: alter sync (adds missing columns)
     if (dialect === 'sqlite') {
       await sequelize.sync(); // creates missing tables, never alters existing
+
+      // SQLite doesn't support ALTER TABLE ADD COLUMN with UNIQUE constraint well,
+      // and sync() never adds new columns to existing tables. We must do it manually.
+      const missingColumns = [
+        { table: 'users', column: 'referralCode', type: 'VARCHAR(20)' },
+        { table: 'users', column: 'referredBy', type: 'VARCHAR(20)' },
+        { table: 'users', column: 'metadata', type: 'TEXT DEFAULT \'{}\''},
+        { table: 'users', column: 'isBanned', type: 'BOOLEAN DEFAULT 0' },
+        { table: 'users', column: 'banReason', type: 'TEXT' },
+        { table: 'users', column: 'accountTier', type: 'VARCHAR(20) DEFAULT \'free\'' },
+        { table: 'users', column: 'subscriptionExpiry', type: 'DATETIME' },
+      ];
+
+      for (const { table, column, type } of missingColumns) {
+        try {
+          await sequelize.query(`ALTER TABLE "${table}" ADD COLUMN "${column}" ${type};`);
+          console.log(`  ✅ Added missing column: ${table}.${column}`);
+        } catch (colErr) {
+          // "duplicate column name" means it already exists — safe to ignore
+          if (!colErr.message?.includes('duplicate column')) {
+            console.warn(`  ⚠️  Column ${table}.${column}:`, colErr.message);
+          }
+        }
+      }
     } else {
       try {
         await sequelize.sync({ alter: true });
@@ -121,6 +146,9 @@ const startServer = async () => {
     } catch (indexErr) {
       console.warn('⚠️  Index creation warning:', indexErr.message);
     }
+    
+    // Start subscription expiry scheduler
+    startExpiryScheduler();
     
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
