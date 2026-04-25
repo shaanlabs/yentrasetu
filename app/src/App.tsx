@@ -913,6 +913,111 @@ function App() {
         </div>
       </section>
 
+      {/* Section 5.5: AI-Powered Intelligence Showcase */}
+      <section className="relative z-[55] bg-[#101214] py-20 md:py-28 overflow-hidden">
+        {/* Animated background pattern */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 25px 25px, #FF6A00 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-[#FF6A00]/10 to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-purple-500/10 to-transparent rounded-full blur-3xl" />
+
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-6 backdrop-blur-sm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6A00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+              <span className="text-xs font-bold text-[#FF6A00] uppercase tracking-widest" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                AI-Powered Platform
+              </span>
+            </div>
+            <h2 className="text-white text-3xl md:text-5xl font-bold mb-4" style={{ fontFamily: 'Sora, sans-serif' }}>
+              Intelligence Built Into Every Step
+            </h2>
+            <p className="text-gray-400 text-base md:text-lg max-w-2xl mx-auto">
+              Our AI engines analyze thousands of data points to help you make smarter decisions — from pricing to demand forecasting.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {/* AI Feature 1: Price Intelligence */}
+            <div className="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-[#FF6A00]/30 transition-all cursor-default">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#FF6A00] to-[#FF8C38] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <h3 className="text-white font-bold text-lg mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>AI Price Intelligence</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">ML models predict fair market value using historical data, condition analysis, and regional demand patterns.</p>
+              <div className="mt-4 flex items-center gap-2">
+                <div className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full w-[87%] bg-gradient-to-r from-[#FF6A00] to-[#FF8C38] rounded-full" />
+                </div>
+                <span className="text-[10px] text-[#FF6A00] font-bold" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>87% accuracy</span>
+              </div>
+            </div>
+
+            {/* AI Feature 2: Demand Forecasting */}
+            <div className="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-purple-400/30 transition-all cursor-default">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <h3 className="text-white font-bold text-lg mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>Demand Forecasting</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">Time-series analysis predicts equipment demand by category, region, and season for smarter inventory decisions.</p>
+              <div className="mt-4 flex gap-1">
+                {[65, 45, 78, 55, 90, 68, 82, 95].map((h, i) => (
+                  <div key={i} className="flex-1 bg-white/5 rounded-sm overflow-hidden h-8 flex items-end">
+                    <div className="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-sm transition-all" style={{ height: `${h}%` }} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* AI Feature 3: Trust & Sentiment */}
+            <div className="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-green-400/30 transition-all cursor-default">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <h3 className="text-white font-bold text-lg mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>Trust & Sentiment AI</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">NLP-powered review analysis generates seller trust scores and detects fraud patterns automatically.</p>
+              <div className="mt-4 flex items-center gap-3">
+                <div className="relative w-10 h-10">
+                  <svg className="w-10 h-10 transform -rotate-90" viewBox="0 0 36 36">
+                    <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" />
+                    <circle cx="18" cy="18" r="14" fill="none" stroke="#22c55e" strokeWidth="3" strokeDasharray="72 88" strokeLinecap="round" />
+                  </svg>
+                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white">82</span>
+                </div>
+                <span className="text-xs text-gray-400">Avg. trust score across verified sellers</span>
+              </div>
+            </div>
+
+            {/* AI Feature 4: Smart Recommendations */}
+            <div className="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-blue-400/30 transition-all cursor-default">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <h3 className="text-white font-bold text-lg mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>Smart Recommendations</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">Collaborative filtering + content-based engine delivers personalized equipment suggestions matched to your needs.</p>
+              <div className="mt-4 flex items-center gap-2 text-xs text-blue-400">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                <span className="font-bold">3× higher engagement</span>
+              </div>
+            </div>
+          </div>
+
+          {/* AI stats bar */}
+          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 border-t border-white/10 pt-10">
+            {[
+              { value: '50K+', label: 'Data points analyzed daily' },
+              { value: '87%', label: 'Price prediction accuracy' },
+              { value: '< 2s', label: 'AI response time' },
+              { value: '24/7', label: 'Continuous model training' },
+            ].map((stat, i) => (
+              <div key={i} className="text-center">
+                <p className="text-2xl md:text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>{stat.value}</p>
+                <p className="text-xs text-gray-500" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Section 6: Testimonial */}
       <section ref={testimonialRef} className="relative z-[60] bg-[#E9E3DA] py-20 md:py-32">
         <div className="testimonial-content max-w-7xl mx-auto px-6 md:px-12">

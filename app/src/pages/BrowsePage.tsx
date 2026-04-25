@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { machineryApi, type MachineryListing, type MachineryFilters, type CategoriesResponse } from '../services/api';
+import { machineryApi, mlApi, type MachineryListing, type MachineryFilters, type CategoriesResponse } from '../services/api';
 import {
   Search, SlidersHorizontal, MapPin, ArrowLeft, ArrowRight,
-  Loader2, X, ChevronDown, Eye, Calendar, Gauge, Heart, Navigation
+  Loader2, X, ChevronDown, Eye, Calendar, Gauge, Heart, Navigation,
+  Sparkles, Brain, TrendingUp, Zap
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
 import { toggleSaved } from './SavedListingsPage';
@@ -19,6 +20,7 @@ export default function BrowsePage() {
   const [geoLoading, setGeoLoading] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
   const [savedIds, setSavedIds] = useState<string[]>(getSavedIds());
+  const [aiTrending, setAiTrending] = useState<string[]>([]);
 
   // Listen for saved listings changes
   useEffect(() => {
@@ -101,9 +103,14 @@ export default function BrowsePage() {
     return () => clearTimeout(timer);
   }, [searchParams]);
 
-  // Fetch categories once
+  // Fetch categories once + AI trending
   useEffect(() => {
     machineryApi.getCategories().then(setCategories).catch(() => {});
+    // AI: Detect trending categories
+    mlApi.getTrending({ limit: 3 }).then(res => {
+      const cats = [...new Set((res.listings || []).map((l: any) => l.category).filter(Boolean))];
+      setAiTrending(cats as string[]);
+    }).catch(() => {});
   }, []);
 
   const activeType = searchParams.get('type');
@@ -264,6 +271,24 @@ export default function BrowsePage() {
         </div>
       )}
 
+      {/* AI Trending Bar */}
+      {aiTrending.length > 0 && !loading && listings.length > 0 && (
+        <div className="flex items-center gap-3 mb-5 px-4 py-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-100">
+          <Brain size={16} className="text-purple-500 shrink-0" />
+          <p className="text-xs text-[#101214]">
+            <span className="font-bold">AI Insight:</span>{' '}
+            <span className="text-[#6F757C]">Trending now —</span>{' '}
+            {aiTrending.map((cat, i) => (
+              <span key={cat}>
+                <button onClick={() => setFilter('category', cat)} className="font-semibold text-purple-600 hover:underline capitalize">{cat}</button>
+                {i < aiTrending.length - 1 && ', '}
+              </span>
+            ))}
+          </p>
+          <Zap size={14} className="text-purple-400 shrink-0 ml-auto" />
+        </div>
+      )}
+
       {/* Results */}
       {loading ? (
         <div className="flex items-center justify-center py-32">
@@ -390,6 +415,14 @@ export default function BrowsePage() {
                       <Eye size={12} /> {listing.viewCount}
                     </span>
                   </div>
+                  {/* AI indicators */}
+                  {listing.viewCount > 50 && (
+                    <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-[#E9E3DA]">
+                      <Sparkles size={12} className="text-purple-400" />
+                      <span className="text-[10px] text-purple-500 font-semibold" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>HIGH DEMAND</span>
+                      <TrendingUp size={10} className="text-purple-400 ml-auto" />
+                    </div>
+                  )}
                 </div>
               </Link>
             ))}

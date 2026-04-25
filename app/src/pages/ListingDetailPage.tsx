@@ -1,15 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { machineryApi, chatsApi, bookingsApi, reviewsApi, fraudApi, type MachineryListing } from '../services/api';
+import { machineryApi, chatsApi, bookingsApi, reviewsApi, fraudApi, mlApi, type MachineryListing } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { isSaved, toggleSaved } from './SavedListingsPage';
 import {
   MapPin, Calendar, Gauge, Shield, User,
   Loader2, Share2, ChevronLeft, ChevronRight,
   Flag, X, Upload, AlertTriangle, Heart, MessageCircle,
-  Star, Calculator, ExternalLink, ZoomIn, Copy, Check
+  Star, Calculator, ExternalLink, ZoomIn, Copy, Check,
+  Brain, TrendingDown, TrendingUp, Sparkles, ShieldCheck, BarChart3, ArrowRight, Zap
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
+import QuickBookModal from '../components/QuickBookModal';
+import AvailabilityCalendar from '../components/AvailabilityCalendar';
+import MarketIntelligenceEngine from '../components/MarketIntelligenceEngine';
 
 const FRAUD_REASONS = [
   { value: 'fake_listing', label: 'Fake Listing' },
@@ -45,6 +49,7 @@ export default function ListingDetailPage() {
 
   // Booking state (for rental listings)
   const [showBooking, setShowBooking] = useState(false);
+  const [showQuickBook, setShowQuickBook] = useState(false);
   const [bookingForm, setBookingForm] = useState({ startDate: '', endDate: '', withOperator: false, renterNotes: '' });
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingMsg, setBookingMsg] = useState('');
@@ -74,6 +79,12 @@ export default function ListingDetailPage() {
   const evidenceRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
 
+  // ── AI State ──────────────────────────────────────────
+  const [aiPriceAnalysis, setAiPriceAnalysis] = useState<any>(null);
+  const [aiTrustScore, setAiTrustScore] = useState<any>(null);
+  const [aiSimilar, setAiSimilar] = useState<any[]>([]);
+  const [aiLoading, setAiLoading] = useState(false);
+
   useEffect(() => {
     if (!id) return;
     setLoading(true);
@@ -94,7 +105,21 @@ export default function ListingDetailPage() {
               setSellerReviewCount(r.pagination?.total || r.reviews?.length || 0);
             })
             .catch(() => {});
+          // Fetch AI Trust Score
+          mlApi.getSellerTrust(data.listing.owner.id)
+            .then(t => setAiTrustScore(t))
+            .catch(() => {});
         }
+        // Fetch AI Price Analysis
+        mlApi.analyzeListing(id!)
+          .then(a => setAiPriceAnalysis(a))
+          .catch(() => {});
+        // Fetch AI Similar Listings
+        mlApi.getSimilar(id!, 4)
+          .then(s => setAiSimilar(s.listings || []))
+          .catch(() => {});
+        // Track view for recommendations
+        mlApi.trackView(id!).catch(() => {});
       })
       .catch((err) => setError(err.message || 'Listing not found.'))
       .finally(() => setLoading(false));
@@ -503,6 +528,42 @@ export default function ListingDetailPage() {
               </div>
             )}
           </div>
+          {/* ── AI Similar Listings Section ── */}
+          {aiSimilar.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 mt-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Brain size={16} className="text-purple-500" />
+                <h2 className="font-semibold text-sm text-purple-600 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                  AI-Recommended Similar
+                </h2>
+              </div>
+              <div className="space-y-3">
+                {aiSimilar.map((sl: any) => (
+                  <Link
+                    key={sl.id}
+                    to={`/listing/${sl.id}`}
+                    className="flex items-center gap-3 p-3 rounded-lg border border-[#E9E3DA] hover:border-purple-300 transition-colors group"
+                  >
+                    <div className="w-14 h-14 bg-[#E9E3DA] rounded-lg flex-shrink-0 overflow-hidden">
+                      {sl.images?.[0] ? (
+                        <img src={sl.images[0]} className="w-full h-full object-cover" alt="" />
+                      ) : (
+                        <Gauge size={20} className="m-auto mt-4 text-[#6F757C] opacity-30" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate group-hover:text-purple-600 transition-colors">{sl.make} {sl.model}</p>
+                      <p className="text-sm font-bold text-[#FF6A00]">{formatPrice(sl.price)}</p>
+                      {sl.similarityScore && (
+                        <span className="text-[10px] text-purple-500 font-medium">{Math.round(sl.similarityScore * 10)}% match</span>
+                      )}
+                    </div>
+                    <ArrowRight size={14} className="text-[#6F757C] opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right — pricing + seller + actions */}
@@ -580,14 +641,99 @@ export default function ListingDetailPage() {
 
                 {/* Booking for Rent */}
                 {listing.listingType === 'rent' && (
-                  <button
-                    onClick={() => setShowBooking(!showBooking)}
-                    className="w-full py-3 text-sm font-semibold rounded-lg flex items-center justify-center gap-2 bg-blue-600 text-white hover:bg-blue-700 transition-all min-h-[44px]"
-                    style={{ fontFamily: 'Sora, sans-serif' }}
-                  >
-                    <Calendar size={15} /> {showBooking ? 'Close Booking' : 'Book This Equipment'}
-                  </button>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={() => setShowQuickBook(true)}
+                      className="w-full py-3 text-sm font-bold rounded-lg flex items-center justify-center gap-2 bg-[#FF6A00] text-white hover:bg-[#e55f00] transition-all min-h-[44px] shadow-lg shadow-[#FF6A00]/20"
+                      style={{ fontFamily: 'Sora, sans-serif' }}
+                    >
+                      <Zap size={15} /> Quick Book — 2 Minutes
+                    </button>
+                    <button
+                      onClick={() => setShowBooking(!showBooking)}
+                      className="w-full py-2.5 text-xs font-medium rounded-lg flex items-center justify-center gap-2 border border-[#E9E3DA] text-[#6F757C] hover:border-blue-300 hover:text-blue-600 transition-all"
+                    >
+                      <Calendar size={13} /> {showBooking ? 'Close Details' : 'Detailed Booking Form'}
+                    </button>
+                  </div>
                 )}
+              </div>
+            )}
+
+            {/* ── AI Price Verdict ── */}
+            {aiPriceAnalysis && (
+              <div className="mt-5 pt-5 border-t border-[#E9E3DA]">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles size={14} className="text-purple-500" />
+                  <span className="text-[10px] font-bold text-purple-600 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>AI Price Analysis</span>
+                </div>
+                {(() => {
+                  const verdict = aiPriceAnalysis.analysis?.verdict || aiPriceAnalysis.verdict;
+                  const diff = aiPriceAnalysis.analysis?.diffPercent || 0;
+                  const predicted = aiPriceAnalysis.prediction?.predicted || 0;
+                  const verdictConfig: Record<string, { icon: any; color: string; bg: string; label: string }> = {
+                    great_deal: { icon: TrendingDown, color: 'text-green-600', bg: 'bg-green-50 border-green-200', label: '🔥 Great Deal' },
+                    below_market: { icon: TrendingDown, color: 'text-green-500', bg: 'bg-green-50 border-green-100', label: 'Below Market' },
+                    fair_price: { icon: BarChart3, color: 'text-blue-600', bg: 'bg-blue-50 border-blue-100', label: 'Fair Price' },
+                    above_market: { icon: TrendingUp, color: 'text-yellow-600', bg: 'bg-yellow-50 border-yellow-100', label: 'Above Market' },
+                    overpriced: { icon: TrendingUp, color: 'text-red-500', bg: 'bg-red-50 border-red-100', label: 'Overpriced' },
+                  };
+                  const vc = verdictConfig[verdict] || verdictConfig.fair_price;
+                  const VerdictIcon = vc.icon;
+                  return (
+                    <div className={`p-3.5 rounded-lg border ${vc.bg}`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-1.5">
+                          <VerdictIcon size={16} className={vc.color} />
+                          <span className={`text-sm font-bold ${vc.color}`}>{vc.label}</span>
+                        </div>
+                        {diff !== 0 && (
+                          <span className={`text-xs font-bold ${diff < 0 ? 'text-green-600' : 'text-red-500'}`}>
+                            {diff > 0 ? '+' : ''}{diff}%
+                          </span>
+                        )}
+                      </div>
+                      {predicted > 0 && (
+                        <p className="text-xs text-[#6F757C]">
+                          AI estimates market value at <span className="font-bold text-[#101214]">{formatPrice(predicted)}</span>
+                        </p>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
+            {/* ── AI Depreciation Forecast (sale only) ── */}
+            {listing.listingType === 'sale' && listing.year && (
+              <div className="mt-4 pt-4 border-t border-[#E9E3DA]">
+                <div className="flex items-center gap-2 mb-3">
+                  <Brain size={14} className="text-blue-500" />
+                  <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>AI Value Forecast</span>
+                </div>
+                {(() => {
+                  const age = new Date().getFullYear() - listing.year;
+                  const price = Number(listing.price);
+                  const depRates = [0.85, 0.72, 0.62]; // 1yr, 2yr, 3yr
+                  return (
+                    <div className="space-y-2">
+                      {['1 Year', '2 Years', '3 Years'].map((label, i) => {
+                        const futureVal = Math.round(price * depRates[i]);
+                        const pct = Math.round(depRates[i] * 100);
+                        return (
+                          <div key={label} className="flex items-center gap-3">
+                            <span className="text-[10px] text-[#6F757C] w-14" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{label}</span>
+                            <div className="flex-1 h-2 bg-[#E9E3DA] rounded-full overflow-hidden">
+                              <div className="h-full rounded-full bg-gradient-to-r from-blue-400 to-blue-600 transition-all" style={{ width: `${pct}%` }} />
+                            </div>
+                            <span className="text-xs font-bold text-[#101214] w-20 text-right">{formatPrice(futureVal)}</span>
+                          </div>
+                        );
+                      })}
+                      <p className="text-[10px] text-[#6F757C] mt-1" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Based on {age}yr age, {listing.condition} condition</p>
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
@@ -646,6 +792,25 @@ export default function ListingDetailPage() {
                 </button>
               </div>
             </div>
+          )}
+
+          {/* ── Market Intelligence Engine ── */}
+          {listing.listingType === 'rent' && (
+            <MarketIntelligenceEngine
+              category={listing.category || 'Backhoe Loader'}
+              currentPrice={listing.rentalRateDaily || listing.price}
+            />
+          )}
+
+          {/* ── Availability Calendar ── */}
+          {listing.listingType === 'rent' && (
+            <AvailabilityCalendar
+              bookedDates={[]}
+              onSelect={(start, end) => {
+                setBookingForm(prev => ({ ...prev, startDate: start, endDate: end }));
+                setShowBooking(true);
+              }}
+            />
           )}
 
           {/* ── Booking Panel ── */}
@@ -715,7 +880,7 @@ export default function ListingDetailPage() {
             </div>
           )}
 
-          {/* Seller card */}
+          {/* Seller card + AI Trust Score */}
           {listing.owner && (
             <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6">
               <h2 className="font-semibold text-sm text-[#6F757C] mb-4 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Seller</h2>
@@ -735,11 +900,51 @@ export default function ListingDetailPage() {
                   )}
                 </div>
               </div>
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2 flex-wrap mb-4">
                 <span className="px-2.5 py-1 bg-[#E9E3DA] text-[#6F757C] text-xs rounded capitalize" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
                   {listing.owner.userType}
                 </span>
               </div>
+
+              {/* ── AI Trust Score ── */}
+              {aiTrustScore && (
+                <div className="border-t border-[#E9E3DA] pt-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <ShieldCheck size={14} className="text-purple-500" />
+                    <span className="text-[10px] font-bold text-purple-600 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>AI Trust Score</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    {/* Circular gauge */}
+                    <div className="relative w-16 h-16">
+                      <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="15.5" fill="none" stroke="#E9E3DA" strokeWidth="3" />
+                        <circle cx="18" cy="18" r="15.5" fill="none" stroke={aiTrustScore.trustScore?.score >= 70 ? '#22c55e' : aiTrustScore.trustScore?.score >= 40 ? '#f59e0b' : '#ef4444'}
+                          strokeWidth="3" strokeLinecap="round"
+                          strokeDasharray={`${(aiTrustScore.trustScore?.score || 0) * 0.975} 97.5`}
+                          style={{ transition: 'stroke-dasharray 1s ease' }} />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-sm font-bold" style={{ fontFamily: 'Sora, sans-serif' }}>{aiTrustScore.trustScore?.score || 0}</span>
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <p className={`text-sm font-bold capitalize ${
+                        aiTrustScore.trustScore?.label === 'excellent' ? 'text-green-600' :
+                        aiTrustScore.trustScore?.label === 'good' ? 'text-green-500' :
+                        aiTrustScore.trustScore?.label === 'average' ? 'text-yellow-600' : 'text-red-500'
+                      }`}>{aiTrustScore.trustScore?.label || 'N/A'}</p>
+                      {aiTrustScore.sentimentSummary && (
+                        <div className="flex gap-2 mt-1">
+                          <span className="text-[10px] text-green-600">{aiTrustScore.sentimentSummary.positive} 👍</span>
+                          <span className="text-[10px] text-[#6F757C]">{aiTrustScore.sentimentSummary.neutral} —</span>
+                          <span className="text-[10px] text-red-500">{aiTrustScore.sentimentSummary.negative} 👎</span>
+                        </div>
+                      )}
+                      <p className="text-[10px] text-[#6F757C] mt-0.5">{aiTrustScore.reviewCount || 0} reviews analyzed</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -966,6 +1171,14 @@ export default function ListingDetailPage() {
             )}
           </div>
         </div>
+      )}
+      {/* ── Quick Book Modal ── */}
+      {showQuickBook && listing && listing.listingType === 'rent' && (
+        <QuickBookModal
+          listing={listing}
+          onClose={() => setShowQuickBook(false)}
+          aiPredictedPrice={aiPriceAnalysis?.prediction?.predicted}
+        />
       )}
     </PageShell>
   );

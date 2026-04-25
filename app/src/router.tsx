@@ -30,6 +30,7 @@ const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
 const SavedListingsPage = lazy(() => import('./pages/SavedListingsPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const MarketInsightsPage = lazy(() => import('./pages/MarketInsightsPage'));
+const WhyYantraSetuPage = lazy(() => import('./pages/WhyYantraSetuPage'));
 
 // ─── Loading fallback ──────────────────────────────────────────
 function PageLoader() {
@@ -100,6 +101,7 @@ export const router = createBrowserRouter([
   { path: '/sample-report', element: <SL><SampleReportPage /></SL> },
   { path: '/inspection-standards', element: <SL><InspectionStandardsPage /></SL> },
   { path: '/contact-specialist', element: <SL><ContactSpecialistPage /></SL> },
+  { path: '/why', element: <SL><WhyYantraSetuPage /></SL> },
 
   // 404
   {

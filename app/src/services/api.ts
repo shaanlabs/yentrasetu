@@ -511,6 +511,15 @@ export const mlApi = {
 
   trackView: (listingId: string) =>
     request<{ ok: boolean }>('/ml/track-view', { method: 'POST', body: JSON.stringify({ listingId }) }),
+
+  getWorkEstimate: (data: { projectType: string; durationDays: number; equipmentTypes?: string[]; city?: string; state?: string }) =>
+    request<{ estimate: any }>('/ml/work-estimate', { method: 'POST', body: JSON.stringify(data) }),
+
+  getEquipmentHealth: (params: { category: string; make?: string; model?: string; year?: number; hoursUsed?: number; condition?: string }) => {
+    const p = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => { if (v !== undefined && v !== null) p.set(k, String(v)); });
+    return request<{ healthScore: any; depreciation: any[]; maintenanceItems: any[]; estimatedCurrentValue: number }>(`/ml/equipment-health?${p}`);
+  },
 };
 
 // ─── Analytics / Marketing API ─────────────────────────
