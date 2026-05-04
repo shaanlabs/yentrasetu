@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YantraSetu Complete ER Diagram</title>
+    <!-- Include Mermaid.js -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; overflow: auto; }
+        .header { background: #101214; color: white; padding: 20px 40px; }
+        .header h1 { margin: 0; font-size: 24px; color: #FF6A00; }
+        .header p { margin: 5px 0 0; font-size: 14px; color: #E9E3DA; }
+        .container { display: flex; justify-content: center; padding: 40px; min-width: max-content; }
+        .diagram-wrapper { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); min-width: max-content; }
+        /* Style adjustments for printing or zooming */
+        @media print {
+            body { background: white; }
+            .header { display: none; }
+            .diagram-wrapper { box-shadow: none; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>YantraSetu Complete Entity-Relationship (ER) Diagram</h1>
+        <p>Contains all 16 tables, 300+ attributes, and complete entity relationships. You can pan, scroll, and use browser zoom (Ctrl + Scroll) to inspect details.</p>
+    </div>
+    
+    <div class="container">
+        <div class="diagram-wrapper">
+            <div class="mermaid">
+erDiagram
+    users {
+        UUID id PK
+        VARCHAR phone "UK"
+        VARCHAR email "UK"
+        VARCHAR password
+        VARCHAR firstName
+        VARCHAR lastName
+        ENUM userType
+        ENUM accountTier
+        VARCHAR companyName
+        VARCHAR gstNumber
+        TEXT address
+        VARCHAR city
+        VARCHAR state
+        VARCHAR pincode
+        DECIMAL latitude
+        DECIMAL longitude
+        BOOLEAN isVerified
+        BOOLEAN isActive
+        BOOLEAN isBanned
+        TEXT banReason
+        DECIMAL rating
+        INTEGER reviewCount
+        TEXT profileImage
+        VARCHAR otpCode
+        DATETIME otpExpiresAt
+        DATETIME lastLoginAt
+        DATETIME subscriptionExpiry
+        VARCHAR referralCode "UK"
+        VARCHAR referredBy
+        JSONB metadata
+        DATETIME createdAt
+        DATETIME updatedAt
+        DATETIME deletedAt
+    }
+
+    machinery_listings {
+        UUID id PK
+        UUID userId FK
+        ENUM listingType
+        ENUM category
+        VARCHAR subCategory
+        VARCHAR make
+        VARCHAR model
+        INTEGER year
+        INTEGER hoursUsed
+        ENUM condition
+        DECIMAL price
+        BOOLEAN priceNegotiable
+        TEXT description
+        ENUM rentalUnit
+        DECIMAL securityDeposit
+        INTEGER minimumRentalDuration
+        BOOLEAN withOperator
+        DECIMAL operatorRate
+        BOOLEAN deliveryAvailable
+        INTEGER deliveryRadius
+        TEXT address
+        VARCHAR city
+        VARCHAR state
+        VARCHAR district
+        VARCHAR pincode
+        DECIMAL latitude
+        DECIMAL longitude
+        ENUM status
+        BOOLEAN isVerified
+        BOOLEAN isFeatured
+        DATETIME featuredUntil
+        BOOLEAN isActive
+        TEXT rejectionReason
+        VARCHAR rcBookUrl
+        VARCHAR insuranceUrl
+        VARCHAR inspectionReportUrl
+        JSONB images
+        VARCHAR videoUrl
+        INTEGER viewCount
+        INTEGER contactUnlockCount
+        DATETIME expiresAt
+        JSONB metadata
+        DATETIME createdAt
+        DATETIME updatedAt
+        DATETIME deletedAt
+    }
+
+    part_listings {
+        UUID id PK
+        UUID userId FK
+        VARCHAR partName
+        VARCHAR partNumber
+        VARCHAR oemPartNumber
+        ENUM category
+        ENUM condition
+        DECIMAL price
+        INTEGER quantity
+        TEXT description
+        JSONB compatibleMakes
+        JSONB compatibleModels
+        JSONB compatibleYears
+        VARCHAR city
+        VARCHAR state
+        VARCHAR pincode
+        DECIMAL latitude
+        DECIMAL longitude
+        ENUM status
+        BOOLEAN isActive
+        JSONB images
+        INTEGER viewCount
+        INTEGER contactUnlockCount
+        DATETIME expiresAt
+        JSONB metadata
+        DATETIME createdAt
+        DATETIME updatedAt
+        DATETIME deletedAt
+    }
+
+    operator_profiles {
+        UUID id PK
+        UUID userId FK "UK"
+        INTEGER yearsOfExperience
+        JSONB equipmentTypes
+        BOOLEAN hasDGMSLicense
+        VARCHAR dgmsLicenseUrl
+        BOOLEAN hasCraneCertificate
+        VARCHAR craneCertificateUrl
+        BOOLEAN hasJCBExcavatorCertificate
+        VARCHAR jcbExcavatorCertificateUrl
+        BOOLEAN hasDrivingLicense
+        VARCHAR drivingLicenseUrl
+        JSONB otherCertifications
+        JSONB workHistory
+        BOOLEAN isAvailable
+        JSONB availabilityCalendar
+        DECIMAL dayRate
+        DECIMAL projectRate
+        VARCHAR city
+        VARCHAR state
+        VARCHAR pincode
+        DECIMAL latitude
+        DECIMAL longitude
+        BOOLEAN willingToRelocate
+        BOOLEAN isVerified
+        ENUM verificationStatus
+        BOOLEAN isActive
+        DECIMAL rating
+        INTEGER reviewCount
+        INTEGER profileViews
+        INTEGER hireCount
+        TEXT bio
+        JSONB metadata
+        DATETIME createdAt
+        DATETIME updatedAt
+        DATETIME deletedAt
+    }
+
+    mechanic_profiles {
+        UUID id PK
+        UUID userId FK "UK"
+        INTEGER yearsOfExperience
+        JSONB specializations
+        JSONB brandExpertise
+        BOOLEAN hasITICertification
+        VARCHAR itiCertificateUrl
+        BOOLEAN hasDiploma
+        VARCHAR diplomaUrl
+        JSONB brandCertifications
+        JSONB otherCertifications
+        BOOLEAN isAvailable
+        JSONB availabilityCalendar
+        DECIMAL hourlyRate
+        DECIMAL dailyRate
+        DECIMAL visitCharge
+        VARCHAR city
+        VARCHAR state
+        VARCHAR pincode
+        DECIMAL latitude
+        DECIMAL longitude
+        INTEGER serviceRadius
+        BOOLEAN isVerified
+        ENUM verificationStatus
+        BOOLEAN isActive
+        DECIMAL rating
+        INTEGER reviewCount
+        INTEGER profileViews
+        INTEGER serviceCount
+        TEXT bio
+        JSONB metadata
+        DATETIME createdAt
+        DATETIME updatedAt
+        DATETIME deletedAt
+    }
+
+    chats {
+        UUID id PK
+        UUID buyerId FK
+        UUID sellerId FK
+        ENUM listingType
+        UUID listingId
+        ENUM status
+        BOOLEAN leadFeePaid
+        DECIMAL leadFeeAmount
+        DATETIME leadFeePaidAt
+        DATETIME lastMessageAt
+        VARCHAR lastMessagePreview
+        INTEGER buyerUnreadCount
+        INTEGER sellerUnreadCount
+        JSONB metadata
+        DATETIME createdAt
+        DATETIME updatedAt
+    }
+
+    messages {
+        UUID id PK
+        UUID chatId FK
+        UUID senderId FK
+        ENUM messageType
+        TEXT content
+        VARCHAR mediaUrl
+        BOOLEAN isRead
+        DATETIME readAt
+        BOOLEAN isDeleted
+        JSONB metadata
+        DATETIME createdAt
+        DATETIME updatedAt
+    }
+
+    reviews {
+        UUID id PK
+        UUID reviewerId FK
+        UUID revieweeId FK
+        ENUM reviewType
+        UUID entityId
+        DECIMAL rating
+        VARCHAR title
+        TEXT comment
+        DECIMAL punctualityRating
+        DECIMAL qualityRating
+        DECIMAL communicationRating
+        DECIMAL valueRating
+        BOOLEAN isVerified
+        BOOLEAN isVisible
+        BOOLEAN isFlagged
+        TEXT flagReason
+        TEXT response
+        DATETIME respondedAt
+        INTEGER helpfulCount
+        JSONB metadata
+        DATETIME createdAt
+        DATETIME updatedAt
+        DATETIME deletedAt
+    }
+
+    rental_bookings {
+        UUID id PK
+        UUID listingId FK
+        UUID ownerId FK
+        UUID renterId FK
+        DATEONLY startDate
+        DATEONLY endDate
+        INTEGER duration
+        DECIMAL rentalRate
+        ENUM rentalUnit
+        DECIMAL totalRentalAmount
+        DECIMAL securityDeposit
+        DECIMAL platformCommission
+        DECIMAL commissionPercentage
+        DECIMAL totalAmount
+        BOOLEAN withOperator
+        DECIMAL operatorRate
+        DECIMAL operatorTotal
+        ENUM status
+        ENUM paymentStatus
+        DECIMAL amountPaid
+        ENUM depositStatus
+        DATETIME depositReleasedAt
+        DECIMAL depositReleaseAmount
+        VARCHAR agreementUrl
+        DATETIME renterSignedAt
+        DATETIME ownerSignedAt
+        TEXT deliveryAddress
+        DATETIME deliveryDate
+        DATETIME returnDate
+        UUID cancelledBy
+        TEXT cancellationReason
+        DATETIME cancelledAt
+        DECIMAL cancellationFee
+        ENUM payoutStatus
+        DECIMAL payoutAmount
+        VARCHAR payoutTransactionId
+        DATETIME payoutCompletedAt
+        TEXT ownerNotes
+        TEXT renterNotes
+        TEXT adminNotes
+        JSONB metadata
+        DATETIME createdAt
+        DATETIME updatedAt
+    }
+
+    transactions {
+        UUID id PK
+        UUID userId FK
+        ENUM transactionType
+        ENUM relatedType
+        UUID relatedId
+        DECIMAL amount
+        VARCHAR currency
+        ENUM paymentMethod
+        VARCHAR paymentGateway
+        VARCHAR gatewayTransactionId
+        ENUM status
+        BOOLEAN isSecurityDeposit
+        ENUM securityDepositStatus
+        DECIMAL commissionAmount
+        DECIMAL commissionPercentage
+        TEXT description
+        JSONB metadata
+        DATETIME completedAt
+        DATETIME refundedAt
+        DATETIME createdAt
+        DATETIME updatedAt
+    }
+
+    subscriptions {
+        UUID id PK
+        UUID userId FK
+        ENUM plan
+        ENUM status
+        DATETIME startDate
+        DATETIME endDate
+        INTEGER maxListings
+        INTEGER featuredListings
+        DECIMAL amount
+        JSONB metadata
+        DATETIME createdAt
+        DATETIME updatedAt
+    }
+
+    certification_requests {
+        UUID id PK
+        UUID userId FK
+        ENUM certificationType
+        VARCHAR documentName
+        VARCHAR documentNumber
+        TEXT documentImage
+        VARCHAR issuingAuthority
+        DATEONLY issuedDate
+        DATEONLY expiresAt
+        ENUM status
+        TEXT adminNotes
+        UUID reviewedBy FK
+        DATETIME reviewedAt
+        DATETIME createdAt
+        DATETIME updatedAt
+        DATETIME deletedAt
+    }
+
+    fraud_reports {
+        UUID id PK
+        UUID reporterId FK
+        ENUM targetType
+        UUID targetId
+        ENUM reason
+        TEXT description
+        JSONB evidenceImages
+        ENUM status
+        TEXT adminNotes
+        VARCHAR resolution
+        UUID reviewedBy FK
+        DATETIME reviewedAt
+        DATETIME createdAt
+        DATETIME updatedAt
+        DATETIME deletedAt
+    }
+
+    notifications {
+        UUID id PK
+        UUID userId FK
+        VARCHAR type
+        VARCHAR title
+        TEXT body
+        JSONB data
+        BOOLEAN isRead
+        DATETIME createdAt
+        DATETIME updatedAt
+    }
+
+    activity_logs {
+        UUID id PK
+        UUID userId FK
+        VARCHAR action
+        VARCHAR targetType
+        UUID targetId
+        JSON metadata
+        VARCHAR ipAddress
+        VARCHAR userAgent
+        ENUM severity
+        DATETIME createdAt
+    }
+
+    campaign_visits {
+        UUID id PK
+        UUID userId FK
+        VARCHAR source
+        VARCHAR medium
+        VARCHAR campaign
+        VARCHAR term
+        VARCHAR content
+        VARCHAR landingPage
+        VARCHAR ipAddress
+        VARCHAR userAgent
+        INTEGER sessionDuration
+        DATETIME createdAt
+        DATETIME updatedAt
+    }
+
+    users ||--o{ machinery_listings : "owns/creates"
+    users ||--o{ part_listings : "sells"
+    users ||--o| operator_profiles : "has profile"
+    users ||--o| mechanic_profiles : "has profile"
+    users ||--o{ chats : "participates in (buyer/seller)"
+    users ||--o{ messages : "sends"
+    users ||--o{ reviews : "gives/receives"
+    users ||--o{ rental_bookings : "owner/renter"
+    users ||--o{ transactions : "performs"
+    users ||--o{ subscriptions : "subscribes"
+    users ||--o{ certification_requests : "submits"
+    users ||--o{ fraud_reports : "reports"
+    users ||--o{ activity_logs : "performs (nullable)"
+    users ||--o{ notifications : "receives"
+    users ||--o{ campaign_visits : "visits (nullable)"
+    
+    machinery_listings ||--o{ rental_bookings : "rented via"
+    chats ||--o{ messages : "contains"
+    
+    users ||--o{ certification_requests : "reviewed by"
+    users ||--o{ fraud_reports : "reviewed by"
+            </div>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            er: {
+                useMaxWidth: false
+            }
+        });
+    </script>
+</body>
+</html>

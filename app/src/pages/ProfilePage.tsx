@@ -5,7 +5,7 @@ import { authApi, analyticsApi } from '../services/api';
 import {
   User, Phone, Mail, Building2, MapPin, FileText, Hash,
   Save, Loader2, LogOut, Lock, CheckCircle,
-  Camera, Star, Calendar, Shield, Award,
+  Camera, Star, Calendar, Shield,
   LayoutDashboard, Heart, Bell, MessageCircle, Package, ShoppingBag, Gift, Copy, TrendingUp
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
@@ -120,7 +120,7 @@ export default function ProfilePage() {
   const initials = `${user?.firstName?.[0] || ''}${user?.lastName?.[0] || ''}`.toUpperCase() || '?';
   const memberSince = user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) : '—';
 
-  const inputClass = 'w-full pl-11 pr-4 py-3.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm';
+  const inputClass = 'w-full pl-11 pr-4 py-3.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm';
   const labelClass = 'block text-xs font-medium text-[#6F757C] mb-1.5 uppercase tracking-wider';
 
   return (
@@ -134,13 +134,11 @@ export default function ProfilePage() {
           </button>
         </div>
         {/* Profile Header Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] overflow-hidden mb-8">
-          {/* Gradient banner */}
-          <div className="h-24 relative" style={{ background: 'linear-gradient(135deg, #FF6A00 0%, #FF8C38 50%, #FFB347 100%)' }}>
-            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
-          </div>
+        <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] overflow-hidden mb-8">
+          {/* Clean accent bar */}
+          <div className="h-20" style={{ background: '#FF6A00' }} />
 
-          <div className="px-6 pb-6 -mt-12">
+          <div className="px-6 pb-6 -mt-10">
             {/* Avatar */}
             <div className="relative inline-block mb-4">
               <div
@@ -170,7 +168,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Name and phone */}
-            <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.5rem', color: '#101214' }}>
+            <h1 className="text-xl font-bold font-heading text-[#101214]">
               {user?.firstName} {user?.lastName}
             </h1>
             <p className="text-[#6F757C] text-sm flex items-center gap-1.5 mt-1">
@@ -179,27 +177,19 @@ export default function ProfilePage() {
             </p>
 
             {/* Info badges row */}
-            <div className="flex gap-2 mt-4 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#FF6A00]/10 text-[#FF6A00] text-xs font-semibold rounded-full"
-                style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                <Shield size={12} />
-                {user?.userType?.toUpperCase()}
+            <div className="flex gap-2 mt-3 flex-wrap">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#101214] text-white text-[10px] font-semibold rounded font-mono uppercase">
+                {user?.userType}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#101214]/5 text-[#101214] text-xs font-semibold rounded-full"
-                style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                <Award size={12} />
-                {user?.accountTier?.toUpperCase() || 'FREE'}
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#EDE8E0] text-[#6F757C] text-[10px] font-semibold rounded font-mono uppercase">
+                {user?.accountTier || 'FREE'}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full"
-                style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                <Calendar size={12} />
-                SINCE {memberSince.toUpperCase()}
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#EDE8E0] text-[#6F757C] text-[10px] font-semibold rounded font-mono uppercase">
+                Since {memberSince}
               </span>
               {(user as any)?.rating > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-50 text-yellow-600 text-xs font-semibold rounded-full"
-                  style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                  <Star size={12} />
-                  {(user as any).rating} ({(user as any).reviewCount} REVIEWS)
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 text-[10px] font-semibold rounded font-mono">
+                  <Star size={10} /> {(user as any).rating}
                 </span>
               )}
             </div>
@@ -207,7 +197,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Quick Links */}
-        <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6 mb-6">
           <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1rem', color: '#101214', marginBottom: '1rem' }}
             className="flex items-center gap-2">
             <ShoppingBag size={18} className="text-[#FF6A00]" /> Quick Links
@@ -220,9 +210,13 @@ export default function ProfilePage() {
               { to: '/saved', icon: Heart, label: 'Saved', color: 'bg-red-50 text-red-500' },
               { to: '/chats', icon: MessageCircle, label: 'Chats', color: 'bg-purple-50 text-purple-600' },
               { to: '/notifications', icon: Bell, label: 'Alerts', color: 'bg-yellow-50 text-yellow-600' },
+              ...(user?.userType === 'admin' || user?.userType === 'super_admin' ? [
+                { to: '/admin', icon: Shield, label: 'Admin', color: 'bg-red-50 text-red-600' },
+              ] : []),
+              { to: '/market-insights', icon: TrendingUp, label: 'Market AI', color: 'bg-indigo-50 text-indigo-600' },
             ].map(link => (
               <Link key={link.to} to={link.to}
-                className="flex flex-col items-center gap-2 p-3 rounded-xl border border-[#E9E3DA] hover:border-[#FF6A00] transition-all hover:shadow-sm">
+                className="flex flex-col items-center gap-2 p-3 rounded-xl border border-[#EDE8E0] hover:border-[#FF6A00] transition-all hover:shadow-sm">
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${link.color}`}>
                   <link.icon size={18} />
                 </div>
@@ -234,7 +228,7 @@ export default function ProfilePage() {
 
         {/* Referral Section */}
         {referral && (
-          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 mb-6">
+          <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6 mb-6">
             <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1rem', color: '#101214', marginBottom: '1rem' }}
               className="flex items-center gap-2">
               <Gift size={18} className="text-[#FF6A00]" /> Refer & Earn
@@ -253,7 +247,7 @@ export default function ProfilePage() {
                     setReferralCopied(true);
                     setTimeout(() => setReferralCopied(false), 2000);
                   }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E9E3DA] rounded-lg text-xs font-medium text-[#6F757C] hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#EDE8E0] rounded-lg text-xs font-medium text-[#6F757C] hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors"
                 >
                   <Copy size={12} />
                   {referralCopied ? 'Copied!' : 'Copy Link'}
@@ -289,7 +283,7 @@ export default function ProfilePage() {
         {/* Form */}
         <form onSubmit={handleSave}>
           {/* Personal Information */}
-          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-6 mb-6">
+          <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-6 mb-6">
             <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1rem', color: '#101214', marginBottom: '1.25rem' }}
               className="flex items-center gap-2">
               <User size={18} className="text-[#FF6A00]" /> Personal Information
@@ -335,7 +329,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Business Information */}
-          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-6 mb-6">
+          <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-6 mb-6">
             <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1rem', color: '#101214', marginBottom: '1.25rem' }}
               className="flex items-center gap-2">
               <Building2 size={18} className="text-[#FF6A00]" /> Business Information
@@ -364,7 +358,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Location */}
-          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-6 mb-6">
+          <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-6 mb-6">
             <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1rem', color: '#101214', marginBottom: '1.25rem' }}
               className="flex items-center gap-2">
               <MapPin size={18} className="text-[#FF6A00]" /> Location
@@ -377,7 +371,7 @@ export default function ProfilePage() {
                 <textarea value={form.address} onChange={(e) => update('address', e.target.value)}
                   rows={3}
                   placeholder="Street address, landmark, etc."
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm resize-none"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm resize-none"
                   style={{ fontFamily: 'Inter, sans-serif' }} />
               </div>
             </div>
@@ -422,7 +416,7 @@ export default function ProfilePage() {
 
         {/* Change Password link */}
         <Link to="/change-password"
-          className="mt-6 w-full flex items-center justify-center gap-2 py-3.5 text-sm font-medium text-[#101214] bg-white border border-[#E9E3DA] rounded-xl shadow-sm hover:border-[#6F757C] transition-colors min-h-[48px]"
+          className="mt-6 w-full flex items-center justify-center gap-2 py-3.5 text-sm font-medium text-[#101214] bg-white border border-[#EDE8E0] rounded-xl shadow-sm hover:border-[#6F757C] transition-colors min-h-[48px]"
           style={{ fontFamily: 'Sora, sans-serif' }}>
           <Lock size={16} /> Change Password
         </Link>

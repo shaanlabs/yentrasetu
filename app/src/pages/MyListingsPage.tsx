@@ -73,9 +73,9 @@ export default function MyListingsPage() {
         ) : (
           <div className="space-y-4">
             {listings.map(listing => (
-              <div key={listing.id} className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-4 sm:p-5 flex flex-col sm:flex-row gap-4">
+              <div key={listing.id} className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-4 sm:p-5 flex flex-col sm:flex-row gap-4">
                 {/* Thumbnail */}
-                <div className="w-full sm:w-32 h-24 bg-[#E9E3DA] rounded overflow-hidden flex-shrink-0">
+                <div className="w-full sm:w-32 h-24 bg-[#EDE8E0] rounded overflow-hidden flex-shrink-0">
                   {listing.images?.[0] ? <img src={listing.images[0]} className="w-full h-full object-cover" /> : <Gauge size={24} className="m-auto mt-7 text-[#6F757C] opacity-30" />}
                 </div>
                 {/* Info */}

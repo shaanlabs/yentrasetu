@@ -88,7 +88,7 @@ export default function NotificationsPage() {
         <div className="flex justify-end mb-4">
           <button
             onClick={handleMarkAllRead}
-            className="text-xs px-3 py-2 bg-white border border-[#E9E3DA] rounded-lg hover:border-[#FF6A00] text-[#6F757C] hover:text-[#FF6A00] transition-colors flex items-center gap-1.5 min-h-[36px]"
+            className="text-xs px-3 py-2 bg-white border border-[#EDE8E0] rounded-lg hover:border-[#FF6A00] text-[#6F757C] hover:text-[#FF6A00] transition-colors flex items-center gap-1.5 min-h-[36px]"
           >
             <CheckCheck size={14} /> Mark all read
           </button>
@@ -114,7 +114,7 @@ export default function NotificationsPage() {
                 onClick={() => handleClick(n)}
                 className={`w-full text-left p-4 rounded-xl border transition-all flex items-start gap-3 ${
                   n.isRead
-                    ? 'bg-white border-[#E9E3DA] hover:border-[#D1CBC2]'
+                    ? 'bg-white border-[#EDE8E0] hover:border-[#D1CBC2]'
                     : 'bg-[#FF6A00]/[0.03] border-[#FF6A00]/20 hover:border-[#FF6A00]/40'
                 }`}
               >
@@ -143,7 +143,7 @@ export default function NotificationsPage() {
               <button
                 disabled={page <= 1}
                 onClick={() => setPage(p => p - 1)}
-                className="px-4 py-2 bg-white border border-[#E9E3DA] rounded-lg text-sm disabled:opacity-40 min-h-[44px]"
+                className="px-4 py-2 bg-white border border-[#EDE8E0] rounded-lg text-sm disabled:opacity-40 min-h-[44px]"
               >
                 Previous
               </button>
@@ -153,7 +153,7 @@ export default function NotificationsPage() {
               <button
                 disabled={page >= pagination.pages}
                 onClick={() => setPage(p => p + 1)}
-                className="px-4 py-2 bg-white border border-[#E9E3DA] rounded-lg text-sm disabled:opacity-40 min-h-[44px]"
+                className="px-4 py-2 bg-white border border-[#EDE8E0] rounded-lg text-sm disabled:opacity-40 min-h-[44px]"
               >
                 Next
               </button>

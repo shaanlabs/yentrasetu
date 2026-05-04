@@ -103,14 +103,14 @@ export default function QuickBookModal({ listing, onClose, aiPredictedPrice }: Q
         style={{ animation: 'slideUp 0.3s ease-out' }}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-[#E9E3DA] p-4 flex items-center justify-between rounded-t-2xl z-10">
+        <div className="sticky top-0 bg-white border-b border-[#EDE8E0] p-4 flex items-center justify-between rounded-t-2xl z-10">
           <div className="flex items-center gap-2">
             <Zap size={18} className="text-[#FF6A00]" />
             <h2 className="font-bold text-base" style={{ fontFamily: 'Sora, sans-serif' }}>
               {step === 'success' ? 'Booking Confirmed!' : 'Quick Book'}
             </h2>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-[#E9E3DA] rounded-full transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-[#EDE8E0] rounded-full transition-colors">
             <X size={18} />
           </button>
         </div>
@@ -153,7 +153,7 @@ export default function QuickBookModal({ listing, onClose, aiPredictedPrice }: Q
                 <button onClick={() => navigate('/bookings')} className="flex-1 py-3 text-sm font-semibold bg-[#101214] text-white rounded-lg">
                   View Bookings
                 </button>
-                <button onClick={onClose} className="flex-1 py-3 text-sm font-semibold border border-[#E9E3DA] rounded-lg hover:bg-[#E9E3DA]/30">
+                <button onClick={onClose} className="flex-1 py-3 text-sm font-semibold border border-[#EDE8E0] rounded-lg hover:bg-[#EDE8E0]/30">
                   Continue Browsing
                 </button>
               </div>
@@ -163,7 +163,7 @@ export default function QuickBookModal({ listing, onClose, aiPredictedPrice }: Q
             <>
               {/* Machine card mini */}
               <div className="flex items-center gap-3 p-3 bg-[#F9F7F4] rounded-xl mb-5">
-                <div className="w-14 h-14 bg-[#E9E3DA] rounded-lg overflow-hidden flex-shrink-0">
+                <div className="w-14 h-14 bg-[#EDE8E0] rounded-lg overflow-hidden flex-shrink-0">
                   {listing.images?.[0] ? (
                     <img src={listing.images[0]} className="w-full h-full object-cover" alt="" />
                   ) : (
@@ -209,7 +209,7 @@ export default function QuickBookModal({ listing, onClose, aiPredictedPrice }: Q
                     value={startDate}
                     min={new Date().toISOString().split('T')[0]}
                     onChange={e => setStartDate(e.target.value)}
-                    className="w-full px-3 py-3 border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] bg-white"
+                    className="w-full px-3 py-3 border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] bg-white"
                   />
                 </div>
                 <div>
@@ -219,7 +219,7 @@ export default function QuickBookModal({ listing, onClose, aiPredictedPrice }: Q
                     value={endDate}
                     min={startDate || new Date().toISOString().split('T')[0]}
                     onChange={e => setEndDate(e.target.value)}
-                    className="w-full px-3 py-3 border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] bg-white"
+                    className="w-full px-3 py-3 border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] bg-white"
                   />
                 </div>
               </div>
@@ -231,7 +231,7 @@ export default function QuickBookModal({ listing, onClose, aiPredictedPrice }: Q
               )}
 
               {/* Operator toggle */}
-              <div className="flex items-center justify-between p-3 border border-[#E9E3DA] rounded-xl mb-4">
+              <div className="flex items-center justify-between p-3 border border-[#EDE8E0] rounded-xl mb-4">
                 <div className="flex items-center gap-2">
                   <User size={16} className="text-[#FF6A00]" />
                   <div>
@@ -241,7 +241,7 @@ export default function QuickBookModal({ listing, onClose, aiPredictedPrice }: Q
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" checked={withOperator} onChange={e => setWithOperator(e.target.checked)} className="sr-only peer" />
-                  <div className="w-11 h-6 bg-[#E9E3DA] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF6A00]"></div>
+                  <div className="w-11 h-6 bg-[#EDE8E0] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF6A00]"></div>
                 </label>
               </div>
 
@@ -251,7 +251,7 @@ export default function QuickBookModal({ listing, onClose, aiPredictedPrice }: Q
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
                 rows={2}
-                className="w-full px-3 py-2.5 border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] resize-none mb-4"
+                className="w-full px-3 py-2.5 border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] resize-none mb-4"
               />
 
               <button
@@ -283,7 +283,7 @@ export default function QuickBookModal({ listing, onClose, aiPredictedPrice }: Q
                     <span className="font-medium">{formatPrice(dailyRate)}/day</span>
                   </div>
 
-                  <div className="border-t border-[#E9E3DA] pt-3 space-y-2">
+                  <div className="border-t border-[#EDE8E0] pt-3 space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-[#6F757C]">Rental ({days} days × {formatPrice(dailyRate)})</span>
                       <span>{formatPrice(rentalCost)}</span>
@@ -334,7 +334,7 @@ export default function QuickBookModal({ listing, onClose, aiPredictedPrice }: Q
               <div className="flex gap-3">
                 <button
                   onClick={() => setStep('dates')}
-                  className="flex-1 py-3 text-sm font-medium border border-[#E9E3DA] rounded-xl hover:bg-[#E9E3DA]/30"
+                  className="flex-1 py-3 text-sm font-medium border border-[#EDE8E0] rounded-xl hover:bg-[#EDE8E0]/30"
                 >
                   Back
                 </button>

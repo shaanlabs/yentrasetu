@@ -16,7 +16,7 @@ export default function LazyImage({
   src,
   alt,
   className = '',
-  skeletonColor = '#E9E3DA',
+  skeletonColor = '#EDE8E0',
   rootMargin = '200px',
   style,
   ...rest

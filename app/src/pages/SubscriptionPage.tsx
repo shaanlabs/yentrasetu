@@ -53,7 +53,7 @@ export default function SubscriptionPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [mySub, setMySub] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState<string | null>(null);
+  const [submitting] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>('upi');
   const [showPayment, setShowPayment] = useState(false);
@@ -87,6 +87,35 @@ export default function SubscriptionPage() {
       }
     } catch (err) {
       console.error('Failed to fetch plans', err);
+      // Fallback plan data when API is unreachable
+      if (plans.length === 0) {
+        setPlans([
+          {
+            id: 'free', name: 'Free', price: 0, maxListings: 3,
+            featuredListings: 0, photosPerListing: 5,
+            description: 'Get started with basic listing capabilities.',
+            features: ['Up to 3 active listings', '5 photos per listing', 'Basic search visibility', 'Community support', 'Standard analytics'],
+          },
+          {
+            id: 'starter', name: 'Starter', price: 999, maxListings: 15,
+            featuredListings: 2, photosPerListing: 15,
+            description: 'For individual sellers and small operators.',
+            features: ['Up to 15 active listings', '15 photos per listing', '2 featured listings', 'Verified badge', 'Enhanced search ranking', 'Priority support', 'Basic analytics dashboard'],
+          },
+          {
+            id: 'growth', name: 'Growth', price: 2999, maxListings: 50,
+            featuredListings: 10, photosPerListing: 30,
+            description: 'For growing dealers and fleet operators.',
+            features: ['Up to 50 active listings', '30 photos per listing', '10 featured listings', 'AI price intelligence', 'Demand forecasting', 'Priority search placement', 'Dedicated account manager', 'Advanced analytics'],
+          },
+          {
+            id: 'enterprise', name: 'Enterprise', price: 9999, maxListings: -1,
+            featuredListings: 50, photosPerListing: 50,
+            description: 'For large dealers and enterprise fleets.',
+            features: ['Unlimited listings', '50 photos per listing', '50 featured listings', 'All AI features', 'API access', 'Multi-user access', 'Custom analytics dashboard', 'White-glove onboarding', 'Invoice & GST integration', 'Bulk upload tools'],
+          },
+        ]);
+      }
     } finally {
       setLoading(false);
     }
@@ -210,10 +239,10 @@ export default function SubscriptionPage() {
                   Valid until {new Date(mySub.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
                 <div className="flex gap-3 mt-2">
-                  <span className="text-xs bg-[#E9E3DA] px-2 py-1 rounded font-mono uppercase text-[#101214]">
+                  <span className="text-xs bg-[#EDE8E0] px-2 py-1 rounded font-mono uppercase text-[#101214]">
                     {mySub.maxListings === -1 ? '∞' : mySub.maxListings} Listings
                   </span>
-                  <span className="text-xs bg-[#E9E3DA] px-2 py-1 rounded font-mono uppercase text-[#101214]">
+                  <span className="text-xs bg-[#EDE8E0] px-2 py-1 rounded font-mono uppercase text-[#101214]">
                     {mySub.featuredListings} Featured
                   </span>
                 </div>
@@ -247,7 +276,7 @@ export default function SubscriptionPage() {
                 className={`relative bg-white rounded-2xl overflow-hidden border-2 transition-all flex flex-col ${
                   isCurrent ? 'border-[#FF6A00] shadow-xl' :
                   isPopular ? 'border-[#FF6A00]/50 shadow-lg' :
-                  'border-[#E9E3DA] hover:border-[#101214]/20 hover:shadow-md'
+                  'border-[#EDE8E0] hover:border-[#101214]/20 hover:shadow-md'
                 }`}
               >
                 {/* Popular badge */}
@@ -331,7 +360,7 @@ export default function SubscriptionPage() {
                       isCurrent
                         ? 'bg-green-500 text-white cursor-default'
                         : isFree
-                          ? 'bg-[#E9E3DA] text-[#6F757C] cursor-default'
+                          ? 'bg-[#EDE8E0] text-[#6F757C] cursor-default'
                           : `bg-gradient-to-r ${color.gradient} text-white hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]`
                     }`}
                     style={{ fontFamily: 'Sora, sans-serif' }}
@@ -350,7 +379,7 @@ export default function SubscriptionPage() {
         <div className="flex justify-center mt-12">
           <button
             onClick={() => setShowComparison(!showComparison)}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#E9E3DA] rounded-xl
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#EDE8E0] rounded-xl
                        text-sm font-bold text-[#101214] hover:border-[#FF6A00]/40 hover:shadow-md transition-all"
             style={{ fontFamily: 'Sora, sans-serif' }}
           >
@@ -362,7 +391,7 @@ export default function SubscriptionPage() {
 
         {/* Full Comparison Table */}
         {showComparison && (
-          <div className="mt-8 bg-white rounded-2xl border-2 border-[#E9E3DA] overflow-hidden shadow-sm">
+          <div className="mt-8 bg-white rounded-2xl border-2 border-[#EDE8E0] overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -390,7 +419,7 @@ export default function SubscriptionPage() {
                 <tbody>
                   {COMPARISON_ROWS.map((row, idx) => (
                     <tr key={row.label} className={idx % 2 === 0 ? 'bg-white' : 'bg-[#FAFAF8]'}>
-                      <td className="p-4 font-medium text-[#101214] border-t border-[#E9E3DA]/60">
+                      <td className="p-4 font-medium text-[#101214] border-t border-[#EDE8E0]/60">
                         {row.label}
                       </td>
                       {plans.map(p => {
@@ -424,7 +453,7 @@ export default function SubscriptionPage() {
                         }
 
                         return (
-                          <td key={p.id} className="p-4 text-center border-t border-[#E9E3DA]/60">
+                          <td key={p.id} className="p-4 text-center border-t border-[#EDE8E0]/60">
                             {content}
                           </td>
                         );
@@ -456,7 +485,7 @@ export default function SubscriptionPage() {
                   <span className="text-[#6F757C]">GST (18%)</span>
                   <span className="font-medium">₹{selectedPlanData.gstAmount?.toLocaleString() || Math.round(selectedPlanData.price * 0.18).toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between border-t border-[#E9E3DA] pt-2 font-bold">
+                <div className="flex justify-between border-t border-[#EDE8E0] pt-2 font-bold">
                   <span>Total</span>
                   <span className="text-[#FF6A00]">₹{selectedPlanData.totalAmount?.toLocaleString() || Math.round(selectedPlanData.price * 1.18).toLocaleString()}</span>
                 </div>
@@ -473,11 +502,11 @@ export default function SubscriptionPage() {
                     key={m.id}
                     onClick={() => setPaymentMethod(m.id)}
                     className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left ${
-                      paymentMethod === m.id ? 'border-[#FF6A00] bg-[#FF6A00]/5' : 'border-[#E9E3DA] hover:border-[#101214]/20'
+                      paymentMethod === m.id ? 'border-[#FF6A00] bg-[#FF6A00]/5' : 'border-[#EDE8E0] hover:border-[#101214]/20'
                     }`}
                   >
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      paymentMethod === m.id ? 'bg-[#FF6A00] text-white' : 'bg-[#E9E3DA] text-[#6F757C]'
+                      paymentMethod === m.id ? 'bg-[#FF6A00] text-white' : 'bg-[#EDE8E0] text-[#6F757C]'
                     }`}>
                       <m.icon size={20} />
                     </div>
@@ -497,7 +526,7 @@ export default function SubscriptionPage() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowPayment(false)}
-                  className="flex-1 py-3.5 border border-[#E9E3DA] rounded-xl text-sm font-medium hover:bg-[#E9E3DA] transition-colors min-h-[48px]"
+                  className="flex-1 py-3.5 border border-[#EDE8E0] rounded-xl text-sm font-medium hover:bg-[#EDE8E0] transition-colors min-h-[48px]"
                 >
                   Cancel
                 </button>
@@ -520,23 +549,23 @@ export default function SubscriptionPage() {
         )}
 
         {/* Bottom Features */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-[#E9E3DA] pt-12">
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-[#EDE8E0] pt-12">
           <div className="text-center">
-            <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-[#E9E3DA] flex items-center justify-center mx-auto mb-4 text-[#FF6A00]">
+            <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-[#EDE8E0] flex items-center justify-center mx-auto mb-4 text-[#FF6A00]">
               <TrendingUp size={24} />
             </div>
             <h4 className="font-bold mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>5× More Views</h4>
             <p className="text-sm text-[#6F757C]">Featured listings appear at the top of search results with AI-optimized positioning.</p>
           </div>
           <div className="text-center">
-            <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-[#E9E3DA] flex items-center justify-center mx-auto mb-4 text-[#FF6A00]">
+            <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-[#EDE8E0] flex items-center justify-center mx-auto mb-4 text-[#FF6A00]">
               <Sparkles size={24} />
             </div>
             <h4 className="font-bold mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>AI-Powered Insights</h4>
             <p className="text-sm text-[#6F757C]">Get AI price predictions, market analysis, and listing optimization recommendations.</p>
           </div>
           <div className="text-center">
-            <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-[#E9E3DA] flex items-center justify-center mx-auto mb-4 text-[#FF6A00]">
+            <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-[#EDE8E0] flex items-center justify-center mx-auto mb-4 text-[#FF6A00]">
               <Globe size={24} />
             </div>
             <h4 className="font-bold mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>Pan-India Reach</h4>

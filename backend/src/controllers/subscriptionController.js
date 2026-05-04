@@ -8,7 +8,15 @@ const PLANS = {
     price: 0,
     maxListings: 5,
     featuredListings: 0,
-    features: ['5 Listings', 'Standard Support', 'Basic Search Visibility']
+    photosPerListing: 3,
+    description: 'Get started with basic listings and explore the platform at no cost.',
+    features: [
+      { name: '5 Active Listings', detail: 'List up to 5 machines for sale or rent at a time' },
+      { name: '3 Photos per Listing', detail: 'Upload up to 3 images per machinery listing' },
+      { name: 'Standard Support', detail: 'Email support with response within 48 business hours' },
+      { name: 'Basic Search Visibility', detail: 'Appear in standard search results' },
+      { name: 'Buyer Messaging', detail: 'Receive and respond to buyer inquiries via in-app chat' },
+    ]
   },
   starter: {
     id: 'starter',
@@ -16,7 +24,17 @@ const PLANS = {
     price: 2999,
     maxListings: 20,
     featuredListings: 2,
-    features: ['20 Listings', 'Priority Support', 'Enhanced Search Visibility', '2 Featured Listings']
+    photosPerListing: 10,
+    description: 'Ideal for small dealers looking to expand reach and generate more leads.',
+    features: [
+      { name: '20 Active Listings', detail: 'List up to 20 machines for sale or rent simultaneously' },
+      { name: '10 Photos per Listing', detail: 'Showcase machinery with up to 10 high-quality images' },
+      { name: '2 Featured Listings', detail: 'Pin 2 listings at the top of search results for more visibility' },
+      { name: 'Priority Support', detail: 'Email & chat support with response within 24 hours' },
+      { name: 'Enhanced Search Visibility', detail: 'Boosted ranking in search results across categories' },
+      { name: 'Verified Seller Badge', detail: 'Display a trust badge on your profile and listings' },
+      { name: 'Basic Analytics', detail: 'View counts, inquiry stats, and listing performance data' },
+    ]
   },
   growth: {
     id: 'growth',
@@ -24,7 +42,19 @@ const PLANS = {
     price: 9999,
     maxListings: 100,
     featuredListings: 10,
-    features: ['100 Listings', 'Dedicated Account Manager', 'Verified Badge', '10 Featured Listings', 'Priority Search']
+    photosPerListing: 20,
+    description: 'For growing businesses needing AI insights, dedicated support, and top visibility.',
+    features: [
+      { name: '100 Active Listings', detail: 'Scale your inventory with up to 100 simultaneous listings' },
+      { name: '20 Photos per Listing', detail: 'Full photo galleries with up to 20 images per listing' },
+      { name: '10 Featured Listings', detail: 'Premium placement on browse pages, search, and homepage' },
+      { name: 'Dedicated Account Manager', detail: 'A personal YantraSetu manager to help grow your business' },
+      { name: 'Verified Badge', detail: 'Prominent verified seller trust mark across all pages' },
+      { name: 'Priority Search', detail: 'Top-tier search positioning across all Indian regions' },
+      { name: 'AI Price Intelligence', detail: 'AI-powered pricing recommendations based on market data' },
+      { name: 'Demand Forecasting', detail: 'Predict demand trends for machinery categories in your area' },
+      { name: 'Advanced Analytics', detail: 'Market trends, competitor analysis, and ROI tracking' },
+    ]
   },
   enterprise: {
     id: 'enterprise',
@@ -32,7 +62,20 @@ const PLANS = {
     price: 19999,
     maxListings: -1,
     featuredListings: 50,
-    features: ['Unlimited Listings', 'Bulk Upload Support', 'API Access', 'Custom Analytics', '50 Featured Listings']
+    photosPerListing: 50,
+    description: 'Full-scale solution for large dealers with API access, bulk tools, and custom analytics.',
+    features: [
+      { name: 'Unlimited Listings', detail: 'No cap on the number of active listings at any time' },
+      { name: '50 Photos per Listing', detail: 'Comprehensive media galleries for every machine' },
+      { name: '50 Featured Listings', detail: 'Maximum visibility with 50 pinned listings platform-wide' },
+      { name: 'Bulk Upload Support', detail: 'Import listings via CSV/Excel for rapid inventory onboarding' },
+      { name: 'Full API Access', detail: 'REST API for programmatic listing management and integrations' },
+      { name: 'Custom Analytics Dashboard', detail: 'Build custom reports, export data, and track KPIs' },
+      { name: 'AI Suite (Full Access)', detail: 'Price intelligence, demand forecasting, SEO scoring, and health reports' },
+      { name: 'Multi-user Access', detail: 'Add team members with role-based permissions and controls' },
+      { name: 'White-glove Onboarding', detail: 'Dedicated team to migrate and set up your account' },
+      { name: 'Invoice & GST Integration', detail: 'Auto-generate GST-compliant invoices for every transaction' },
+    ]
   }
 };
 

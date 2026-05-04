@@ -1,0 +1,1981 @@
+================================================================================
+                        YANTRASETU - PROJECT REPORT
+              India's Heavy Equipment Marketplace Platform
+================================================================================
+
+Date:           20 April 2026
+Project Name:   YantraSetu
+Repository:     https://github.com/shaanlabs/yentrasetu
+License:        ISC
+
+================================================================================
+                         TABLE OF CONTENTS
+================================================================================
+
+  1.  Project Overview
+  2.  Problem Statement
+  3.  Objectives
+  4.  Technology Stack
+  5.  System Architecture
+  6.  Project Directory Structure
+  7.  Database Design
+      7.1  Database Tables (Schema Details)
+      7.2  Entity-Relationship (ER) Diagram
+      7.3  Model Associations / Relationships
+  8.  Data Flow Diagrams
+      8.1  User Authentication Flow
+      8.2  Machinery Listing Flow
+      8.3  Rental Booking Flow
+      8.4  Chat / Messaging Flow
+      8.5  Admin Moderation Flow
+      8.6  ML/AI Data Flow
+      8.7  Payment & Transaction Flow
+  9.  Module Details
+      9.1  Authentication Module
+      9.2  Machinery Marketplace Module
+      9.3  Spare Parts Module
+      9.4  Operator Marketplace Module
+      9.5  Mechanic Marketplace Module
+      9.6  Rental & Booking Module
+      9.7  Chat / Messaging Module
+      9.8  Review & Rating Module
+      9.9  Admin Dashboard Module
+      9.10 Certification & Verification Module
+      9.11 Fraud Detection & Reporting Module
+      9.12 Subscription & Monetization Module
+      9.13 Notification Module
+      9.14 ML / AI Intelligence Module
+      9.15 Analytics & Marketing Module
+      9.16 SEO Automation Module
+      9.17 Invoice Generation Module
+ 10.  API Endpoints (Complete List)
+ 11.  Security Implementation
+ 12.  Frontend Pages & Components
+ 13.  Deployment Architecture
+ 14.  Future Enhancements
+ 15.  Conclusion
+
+
+================================================================================
+  1. PROJECT OVERVIEW
+================================================================================
+
+YantraSetu is India's premier heavy equipment marketplace — a comprehensive,
+full-stack web platform that enables buying, selling, and renting of heavy
+machinery (construction, mining, agriculture, and industrial equipment),
+along with marketplaces for spare parts, certified operators, and mechanics.
+
+The name "YantraSetu" means "Bridge of Machines" (Yantra = Machine,
+Setu = Bridge) — symbolizing the platform's role in connecting equipment
+owners, buyers, renters, operators, and service providers across India.
+
+Key Highlights:
+  • Unified multi-role account system (buyer/seller/renter/operator/mechanic)
+  • Location-first discovery with GPS-based radius search
+  • ML-powered price prediction and recommendation engine
+  • Admin moderation with fraud detection and spam prevention
+  • Tiered subscription monetization model
+  • End-to-end rental workflow with digital agreements
+  • Real-time in-app messaging between buyers and sellers
+  • Comprehensive review and trust scoring system
+  • UTM campaign tracking and marketing analytics
+  • SEO optimization with structured data (JSON-LD)
+
+
+================================================================================
+  2. PROBLEM STATEMENT
+================================================================================
+
+India's heavy equipment market (valued at $20+ billion) lacks a unified
+digital platform. Currently:
+
+  • Buyers/sellers rely on fragmented local dealers and word-of-mouth
+  • No standardized pricing — buyers often overpay or sellers undervalue
+  • No verification system — high risk of fraud and fake listings
+  • Operators and mechanics have no formal marketplace to showcase skills
+  • Rental processes are manual with no digital agreements or tracking
+  • Spare parts are difficult to source for specific machinery models
+
+YantraSetu addresses all these problems with a single, trust-based platform.
+
+
+================================================================================
+  3. OBJECTIVES
+================================================================================
+
+  1. Create a unified marketplace for heavy machinery buy/sell/rent
+  2. Build operator and mechanic hiring marketplaces
+  3. Implement ML-based fair price prediction for equipment
+  4. Establish a verification and trust system (document verification, reviews)
+  5. Enable digital rental agreements with security deposit management
+  6. Provide analytics dashboards for market insights
+  7. Implement robust security (rate limiting, spam detection, fraud reporting)
+  8. Build a subscription-based revenue model for dealers
+  9. Deliver SEO-optimized listings with structured data
+ 10. Support location-based search with geolocation
+
+
+================================================================================
+  4. TECHNOLOGY STACK
+================================================================================
+
++---------------------+--------------------------------------------------+
+|  LAYER              |  TECHNOLOGY                                      |
++---------------------+--------------------------------------------------+
+|  Frontend Framework |  React 18 + TypeScript                           |
+|  Build Tool         |  Vite                                            |
+|  Styling            |  Vanilla CSS (custom design system)               |
+|  Animations         |  GSAP + ScrollTrigger                            |
+|  Icons              |  Lucide React                                    |
+|  Routing            |  React Router v6 (lazy-loaded code splitting)    |
+|  State Management   |  React Context API (AuthContext)                 |
+|  Backend Runtime    |  Node.js 20                                      |
+|  API Framework      |  Express.js                                      |
+|  ORM                |  Sequelize v6                                    |
+|  Database (Prod)    |  PostgreSQL                                      |
+|  Database (Dev)     |  SQLite                                          |
+|  Authentication     |  JWT (Access + Refresh tokens)                   |
+|  Password Hashing   |  bcryptjs                                        |
+|  Security Headers   |  Helmet.js                                       |
+|  Rate Limiting      |  express-rate-limit                              |
+|  Compression        |  compression (gzip)                              |
+|  Logging            |  Morgan (HTTP request logging)                   |
+|  Containerization   |  Docker (multi-stage build)                      |
+|  CI/CD              |  GitHub Actions                                  |
+|  ML Engine          |  Pure JS (multivariate linear regression)        |
+|  NLP / Sentiment    |  AFINN-165 lexicon-based analyzer (pure JS)      |
++---------------------+--------------------------------------------------+
+
+
+================================================================================
+  5. SYSTEM ARCHITECTURE
+================================================================================
+
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │                        CLIENT (Browser)                             │
+  │  ┌──────────────────────────────────────────────────────────────┐  │
+  │  │  React 18 + TypeScript + Vite                                │  │
+  │  │  ├── Pages (27 lazy-loaded routes)                           │  │
+  │  │  ├── Components (LazyImage, PageShell, SearchOverlay)        │  │
+  │  │  ├── Contexts (AuthContext — global auth state)              │  │
+  │  │  ├── Hooks (useGeolocation, useSEO, useUtmTracker)          │  │
+  │  │  └── Services (api.ts — centralized HTTP client)             │  │
+  │  └──────────────────────────────────────────────────────┬───────┘  │
+  └──────────────────────────────────────────────────────────┼──────────┘
+                                                             │
+                        HTTP/REST API (JSON)                  │
+                                                             ▼
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │                     API SERVER (Express.js)                         │
+  │  ┌───────────────────────────────────────────────────────────────┐ │
+  │  │  Middleware Pipeline:                                         │ │
+  │  │   Helmet → CORS → Rate Limiter → Body Parser →               │ │
+  │  │   Input Sanitizer → Compression → Morgan Logger              │ │
+  │  ├───────────────────────────────────────────────────────────────┤ │
+  │  │  Routes Layer:                                                │ │
+  │  │   /api/auth/*          — Authentication                      │ │
+  │  │   /api/machinery/*     — Machinery Listings                  │ │
+  │  │   /api/parts/*         — Spare Parts                         │ │
+  │  │   /api/operators/*     — Operator Profiles                   │ │
+  │  │   /api/mechanics/*     — Mechanic Profiles                   │ │
+  │  │   /api/bookings/*      — Rental Bookings                     │ │
+  │  │   /api/chats/*         — Messaging                           │ │
+  │  │   /api/reviews/*       — Reviews & Ratings                   │ │
+  │  │   /api/admin/*         — Admin Panel                         │ │
+  │  │   /api/certifications/*— Certification Verification          │ │
+  │  │   /api/fraud-reports/* — Fraud Reporting                     │ │
+  │  │   /api/subscriptions/* — Subscription Plans                  │ │
+  │  │   /api/notifications/* — Notifications                       │ │
+  │  │   /api/ml/*            — ML/AI Predictions                   │ │
+  │  │   /api/invoices/*      — GST Invoice Generation              │ │
+  │  │   /api/analytics/*     — Marketing Analytics                 │ │
+  │  ├───────────────────────────────────────────────────────────────┤ │
+  │  │  Controllers (16) → Services (7) → Models (15)               │ │
+  │  ├───────────────────────────────────────────────────────────────┤ │
+  │  │  Background Services:                                        │ │
+  │  │   • Subscription Expiry Scheduler (hourly cron)              │ │
+  │  │   • ML Price Model Training (auto-train on startup + 6hr)    │ │
+  │  └───────────────────────────────────────────────────────────────┘ │
+  └──────────────────────────────────────────────┬──────────────────────┘
+                                                 │
+                         Sequelize ORM           │
+                                                 ▼
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │                         DATABASE                                    │
+  │   Production: PostgreSQL (with SSL)                                │
+  │   Development: SQLite (local file)                                 │
+  │   Tables: 16 (+ newsletter_subscribers)                            │
+  │   Indexes: 80+ custom indexes for query performance                │
+  └─────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+  6. PROJECT DIRECTORY STRUCTURE
+================================================================================
+
+yantrasetu/
+├── .github/                          # GitHub Actions CI/CD
+├── .gitignore
+├── .dockerignore
+├── Dockerfile                        # Multi-stage Docker build
+├── README.md                         # Project documentation
+├── DEVELOPER_DOCS.md                 # Developer documentation
+├── DEV_CREDENTIALS.md                # Development credentials
+│
+├── app/                              # ── FRONTEND (React + Vite) ──
+│   ├── public/images/                # Static images
+│   ├── src/
+│   │   ├── main.tsx                  # App entry point
+│   │   ├── App.tsx                   # Root component (landing page)
+│   │   ├── App.css                   # App-specific styles
+│   │   ├── index.css                 # Global design system styles
+│   │   ├── router.tsx                # Route definitions (27 routes)
+│   │   ├── components/
+│   │   │   ├── LazyImage.tsx         # Lazy-loaded image component
+│   │   │   ├── PageShell.tsx         # Shared page layout wrapper
+│   │   │   ├── SearchOverlay.tsx     # Global search overlay
+│   │   │   ├── sections/            # Landing page sections
+│   │   │   └── ui/                  # Reusable UI components
+│   │   ├── contexts/
+│   │   │   └── AuthContext.tsx       # Global authentication state
+│   │   ├── hooks/
+│   │   │   ├── use-mobile.ts        # Mobile detection hook
+│   │   │   ├── useGeolocation.ts    # GPS location hook
+│   │   │   ├── useSEO.ts           # Dynamic SEO meta tags hook
+│   │   │   └── useUtmTracker.ts    # UTM campaign tracking hook
+│   │   ├── services/
+│   │   │   ├── api.ts              # Centralized API client (540 lines)
+│   │   │   └── emailService.ts     # Email integration
+│   │   ├── pages/                   # 27 page components
+│   │   │   ├── LoginPage.tsx
+│   │   │   ├── RegisterPage.tsx
+│   │   │   ├── VerifyOtpPage.tsx
+│   │   │   ├── ProfilePage.tsx
+│   │   │   ├── ChangePasswordPage.tsx
+│   │   │   ├── BrowsePage.tsx
+│   │   │   ├── ListingDetailPage.tsx
+│   │   │   ├── CreateListingPage.tsx
+│   │   │   ├── MyListingsPage.tsx
+│   │   │   ├── PartsPage.tsx
+│   │   │   ├── OperatorsPage.tsx
+│   │   │   ├── MechanicsPage.tsx
+│   │   │   ├── BookingsPage.tsx
+│   │   │   ├── ChatsPage.tsx
+│   │   │   ├── AdminPage.tsx
+│   │   │   ├── DashboardPage.tsx
+│   │   │   ├── MarketInsightsPage.tsx
+│   │   │   ├── NotificationsPage.tsx
+│   │   │   ├── SavedListingsPage.tsx
+│   │   │   ├── SubscriptionPage.tsx
+│   │   │   ├── CertificationsPage.tsx
+│   │   │   ├── LoanEligibilityPage.tsx
+│   │   │   ├── AboutPage.tsx
+│   │   │   ├── TermsPage.tsx
+│   │   │   ├── SampleReportPage.tsx
+│   │   │   ├── InspectionStandardsPage.tsx
+│   │   │   └── ContactSpecialistPage.tsx
+│   │   └── lib/                     # Utility libraries
+│   ├── index.html
+│   └── package.json
+│
+├── backend/                          # ── BACKEND (Node.js + Express) ──
+│   ├── src/
+│   │   ├── server.js                 # Express app entry point
+│   │   ├── config/
+│   │   │   ├── database.js          # Sequelize DB connection
+│   │   │   ├── dbHelpers.js         # DB helper utilities
+│   │   │   ├── dbIndexes.js         # Custom database indexes
+│   │   │   ├── pagination.js        # Pagination utility
+│   │   │   └── validateEnv.js       # Environment validation
+│   │   ├── controllers/             # 16 controllers
+│   │   │   ├── authController.js
+│   │   │   ├── machineryController.js
+│   │   │   ├── partsController.js
+│   │   │   ├── operatorController.js
+│   │   │   ├── mechanicController.js
+│   │   │   ├── bookingController.js
+│   │   │   ├── chatController.js
+│   │   │   ├── reviewController.js
+│   │   │   ├── adminController.js
+│   │   │   ├── certificationController.js
+│   │   │   ├── fraudController.js
+│   │   │   ├── subscriptionController.js
+│   │   │   ├── notificationController.js
+│   │   │   ├── mlController.js
+│   │   │   ├── invoiceController.js
+│   │   │   └── analyticsController.js
+│   │   ├── middleware/               # 5 middleware modules
+│   │   │   ├── auth.js              # JWT authentication & authorization
+│   │   │   ├── errorHandler.js      # Global error handler
+│   │   │   ├── inputSanitizer.js    # XSS prevention
+│   │   │   ├── rateLimiter.js       # Granular rate limiting
+│   │   │   └── spamDetector.js      # Anti-spam middleware
+│   │   ├── models/                   # 15 Sequelize models + index
+│   │   │   ├── User.js
+│   │   │   ├── MachineryListing.js
+│   │   │   ├── PartListing.js
+│   │   │   ├── OperatorProfile.js
+│   │   │   ├── MechanicProfile.js
+│   │   │   ├── Chat.js             # Chat + Message
+│   │   │   ├── Review.js
+│   │   │   ├── Transaction.js
+│   │   │   ├── RentalBooking.js
+│   │   │   ├── Subscription.js
+│   │   │   ├── Notification.js
+│   │   │   ├── CertificationRequest.js
+│   │   │   ├── FraudReport.js
+│   │   │   ├── ActivityLog.js
+│   │   │   ├── CampaignVisit.js
+│   │   │   └── index.js            # Associations & exports
+│   │   ├── routes/
+│   │   │   └── index.js             # All API route definitions
+│   │   ├── services/                 # 7 business logic services
+│   │   │   ├── pricePrediction.js   # ML price prediction engine
+│   │   │   ├── recommendationEngine.js  # Recommendation system
+│   │   │   ├── demandForecaster.js  # Demand forecasting
+│   │   │   ├── sentimentAnalyzer.js # Review sentiment analysis
+│   │   │   ├── leadScorer.js        # User lead scoring
+│   │   │   ├── seoScorer.js         # SEO quality scorer
+│   │   │   └── subscriptionCron.js  # Subscription expiry scheduler
+│   │   ├── seed-admin.js            # Admin user seeder
+│   │   ├── seed-users.js            # Test user seeder
+│   │   ├── seed-listings.js         # Test listing seeder
+│   │   ├── seed-comprehensive.js    # Comprehensive data seeder
+│   │   └── seed-massive.js          # Large-scale data seeder
+│   └── package.json
+
+
+================================================================================
+  7. DATABASE DESIGN
+================================================================================
+
+7.1 DATABASE TABLES (SCHEMA DETAILS)
+================================================================================
+
+The database consists of 16 primary tables plus 1 utility table.
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 1: users
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores all user accounts (buyers, sellers, operators, mechanics, admins)
+Soft Delete: Yes (paranoid: true — uses deletedAt column)
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated       Unique user identifier
+  phone               VARCHAR(15)       NOT NULL, UNIQUE     Phone number (primary login)
+  email               VARCHAR(255)      UNIQUE, nullable     Email address
+  password            VARCHAR(255)      nullable             Bcrypt hashed password
+  firstName           VARCHAR(100)      nullable             First name
+  lastName            VARCHAR(100)      nullable             Last name
+  userType            ENUM              Default: individual  individual, contractor, company,
+                                                             dealer, operator, mechanic,
+                                                             admin, super_admin
+  accountTier         ENUM              Default: free        free, starter, growth, enterprise
+  companyName         VARCHAR(255)      nullable             Company/business name
+  gstNumber           VARCHAR(50)       nullable             GST registration number
+  address             TEXT              nullable             Full address
+  city                VARCHAR(100)      nullable             City name
+  state               VARCHAR(100)      nullable             State name
+  pincode             VARCHAR(10)       nullable             Postal code
+  latitude            DECIMAL(10,8)     nullable             GPS latitude
+  longitude           DECIMAL(11,8)     nullable             GPS longitude
+  isVerified          BOOLEAN           Default: false       Admin verification status
+  isActive            BOOLEAN           Default: true        Account active status
+  isBanned            BOOLEAN           Default: false       Ban status
+  banReason           TEXT              nullable             Reason for ban
+  rating              DECIMAL(2,1)      Default: 0.0         Average rating (0-5)
+  reviewCount         INTEGER           Default: 0           Total reviews received
+  profileImage        TEXT              nullable             Profile image (base64/URL)
+  otpCode             VARCHAR(10)       nullable             Current OTP code
+  otpExpiresAt        DATETIME          nullable             OTP expiry timestamp
+  lastLoginAt         DATETIME          nullable             Last login timestamp
+  subscriptionExpiry  DATETIME          nullable             Subscription expiry date
+  referralCode        VARCHAR(20)       UNIQUE, nullable     Unique referral code
+  referredBy          VARCHAR(20)       nullable             Referral code of referrer
+  metadata            JSONB             Default: {}          Flexible metadata storage
+  createdAt           DATETIME          Auto-generated       Account creation time
+  updatedAt           DATETIME          Auto-generated       Last update time
+  deletedAt           DATETIME          nullable             Soft delete timestamp
+
+Hooks:
+  • beforeCreate: Auto-hashes password with bcrypt (10 rounds)
+  • beforeUpdate: Re-hashes password if changed
+
+Instance Methods:
+  • comparePassword(candidatePassword) — bcrypt comparison
+  • getFullName() — returns "FirstName LastName" or "Anonymous"
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 2: machinery_listings
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores all heavy equipment listings (for sale and for rent)
+Soft Delete: Yes (paranoid: true)
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated       Listing identifier
+  userId              UUID (FK)         NOT NULL → users.id  Owner/seller reference
+  listingType         ENUM              NOT NULL             sale, rent
+  category            ENUM              NOT NULL             construction, mining,
+                                                             agriculture, industrial
+  subCategory         VARCHAR(100)      NOT NULL             Equipment sub-type
+  make                VARCHAR(100)      NOT NULL             Manufacturer/brand
+  model               VARCHAR(100)      NOT NULL             Model name
+  year                INTEGER           NOT NULL             Manufacturing year
+  hoursUsed           INTEGER           nullable             Total hours operated
+  condition           ENUM              NOT NULL             new, used, refurbished
+  price               DECIMAL(15,2)     NOT NULL             Sale price or rental rate
+  priceNegotiable     BOOLEAN           Default: true        Price negotiation flag
+  description         TEXT              nullable             Detailed description
+  rentalUnit          ENUM              nullable             hourly, daily, monthly
+  securityDeposit     DECIMAL(15,2)     nullable             Required security deposit
+  minimumRentalDuration INTEGER         nullable             Min rental days
+  withOperator        BOOLEAN           Default: false       Operator included option
+  operatorRate        DECIMAL(10,2)     nullable             Operator cost per day
+  deliveryAvailable   BOOLEAN           Default: false       Delivery service flag
+  deliveryRadius      INTEGER           nullable             Delivery radius (km)
+  address             TEXT              nullable             Equipment location address
+  city                VARCHAR(100)      NOT NULL             City
+  state               VARCHAR(100)      NOT NULL             State
+  district            VARCHAR(100)      nullable             District
+  pincode             VARCHAR(10)       nullable             Postal code
+  latitude            DECIMAL(10,8)     nullable             GPS latitude
+  longitude           DECIMAL(11,8)     nullable             GPS longitude
+  status              ENUM              Default: pending     pending, approved, rejected,
+                                                             sold, rented, expired
+  isVerified          BOOLEAN           Default: false       Admin verified
+  isFeatured          BOOLEAN           Default: false       Featured/promoted listing
+  featuredUntil       DATETIME          nullable             Featured expiry date
+  isActive            BOOLEAN           Default: true        Listing active status
+  rejectionReason     TEXT              nullable             Admin rejection reason
+  rcBookUrl           VARCHAR(500)      nullable             RC book document URL
+  insuranceUrl        VARCHAR(500)      nullable             Insurance document URL
+  inspectionReportUrl VARCHAR(500)      nullable             Inspection report URL
+  images              JSONB             Default: []          Array of image URLs/base64
+  videoUrl            VARCHAR(500)      nullable             Video URL
+  viewCount           INTEGER           Default: 0           Total page views
+  contactUnlockCount  INTEGER           Default: 0           Contact reveal count
+  expiresAt           DATETIME          nullable             Listing expiry date
+  metadata            JSONB             Default: {}          Flexible metadata
+  createdAt           DATETIME          Auto-generated
+  updatedAt           DATETIME          Auto-generated
+  deletedAt           DATETIME          nullable
+
+Indexes: userId, category, subCategory, make, model, listingType, status,
+         city, state, price, year, condition, isFeatured, isVerified,
+         createdAt, (latitude, longitude)
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 3: part_listings
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores spare parts listings
+Soft Delete: Yes (paranoid: true)
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated       Part listing ID
+  userId              UUID (FK)         NOT NULL → users.id  Seller reference
+  partName            VARCHAR(255)      NOT NULL             Part name
+  partNumber          VARCHAR(100)      nullable             Part number
+  oemPartNumber       VARCHAR(100)      nullable             OEM part number
+  category            ENUM              NOT NULL             engine, hydraulics, electrical,
+                                                             undercarriage, cab,
+                                                             attachments, other
+  condition           ENUM              NOT NULL             new, used, oem,
+                                                             aftermarket, refurbished
+  price               DECIMAL(12,2)     NOT NULL             Part price (INR)
+  quantity            INTEGER           Default: 1           Available quantity
+  description         TEXT              nullable             Part description
+  compatibleMakes     JSONB             Default: []          Compatible manufacturers
+  compatibleModels    JSONB             Default: []          Compatible models
+  compatibleYears     JSONB             Default: []          Compatible years
+  city                VARCHAR(100)      NOT NULL             City
+  state               VARCHAR(100)      NOT NULL             State
+  pincode             VARCHAR(10)       nullable             Postal code
+  latitude            DECIMAL(10,8)     nullable             GPS latitude
+  longitude           DECIMAL(11,8)     nullable             GPS longitude
+  status              ENUM              Default: active      active, sold, inactive
+  isActive            BOOLEAN           Default: true
+  images              JSONB             Default: []          Part images
+  viewCount           INTEGER           Default: 0
+  contactUnlockCount  INTEGER           Default: 0
+  expiresAt           DATETIME          nullable
+  metadata            JSONB             Default: {}
+  createdAt           DATETIME
+  updatedAt           DATETIME
+  deletedAt           DATETIME          nullable
+
+Indexes: userId, partNumber, oemPartNumber, category, condition,
+         city, state, status, price
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 4: operator_profiles
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores machinery operator profiles and certifications
+Soft Delete: Yes (paranoid: true)
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated
+  userId              UUID (FK)         NOT NULL, UNIQUE     One profile per user
+  yearsOfExperience   INTEGER           Default: 0           Years of operating experience
+  equipmentTypes      JSONB             Default: []          Machinery types operated
+  hasDGMSLicense      BOOLEAN           Default: false       DGMS mining license
+  dgmsLicenseUrl      VARCHAR(500)      nullable             License document
+  hasCraneCertificate BOOLEAN           Default: false       Crane operation cert
+  craneCertificateUrl VARCHAR(500)      nullable
+  hasJCBExcavatorCertificate BOOLEAN    Default: false       JCB/excavator cert
+  jcbExcavatorCertificateUrl VARCHAR(500) nullable
+  hasDrivingLicense   BOOLEAN           Default: false       Driving license
+  drivingLicenseUrl   VARCHAR(500)      nullable
+  otherCertifications JSONB             Default: []          Other certifications
+  workHistory         JSONB             Default: []          Past work experience
+  isAvailable         BOOLEAN           Default: true        Currently available
+  availabilityCalendar JSONB            Default: {}          Schedule calendar
+  dayRate             DECIMAL(10,2)     nullable             Daily rate (INR)
+  projectRate         DECIMAL(12,2)     nullable             Project rate (INR)
+  city                VARCHAR(100)      NOT NULL
+  state               VARCHAR(100)      NOT NULL
+  pincode             VARCHAR(10)       nullable
+  latitude            DECIMAL(10,8)     nullable
+  longitude           DECIMAL(11,8)     nullable
+  willingToRelocate   BOOLEAN           Default: false
+  isVerified          BOOLEAN           Default: false
+  verificationStatus  ENUM              Default: pending     pending, approved, rejected
+  isActive            BOOLEAN           Default: true
+  rating              DECIMAL(2,1)      Default: 0.0
+  reviewCount         INTEGER           Default: 0
+  profileViews        INTEGER           Default: 0
+  hireCount           INTEGER           Default: 0
+  bio                 TEXT              nullable
+  metadata            JSONB             Default: {}
+  createdAt           DATETIME
+  updatedAt           DATETIME
+  deletedAt           DATETIME          nullable
+
+Indexes: userId, city, state, isAvailable, isVerified, rating, dayRate
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 5: mechanic_profiles
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores mechanic/technician profiles, specializations, and service areas
+Soft Delete: Yes (paranoid: true)
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated
+  userId              UUID (FK)         NOT NULL, UNIQUE     One profile per user
+  yearsOfExperience   INTEGER           Default: 0
+  specializations     JSONB             Default: []          engine, hydraulics, electrical,
+                                                             welding, tyres, pms, etc.
+  brandExpertise      JSONB             Default: []          CAT, Volvo, Komatsu, etc.
+  hasITICertification BOOLEAN           Default: false       ITI diploma
+  itiCertificateUrl   VARCHAR(500)      nullable
+  hasDiploma          BOOLEAN           Default: false       Engineering diploma
+  diplomaUrl          VARCHAR(500)      nullable
+  brandCertifications JSONB             Default: []          Brand-specific certs
+  otherCertifications JSONB             Default: []
+  isAvailable         BOOLEAN           Default: true
+  availabilityCalendar JSONB            Default: {}
+  hourlyRate          DECIMAL(10,2)     nullable
+  dailyRate           DECIMAL(10,2)     nullable
+  visitCharge         DECIMAL(10,2)     nullable             On-site visit charge
+  city                VARCHAR(100)      NOT NULL
+  state               VARCHAR(100)      NOT NULL
+  pincode             VARCHAR(10)       nullable
+  latitude            DECIMAL(10,8)     nullable
+  longitude           DECIMAL(11,8)     nullable
+  serviceRadius       INTEGER           Default: 50          Service radius in km
+  isVerified          BOOLEAN           Default: false
+  verificationStatus  ENUM              Default: pending
+  isActive            BOOLEAN           Default: true
+  rating              DECIMAL(2,1)      Default: 0.0
+  reviewCount         INTEGER           Default: 0
+  profileViews        INTEGER           Default: 0
+  serviceCount        INTEGER           Default: 0           Completed services
+  bio                 TEXT              nullable
+  metadata            JSONB             Default: {}
+  createdAt           DATETIME
+  updatedAt           DATETIME
+  deletedAt           DATETIME          nullable
+
+Indexes: userId, city, state, isAvailable, isVerified, rating, hourlyRate
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 6: chats
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores chat conversations between buyer and seller
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated
+  buyerId             UUID (FK)         NOT NULL → users.id  Buyer/inquirer
+  sellerId            UUID (FK)         NOT NULL → users.id  Seller/provider
+  listingType         ENUM              nullable             machinery, part, operator,
+                                                             mechanic
+  listingId           UUID              nullable             Related listing/profile ID
+  status              ENUM              Default: active      active, blocked, archived
+  leadFeePaid         BOOLEAN           Default: false       Lead fee payment status
+  leadFeeAmount       DECIMAL(10,2)     nullable             Lead fee amount
+  leadFeePaidAt       DATETIME          nullable
+  lastMessageAt       DATETIME          nullable
+  lastMessagePreview  VARCHAR(200)      nullable             Preview text
+  buyerUnreadCount    INTEGER           Default: 0
+  sellerUnreadCount   INTEGER           Default: 0
+  metadata            JSONB             Default: {}
+  createdAt           DATETIME
+  updatedAt           DATETIME
+
+Indexes: buyerId, sellerId, listingId, status, lastMessageAt
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 7: messages
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores individual messages within chat conversations
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated
+  chatId              UUID (FK)         NOT NULL → chats.id  Parent chat
+  senderId            UUID (FK)         NOT NULL → users.id  Message sender
+  messageType         ENUM              Default: text        text, image, document,
+                                                             location
+  content             TEXT              NOT NULL             Message content
+  mediaUrl            VARCHAR(500)      nullable             Attachment URL
+  isRead              BOOLEAN           Default: false
+  readAt              DATETIME          nullable
+  isDeleted           BOOLEAN           Default: false
+  metadata            JSONB             Default: {}
+  createdAt           DATETIME
+  updatedAt           DATETIME
+
+Indexes: chatId, senderId, createdAt
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 8: reviews
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores ratings and reviews for users, listings, operators, mechanics
+Soft Delete: Yes (paranoid: true)
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated
+  reviewerId          UUID (FK)         NOT NULL → users.id  Person giving review
+  revieweeId          UUID (FK)         NOT NULL → users.id  Person being reviewed
+  reviewType          ENUM              NOT NULL             listing, user, operator,
+                                                             mechanic, rental
+  entityId            UUID              nullable             Related listing/rental ID
+  rating              DECIMAL(2,1)      NOT NULL, 1-5        Overall rating
+  title               VARCHAR(200)      nullable             Review title
+  comment             TEXT              NOT NULL             Review text
+  punctualityRating   DECIMAL(2,1)      nullable             Punctuality sub-rating
+  qualityRating       DECIMAL(2,1)      nullable             Quality sub-rating
+  communicationRating DECIMAL(2,1)      nullable             Communication sub-rating
+  valueRating         DECIMAL(2,1)      nullable             Value-for-money sub-rating
+  isVerified          BOOLEAN           Default: false       Verified transaction review
+  isVisible           BOOLEAN           Default: true        Visibility flag
+  isFlagged           BOOLEAN           Default: false       Flagged for moderation
+  flagReason          TEXT              nullable
+  response            TEXT              nullable             Reviewee's response
+  respondedAt         DATETIME          nullable
+  helpfulCount        INTEGER           Default: 0           "Helpful" votes
+  metadata            JSONB             Default: {}
+  createdAt           DATETIME
+  updatedAt           DATETIME
+  deletedAt           DATETIME          nullable
+
+Indexes: reviewerId, revieweeId, reviewType, entityId, rating,
+         isVisible, createdAt
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 9: rental_bookings
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores equipment rental booking records with full payment tracking
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated
+  listingId           UUID (FK)         NOT NULL → machinery_listings.id
+  ownerId             UUID (FK)         NOT NULL → users.id  Equipment owner
+  renterId            UUID (FK)         NOT NULL → users.id  Renter
+  startDate           DATEONLY          NOT NULL             Rental start
+  endDate             DATEONLY          NOT NULL             Rental end
+  duration            INTEGER           NOT NULL             Duration in days
+  rentalRate          DECIMAL(10,2)     NOT NULL             Rate per unit
+  rentalUnit          ENUM              NOT NULL             hourly, daily, monthly
+  totalRentalAmount   DECIMAL(15,2)     NOT NULL
+  securityDeposit     DECIMAL(15,2)     NOT NULL
+  platformCommission  DECIMAL(15,2)     NOT NULL             Platform fee
+  commissionPercentage DECIMAL(5,2)     Default: 10.00       Commission %
+  totalAmount         DECIMAL(15,2)     NOT NULL             Grand total
+  withOperator        BOOLEAN           Default: false
+  operatorRate        DECIMAL(10,2)     nullable
+  operatorTotal       DECIMAL(10,2)     nullable
+  status              ENUM              Default: pending     pending, confirmed, active,
+                                                             completed, cancelled, disputed
+  paymentStatus       ENUM              Default: pending     pending, partial, completed,
+                                                             refunded
+  amountPaid          DECIMAL(15,2)     Default: 0.00
+  depositStatus       ENUM              Default: pending     pending, held, released,
+                                                             forfeited
+  depositReleasedAt   DATETIME          nullable
+  depositReleaseAmount DECIMAL(15,2)    nullable
+  agreementUrl        VARCHAR(500)      nullable             Digital agreement PDF
+  renterSignedAt      DATETIME          nullable
+  ownerSignedAt       DATETIME          nullable
+  deliveryAddress     TEXT              nullable
+  deliveryDate        DATETIME          nullable
+  returnDate          DATETIME          nullable
+  cancelledBy         UUID              nullable
+  cancellationReason  TEXT              nullable
+  cancelledAt         DATETIME          nullable
+  cancellationFee     DECIMAL(10,2)     Default: 0.00
+  payoutStatus        ENUM              Default: pending     pending, processing,
+                                                             completed, failed
+  payoutAmount        DECIMAL(15,2)     nullable
+  payoutTransactionId VARCHAR(255)      nullable
+  payoutCompletedAt   DATETIME          nullable
+  ownerNotes          TEXT              nullable
+  renterNotes         TEXT              nullable
+  adminNotes          TEXT              nullable
+  metadata            JSONB             Default: {}
+  createdAt           DATETIME
+  updatedAt           DATETIME
+
+Indexes: listingId, ownerId, renterId, status, paymentStatus,
+         startDate, endDate
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 10: transactions
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Tracks all financial transactions on the platform
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated
+  userId              UUID (FK)         NOT NULL → users.id
+  transactionType     ENUM              NOT NULL             lead_fee, rental_payment,
+                                                             rental_commission,
+                                                             security_deposit,
+                                                             deposit_refund, subscription,
+                                                             featured_listing, payout
+  relatedType         ENUM              nullable             listing, chat, rental,
+                                                             subscription
+  relatedId           UUID              nullable             Related entity ID
+  amount              DECIMAL(15,2)     NOT NULL
+  currency            VARCHAR(3)        Default: INR
+  paymentMethod       ENUM              nullable             upi, card, netbanking,
+                                                             wallet, cash, bank_transfer
+  paymentGateway      VARCHAR(50)       nullable
+  gatewayTransactionId VARCHAR(255)     nullable
+  status              ENUM              Default: pending     pending, completed, failed,
+                                                             refunded, cancelled
+  isSecurityDeposit   BOOLEAN           Default: false
+  securityDepositStatus ENUM            nullable             held, released, forfeited
+  commissionAmount    DECIMAL(15,2)     nullable
+  commissionPercentage DECIMAL(5,2)     nullable
+  description         TEXT              nullable
+  metadata            JSONB             Default: {}
+  completedAt         DATETIME          nullable
+  refundedAt          DATETIME          nullable
+  createdAt           DATETIME
+  updatedAt           DATETIME
+
+Indexes: userId, transactionType, relatedId, status,
+         gatewayTransactionId, createdAt
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 11: subscriptions
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores user subscription plans and their status
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated
+  userId              UUID (FK)         NOT NULL → users.id
+  plan                ENUM              Default: free        free, starter, growth,
+                                                             enterprise
+  status              ENUM              Default: active      active, expired, cancelled
+  startDate           DATETIME          Default: NOW
+  endDate             DATETIME          nullable
+  maxListings         INTEGER           Default: 5
+  featuredListings    INTEGER           Default: 0
+  amount              DECIMAL(10,2)     Default: 0.00
+  metadata            JSONB             nullable
+  createdAt           DATETIME
+  updatedAt           DATETIME
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 12: notifications
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores in-app notifications for users
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated
+  userId              UUID (FK)         NOT NULL
+  type                VARCHAR(50)       NOT NULL             booking_created,
+                                                             booking_confirmed,
+                                                             booking_cancelled,
+                                                             booking_completed,
+                                                             message_received,
+                                                             listing_approved,
+                                                             listing_rejected,
+                                                             review_received, system
+  title               VARCHAR(255)      NOT NULL
+  body                TEXT              nullable
+  data                JSONB             Default: {}          Navigation data (IDs)
+  isRead              BOOLEAN           Default: false
+  createdAt           DATETIME
+  updatedAt           DATETIME
+
+Indexes: (userId, isRead), (userId, createdAt)
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 13: certification_requests
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores user-submitted certification documents for verification
+Soft Delete: Yes (paranoid: true)
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated
+  userId              UUID (FK)         NOT NULL → users.id
+  certificationType   ENUM              NOT NULL             DGMS, crane_operator,
+                                                             JCB_certified, ITI_diploma,
+                                                             trade_license,
+                                                             GST_certificate, ISO,
+                                                             safety_training, other
+  documentName        VARCHAR(255)      NOT NULL             Certificate name
+  documentNumber      VARCHAR(100)      nullable             Certificate number
+  documentImage       TEXT              NOT NULL             Base64 encoded image
+  issuingAuthority    VARCHAR(255)      nullable
+  issuedDate          DATEONLY          nullable
+  expiresAt           DATEONLY          nullable
+  status              ENUM              Default: pending     pending, approved, rejected
+  adminNotes          TEXT              nullable
+  reviewedBy          UUID (FK)         nullable → users.id  Admin who reviewed
+  reviewedAt          DATETIME          nullable
+  createdAt           DATETIME
+  updatedAt           DATETIME
+  deletedAt           DATETIME          nullable
+
+Indexes: userId, status, certificationType
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 14: fraud_reports
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores fraud/abuse reports submitted by users
+Soft Delete: Yes (paranoid: true)
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated
+  reporterId          UUID (FK)         NOT NULL → users.id  Reporter
+  targetType          ENUM              NOT NULL             listing, user
+  targetId            UUID              NOT NULL             Reported entity ID
+  reason              ENUM              NOT NULL             fake_listing,
+                                                             misleading_photos,
+                                                             scam_pricing,
+                                                             stolen_equipment,
+                                                             impersonation, spam, other
+  description         TEXT              NOT NULL             Report details
+  evidenceImages      JSONB             Default: []          Evidence images (base64)
+  status              ENUM              Default: pending     pending, investigating,
+                                                             resolved, dismissed
+  adminNotes          TEXT              nullable
+  resolution          VARCHAR(255)      nullable
+  reviewedBy          UUID (FK)         nullable → users.id  Admin reviewer
+  reviewedAt          DATETIME          nullable
+  createdAt           DATETIME
+  updatedAt           DATETIME
+  deletedAt           DATETIME          nullable
+
+Indexes: reporterId, (targetType, targetId), status, reason
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 15: activity_logs
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Immutable audit trail for all significant platform actions
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated
+  userId              UUID              nullable             Acting user (null for anon)
+  action              VARCHAR(80)       NOT NULL             Action type (validated enum):
+                                                             login, login_failed, register,
+                                                             password_changed,
+                                                             listing_created/updated/
+                                                             approved/rejected/featured,
+                                                             user_banned/unbanned/
+                                                             role_changed/verified/
+                                                             deactivated,
+                                                             booking_created/confirmed/
+                                                             cancelled,
+                                                             fraud_reported/resolved/
+                                                             dismissed,
+                                                             cert_submitted/approved/
+                                                             rejected,
+                                                             spam_detected/blocked,
+                                                             review_created, part_created,
+                                                             profile_updated, admin_action,
+                                                             listing_viewed/searched,
+                                                             referral_used
+  targetType          VARCHAR(50)       nullable             Target entity type
+  targetId            UUID              nullable             Target entity ID
+  metadata            JSON              Default: {}          Additional context data
+  ipAddress           VARCHAR(45)       nullable             Client IP address
+  userAgent           VARCHAR(500)      nullable             Browser user agent
+  severity            ENUM              Default: info        info, warning, critical
+  createdAt           DATETIME          Auto-generated
+
+Note: updatedAt is disabled (logs are immutable)
+Indexes: userId, action, createdAt, severity
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 16: campaign_visits
+────────────────────────────────────────────────────────────────────────────────
+Purpose: UTM campaign tracking for marketing analytics
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  UUID (PK)         Auto-generated
+  sessionId           VARCHAR(100)      NOT NULL             Browser session ID
+  userId              UUID              nullable             Set after login/register
+  source              VARCHAR(100)      nullable             UTM source (google, facebook)
+  medium              VARCHAR(100)      nullable             UTM medium (cpc, organic)
+  campaign            VARCHAR(255)      nullable             UTM campaign name
+  content             VARCHAR(255)      nullable             A/B test variant
+  term                VARCHAR(255)      nullable             Search keyword
+  landingPage         VARCHAR(500)      nullable             Entry page URL
+  referrer            VARCHAR(500)      nullable             HTTP referrer
+  userAgent           VARCHAR(500)      nullable
+  ipAddress           VARCHAR(45)       nullable
+  device              ENUM              nullable             desktop, mobile, tablet
+  browser             VARCHAR(50)       nullable
+  country             VARCHAR(50)       nullable
+  city                VARCHAR(100)      nullable
+  conversionType      ENUM              Default: none        none, registered, listed,
+                                                             booked, subscribed
+  convertedAt         DATETIME          nullable
+  pageViews           INTEGER           Default: 1
+  duration            INTEGER           Default: 0           Session seconds
+  bounced             BOOLEAN           Default: true        Single page visit
+  createdAt           DATETIME
+  updatedAt           DATETIME
+
+Indexes: sessionId, userId, source, medium, campaign,
+         conversionType, createdAt
+
+
+────────────────────────────────────────────────────────────────────────────────
+TABLE 17: newsletter_subscribers (Auto-created utility table)
+────────────────────────────────────────────────────────────────────────────────
+Purpose: Stores newsletter email subscriptions
+
+  Column              Type              Constraints          Description
+  ──────────────────  ────────────────  ───────────────────  ────────────────────────
+  id                  INTEGER (PK)      AUTO_INCREMENT
+  email               VARCHAR(255)      NOT NULL, UNIQUE
+  subscribed_at       DATETIME          Default: NOW
+  is_active           BOOLEAN           Default: 1
+
+
+================================================================================
+7.2 ENTITY-RELATIONSHIP (ER) DIAGRAM (TEXT REPRESENTATION)
+================================================================================
+
+                        ┌──────────────────┐
+                        │                  │
+              ┌─────────┤     USERS        ├──────────────┐
+              │         │                  │              │
+              │         └───┬──┬──┬──┬──┬──┘              │
+              │             │  │  │  │  │                 │
+         1:N  │        1:N  │  │  │  │  │ 1:N             │ 1:N
+              │             │  │  │  │  │                 │
+              ▼             │  │  │  │  │                 ▼
+    ┌──────────────┐        │  │  │  │  │      ┌──────────────────┐
+    │ MACHINERY    │        │  │  │  │  │      │ ACTIVITY_LOGS    │
+    │ LISTINGS     │        │  │  │  │  │      └──────────────────┘
+    └──────┬───────┘        │  │  │  │  │
+           │                │  │  │  │  │      ┌──────────────────┐
+      1:N  │           1:1  │  │  │  │  └─────►│ CAMPAIGN_VISITS  │
+           │                │  │  │  │         └──────────────────┘
+           ▼                │  │  │  │
+    ┌──────────────┐        │  │  │  │         ┌──────────────────┐
+    │ RENTAL       │   1:1  │  │  │  └────────►│ NOTIFICATIONS    │
+    │ BOOKINGS     │◄──┐    │  │  │            └──────────────────┘
+    └──────────────┘   │    │  │  │
+                       │    │  │  │            ┌──────────────────┐
+      USERS(ownerId)───┘    │  │  └───────────►│ FRAUD_REPORTS    │
+      USERS(renterId)───┘   │  │               └──────────────────┘
+                            │  │
+                            │  │               ┌──────────────────┐
+                            │  └──────────────►│ CERTIFICATION    │
+                            │                  │ REQUESTS         │
+                            │                  └──────────────────┘
+                            │
+              ┌─────────────┼─────────────┐
+              │             │             │
+              ▼             ▼             ▼
+    ┌──────────────┐ ┌────────────┐ ┌──────────────┐
+    │ OPERATOR     │ │ MECHANIC   │ │ PART         │
+    │ PROFILES     │ │ PROFILES   │ │ LISTINGS     │
+    └──────────────┘ └────────────┘ └──────────────┘
+
+    ┌──────────────┐                ┌──────────────┐
+    │ CHATS        │───────1:N─────►│ MESSAGES     │
+    │ (buyerId,    │                └──────────────┘
+    │  sellerId)   │
+    └──────────────┘
+
+    ┌──────────────┐                ┌──────────────┐
+    │ REVIEWS      │                │ TRANSACTIONS │
+    │ (reviewerId, │                │ (userId)     │
+    │  revieweeId) │                └──────────────┘
+    └──────────────┘
+
+    ┌──────────────┐
+    │ SUBSCRIPTIONS│
+    │ (userId)     │
+    └──────────────┘
+
+
+RELATIONSHIPS AT A GLANCE:
+──────────────────────────
+
+  User (1) ──────────► (N) MachineryListing       [userId]
+  User (1) ──────────► (N) PartListing             [userId]
+  User (1) ──────────► (1) OperatorProfile         [userId, UNIQUE]
+  User (1) ──────────► (1) MechanicProfile         [userId, UNIQUE]
+  User (1) ──────────► (N) Chat (as buyer)         [buyerId]
+  User (1) ──────────► (N) Chat (as seller)        [sellerId]
+  User (1) ──────────► (N) Message                 [senderId]
+  User (1) ──────────► (N) Review (as reviewer)    [reviewerId]
+  User (1) ──────────► (N) Review (as reviewee)    [revieweeId]
+  User (1) ──────────► (N) Transaction             [userId]
+  User (1) ──────────► (N) RentalBooking (owner)   [ownerId]
+  User (1) ──────────► (N) RentalBooking (renter)  [renterId]
+  User (1) ──────────► (N) CertificationRequest    [userId]
+  User (1) ──────────► (N) FraudReport             [reporterId]
+  User (1) ──────────► (N) Subscription            [userId]
+  User (1) ──────────► (N) Notification            [userId]
+  User (1) ──────────► (N) ActivityLog             [userId]
+  User (1) ──────────► (N) CampaignVisit           [userId]
+  MachineryListing (1) ► (N) RentalBooking         [listingId]
+  Chat (1) ──────────► (N) Message                 [chatId]
+
+
+================================================================================
+7.3 MODEL ASSOCIATIONS (SEQUELIZE CODE)
+================================================================================
+
+  // User → Listings
+  User.hasMany(MachineryListing, { foreignKey: 'userId', as: 'machineryListings' })
+  User.hasMany(PartListing, { foreignKey: 'userId', as: 'partListings' })
+  MachineryListing.belongsTo(User, { foreignKey: 'userId', as: 'owner' })
+  PartListing.belongsTo(User, { foreignKey: 'userId', as: 'seller' })
+
+  // User → Profiles (1:1)
+  User.hasOne(OperatorProfile, { foreignKey: 'userId', as: 'operatorProfile' })
+  User.hasOne(MechanicProfile, { foreignKey: 'userId', as: 'mechanicProfile' })
+  OperatorProfile.belongsTo(User, { foreignKey: 'userId', as: 'user' })
+  MechanicProfile.belongsTo(User, { foreignKey: 'userId', as: 'user' })
+
+  // User → Chats (dual FK)
+  User.hasMany(Chat, { foreignKey: 'buyerId', as: 'buyerChats' })
+  User.hasMany(Chat, { foreignKey: 'sellerId', as: 'sellerChats' })
+  Chat.belongsTo(User, { foreignKey: 'buyerId', as: 'buyer' })
+  Chat.belongsTo(User, { foreignKey: 'sellerId', as: 'seller' })
+
+  // Chat → Messages
+  Chat.hasMany(Message, { foreignKey: 'chatId', as: 'messages' })
+  Message.belongsTo(Chat, { foreignKey: 'chatId', as: 'chat' })
+  Message.belongsTo(User, { foreignKey: 'senderId', as: 'sender' })
+
+  // User → Reviews (dual FK)
+  User.hasMany(Review, { foreignKey: 'reviewerId', as: 'reviewsGiven' })
+  User.hasMany(Review, { foreignKey: 'revieweeId', as: 'reviewsReceived' })
+  Review.belongsTo(User, { foreignKey: 'reviewerId', as: 'reviewer' })
+  Review.belongsTo(User, { foreignKey: 'revieweeId', as: 'reviewee' })
+
+  // User → Bookings (dual FK)
+  User.hasMany(RentalBooking, { foreignKey: 'ownerId', as: 'rentalsAsOwner' })
+  User.hasMany(RentalBooking, { foreignKey: 'renterId', as: 'rentalsAsRenter' })
+  RentalBooking.belongsTo(User, { foreignKey: 'ownerId', as: 'owner' })
+  RentalBooking.belongsTo(User, { foreignKey: 'renterId', as: 'renter' })
+  MachineryListing.hasMany(RentalBooking, { foreignKey: 'listingId', as: 'rentalBookings' })
+  RentalBooking.belongsTo(MachineryListing, { foreignKey: 'listingId', as: 'listing' })
+
+  // User → Financial/System
+  User.hasMany(Transaction, { foreignKey: 'userId', as: 'transactions' })
+  User.hasMany(Subscription, { foreignKey: 'userId', as: 'subscriptions' })
+  User.hasMany(Notification, { foreignKey: 'userId', as: 'notifications' })
+  User.hasMany(CertificationRequest, { foreignKey: 'userId', as: 'certifications' })
+  User.hasMany(FraudReport, { foreignKey: 'reporterId', as: 'fraudReports' })
+  User.hasMany(ActivityLog, { foreignKey: 'userId', as: 'activityLogs' })
+  User.hasMany(CampaignVisit, { foreignKey: 'userId', as: 'campaignVisits' })
+
+
+================================================================================
+  8. DATA FLOW DIAGRAMS
+================================================================================
+
+8.1 USER AUTHENTICATION FLOW
+────────────────────────────
+
+  ┌──────────┐   POST /auth/register     ┌──────────────┐
+  │  Client  │ ─────────────────────────► │ Auth         │
+  │ (React)  │   {phone, password,        │ Controller   │
+  │          │    firstName, lastName}     │              │
+  │          │                            │ 1. Validate  │
+  │          │                            │ 2. Hash pass │
+  │          │                            │ 3. Create    │
+  │          │                            │    user       │
+  │          │                            │ 4. Generate  │
+  │          │   {token, refreshToken,    │    JWT       │
+  │          │ ◄───────────────────────── │ 5. Log       │
+  │          │    user}                   │    activity   │
+  └──────────┘                            └──────────────┘
+
+  OTP Flow:
+  Client → POST /auth/send-otp {phone}
+         → Server generates 6-digit OTP, stores in user.otpCode
+         → 5 min expiry
+  Client → POST /auth/verify-otp {phone, otp}
+         → Server verifies OTP, creates/finds user
+         → Returns {token, refreshToken, user}
+
+  Token Refresh:
+  Client → POST /auth/refresh-token {refreshToken}
+         → Server verifies refresh token (30-day TTL)
+         → Issues new access token (7-day TTL)
+
+  Token Storage:
+  • Access Token  → localStorage key: 'ys_token'
+  • Refresh Token → localStorage key: 'ys_refresh_token'
+
+
+8.2 MACHINERY LISTING FLOW
+───────────────────────────
+
+  [Create]
+  User → POST /api/machinery (with Auth)
+       → Rate Limiter (15/hour)
+       → Spam: detectDuplicateListings
+       → Spam: analyzeListingContent
+       → Spam: checkSuspiciousAccount
+       → machineryController.createListing
+       → Status = 'pending'
+       → ActivityLog entry created
+       → 201 Created
+
+  [Admin Approval]
+  Admin → GET /api/admin/pending-listings
+        → Reviews listing details
+        → PUT /api/admin/listings/:id/approve
+        → Status → 'approved'
+        → Notification sent to listing owner
+        → ActivityLog entry created
+
+  [Discovery]
+  Visitor → GET /api/machinery?category=construction&city=Mumbai
+          → Filters: category, make, model, year, price, city, state,
+                     condition, listingType, lat/lng/radius
+          → Pagination: page, limit
+          → Sorting: price, year, viewCount, createdAt
+          → Results with owner info
+
+  [Lifecycle]
+  pending → approved/rejected → sold/rented/expired
+
+
+8.3 RENTAL BOOKING FLOW
+────────────────────────
+
+  ┌──────────┐                     ┌──────────────┐                 ┌──────────┐
+  │  RENTER  │  1. Create Booking  │   SYSTEM     │  2. Notify      │  OWNER   │
+  │          │ ──────────────────► │              │ ───────────────►│          │
+  │          │  {listingId, start, │ Calculate:   │                 │          │
+  │          │   end, withOperator}│ - rental amt │  3. Confirm     │          │
+  │          │                     │ - deposit    │ ◄───────────────│          │
+  │          │                     │ - commission │                 │          │
+  │          │                     │ - total      │  4. Status      │          │
+  │          │  5. Payment         │              │    'confirmed'  │          │
+  │          │ ──────────────────► │ Track payment│                 │          │
+  │          │                     │ Update status│                 │          │
+  │          │                     │              │  6. Payout      │          │
+  │          │  7. Return          │              │ ───────────────►│          │
+  │          │ ──────────────────► │ Release      │                 │          │
+  │          │                     │ deposit,     │                 │          │
+  │          │                     │ process      │                 │          │
+  │          │  8. Review each other│ payout      │                 │          │
+  └──────────┘                     └──────────────┘                 └──────────┘
+
+  Status Flow: pending → confirmed → active → completed
+                                   └─────► cancelled
+                                   └─────► disputed
+
+
+8.4 CHAT / MESSAGING FLOW
+──────────────────────────
+
+  Buyer → POST /api/chats {sellerId, listingType, listingId}
+        → System creates or retrieves existing chat
+        → Returns chat object
+
+  Buyer → POST /api/chats/:chatId/messages {content}
+        → Rate limit: 60 messages/minute
+        → Message created with senderId
+        → Chat updated: lastMessageAt, lastMessagePreview
+        → Seller's unread count incremented
+
+  Either party → GET /api/chats
+               → Returns all chats with last message preview
+
+  Either party → GET /api/chats/:chatId/messages
+               → Returns all messages
+               → Marks messages as read for the requesting user
+
+
+8.5 ADMIN MODERATION FLOW
+──────────────────────────
+
+  Admin Dashboard → GET /api/admin/dashboard
+  │
+  ├── Pending Listings → Review → Approve/Reject
+  │     └── ActivityLog entry for each action
+  │
+  ├── User Management → View/Ban/Unban/Change Role/Verify/Deactivate
+  │     └── ActivityLog entry with severity level
+  │
+  ├── Fraud Reports → Investigate → Resolve/Dismiss
+  │     └── Can ban users or remove listings
+  │
+  ├── Certification Reviews → Verify documents → Approve/Reject
+  │     └── Updates user verification badge
+  │
+  └── Activity Log → Full audit trail with filters
+
+
+8.6 ML / AI DATA FLOW
+──────────────────────
+
+  ┌────────────────────────────────────────────────────────────────────┐
+  │                    ML/AI Services Pipeline                         │
+  │                                                                    │
+  │  ┌─────────────────┐     ┌──────────────────┐                     │
+  │  │ Historical Data  │────►│ Price Prediction  │                     │
+  │  │ (Listings DB)    │     │ Engine            │                     │
+  │  │ 5000 samples max │     │ • Feature extract │                     │
+  │  │                  │     │ • Normalize       │                     │
+  │  │                  │     │ • Gradient descent│                     │
+  │  │                  │     │ • 500 epochs      │                     │
+  │  │                  │     │ • Auto-train 6hr  │                     │
+  │  │                  │     └──────────────────┘                     │
+  │  │                  │                                               │
+  │  │                  │     ┌──────────────────┐                     │
+  │  │                  │────►│ Recommendation    │                     │
+  │  │                  │     │ Engine            │                     │
+  │  │                  │     │ • Content-based   │                     │
+  │  │                  │     │ • Collaborative   │                     │
+  │  │                  │     │ • Location-aware  │                     │
+  │  │                  │     └──────────────────┘                     │
+  │  │                  │                                               │
+  │  │                  │     ┌──────────────────┐                     │
+  │  │                  │────►│ Demand Forecaster │                     │
+  │  │                  │     │ • Category demand │                     │
+  │  │                  │     │ • Price trends    │                     │
+  │  │                  │     │ • Supply-demand   │                     │
+  │  │                  │     │ • Seasonal pattern│                     │
+  │  │                  │     └──────────────────┘                     │
+  │  └─────────────────┘                                               │
+  │                                                                    │
+  │  ┌─────────────────┐     ┌──────────────────┐                     │
+  │  │ Review Text Data │────►│ Sentiment Analyzer│                     │
+  │  │                  │     │ • AFINN-165 lexicon│                    │
+  │  │                  │     │ • Negation aware  │                     │
+  │  │                  │     │ • Trust scoring   │                     │
+  │  └─────────────────┘     └──────────────────┘                     │
+  │                                                                    │
+  │  ┌─────────────────┐     ┌──────────────────┐                     │
+  │  │ User Activity    │────►│ Lead Scorer       │                     │
+  │  │ (Logs, Profile)  │     │ • Profile: 0-20   │                     │
+  │  │                  │     │ • Activity: 0-25  │                     │
+  │  │                  │     │ • Engagement: 0-30│                     │
+  │  │                  │     │ • Transactions:25 │                     │
+  │  └─────────────────┘     └──────────────────┘                     │
+  │                                                                    │
+  │  ┌─────────────────┐     ┌──────────────────┐                     │
+  │  │ Listing Content  │────►│ SEO Scorer        │                     │
+  │  │                  │     │ • 0-100 score     │                     │
+  │  │                  │     │ • JSON-LD schema  │                     │
+  │  │                  │     │ • Meta tags       │                     │
+  │  │                  │     │ • Sitemap entries  │                     │
+  │  └─────────────────┘     └──────────────────┘                     │
+  └────────────────────────────────────────────────────────────────────┘
+
+
+8.7 PAYMENT & TRANSACTION FLOW
+────────────────────────────────
+
+  Transaction Types:
+  ┌────────────────────┬──────────────────────────────────────────────┐
+  │ lead_fee           │ Buyer pays to unlock seller contact info     │
+  │ rental_payment     │ Renter pays rental amount to platform       │
+  │ rental_commission  │ Platform commission (8-12% of rental)       │
+  │ security_deposit   │ Security deposit held in escrow             │
+  │ deposit_refund     │ Security deposit returned to renter         │
+  │ subscription       │ Monthly/yearly subscription payment         │
+  │ featured_listing   │ Payment for promoted listing placement      │
+  │ payout             │ Platform pays owner their rental earnings   │
+  └────────────────────┴──────────────────────────────────────────────┘
+
+  Payment Methods: UPI, Card, Net Banking, Wallet, Cash, Bank Transfer
+  Currency: INR (Indian Rupees)
+
+
+================================================================================
+  9. MODULE DETAILS
+================================================================================
+
+9.1 AUTHENTICATION MODULE
+─────────────────────────
+  Files: authController.js, auth.js (middleware), AuthContext.tsx
+  Features:
+    • Phone + Password registration
+    • Phone + Password login
+    • OTP-based passwordless login (6-digit, 5-min expiry)
+    • JWT access tokens (7-day expiry)
+    • JWT refresh tokens (30-day expiry, separate secret)
+    • Auto token refresh on 401 response
+    • Profile management (update details, change password)
+    • Role-based access: authenticate, optionalAuth, requireAdmin
+    • Password hashing with bcrypt (10 salt rounds)
+    • Banned user blocking
+
+9.2 MACHINERY MARKETPLACE MODULE
+─────────────────────────────────
+  Files: machineryController.js, MachineryListing.js
+  Features:
+    • Create listings (sale or rent)
+    • Multi-filter search (category, make, model, city, price range, year)
+    • GPS-based radius search (lat/lng filtering)
+    • Listing status workflow (pending → approved → sold/rented)
+    • View count tracking
+    • Image gallery support (JSONB array)
+    • Document uploads (RC book, insurance, inspection reports)
+    • Featured listing promotion
+    • Listing renewal (after expiry)
+    • Mark as sold/rented functionality
+    • Spam protection on creation (3 middleware layers)
+
+9.3 SPARE PARTS MODULE
+───────────────────────
+  Files: partsController.js, PartListing.js
+  Features:
+    • Create and manage spare part listings
+    • Part number and OEM part number search
+    • 7 categories: engine, hydraulics, electrical, undercarriage,
+      cab, attachments, other
+    • 5 conditions: new, used, oem, aftermarket, refurbished
+    • Compatibility data (makes, models, years as JSONB)
+    • Location-based search
+
+9.4 OPERATOR MARKETPLACE MODULE
+────────────────────────────────
+  Files: operatorController.js, OperatorProfile.js
+  Features:
+    • Create/update operator profile (one per user)
+    • Experience and equipment type listing
+    • Certification tracking (DGMS, Crane, JCB, Driving License)
+    • Availability calendar (JSONB)
+    • Day rate and project rate pricing
+    • Location with relocation willingness
+    • Verification workflow (pending → approved/rejected)
+    • Profile view and hire count analytics
+    • Rating and review display
+
+9.5 MECHANIC MARKETPLACE MODULE
+────────────────────────────────
+  Files: mechanicController.js, MechanicProfile.js
+  Features:
+    • Create/update mechanic profile (one per user)
+    • Specializations (engine, hydraulics, electrical, welding, etc.)
+    • Brand expertise tracking (CAT, Volvo, Komatsu, etc.)
+    • Certifications (ITI, Diploma, Brand-specific)
+    • Hourly, daily, and visit charge pricing
+    • Service radius configuration (default: 50 km)
+    • Similar verification and analytics as operators
+
+9.6 RENTAL & BOOKING MODULE
+────────────────────────────
+  Files: bookingController.js, RentalBooking.js
+  Features:
+    • Create rental booking with date selection
+    • Automatic pricing calculation:
+      - Rental amount (rate × duration)
+      - Security deposit
+      - Platform commission (default 10%)
+      - Operator cost (optional)
+    • Booking status management (pending → confirmed → active → completed)
+    • Payment tracking (pending/partial/completed/refunded)
+    • Security deposit escrow (pending → held → released/forfeited)
+    • Digital agreement URL support
+    • Digital signatures (renter/owner signedAt timestamps)
+    • Delivery scheduling
+    • Cancellation with fee calculation
+    • Owner payout processing
+    • Availability check endpoint
+
+9.7 CHAT / MESSAGING MODULE
+────────────────────────────
+  Files: chatController.js, Chat.js
+  Features:
+    • Start or get existing chat between buyer and seller
+    • Linked to listings (machinery, part, operator, mechanic)
+    • Rate-limited messaging (60/minute)
+    • Unread count tracking (separate for buyer and seller)
+    • Last message preview for chat list
+    • Message types: text, image, document, location
+    • Read receipt tracking
+    • Lead fee tracking integration
+
+9.8 REVIEW & RATING MODULE
+───────────────────────────
+  Files: reviewController.js, Review.js
+  Features:
+    • Multi-dimensional reviews (overall + punctuality, quality,
+      communication, value sub-ratings)
+    • Review types: listing, user, operator, mechanic, rental
+    • Verified transaction badge
+    • Seller response capability
+    • "Helpful" voting system
+    • Flag for moderation
+    • Auto-update of reviewee's average rating
+    • Rate-limited (10 reviews/hour)
+
+9.9 ADMIN DASHBOARD MODULE
+───────────────────────────
+  Files: adminController.js, AdminPage.tsx
+  Features:
+    • Dashboard with platform statistics
+    • Pending listing queue with approve/reject
+    • User management (view, ban/unban, role change, verify, deactivate)
+    • Listing management (all listings, feature/unfeature)
+    • Fraud report review
+    • Certification verification
+    • Activity log viewer with severity filtering
+    • Role-based access (admin, super_admin only)
+
+9.10 CERTIFICATION & VERIFICATION MODULE
+─────────────────────────────────────────
+  Files: certificationController.js, CertificationRequest.js
+  Features:
+    • Submit certifications (DGMS, Crane, JCB, ITI, Trade License,
+      GST, ISO, Safety Training)
+    • Upload certificate images (base64 encoded)
+    • Document number tracking
+    • Issuing authority and dates
+    • Admin review workflow (pending → approved/rejected)
+    • Admin notes for rejections
+
+9.11 FRAUD DETECTION & REPORTING MODULE
+───────────────────────────────────────
+  Files: fraudController.js, FraudReport.js, spamDetector.js
+  Features:
+    • User-submitted fraud reports with 7 reason categories
+    • Evidence image upload
+    • Admin investigation workflow (pending → investigating → resolved)
+    • Spam detection middleware:
+      - Duplicate listing detection (same make+model within 24h)
+      - Content analysis (phone numbers, URLs, excessive caps)
+      - Suspicious account check (3+ fraud reports)
+    • Auto-flagging without blocking (logged for admin review)
+
+9.12 SUBSCRIPTION & MONETIZATION MODULE
+────────────────────────────────────────
+  Files: subscriptionController.js, Subscription.js, subscriptionCron.js
+  Features:
+    • 4-tier subscription plans:
+      ┌───────────┬────────────┬──────────┬───────────────┬──────────┐
+      │ Plan      │ Price/mo   │ Listings │ Featured      │ Support  │
+      ├───────────┼────────────┼──────────┼───────────────┼──────────┤
+      │ Free      │ ₹0         │ 5        │ 0             │ Email    │
+      │ Starter   │ ₹2,999     │ 25       │ 3             │ Priority │
+      │ Growth    │ ₹7,999     │ 100      │ 10            │ Dedicated│
+      │ Enterprise│ ₹19,999    │ Unlimited│ 30            │ Account  │
+      └───────────┴────────────┴──────────┴───────────────┴──────────┘
+    • Subscription lifecycle management
+    • Automatic expiry checker (runs hourly via cron scheduler)
+    • Auto-downgrade to free tier on expiry
+    • Cancel subscription endpoint
+
+9.13 NOTIFICATION MODULE
+────────────────────────
+  Files: notificationController.js, Notification.js
+  Features:
+    • In-app notification system
+    • Notification types: booking events, messages, listing status,
+      reviews, system alerts
+    • Unread count API
+    • Mark as read (individual and bulk)
+    • Navigation data in JSON for deep linking
+
+9.14 ML / AI INTELLIGENCE MODULE
+─────────────────────────────────
+  Files: pricePrediction.js, recommendationEngine.js,
+         demandForecaster.js, sentimentAnalyzer.js,
+         leadScorer.js, mlController.js
+
+  A. PRICE PREDICTION ENGINE
+     • Pure JS multivariate linear regression
+     • Features: category, condition, type, year, hours, city
+     • Auto-trains on startup, re-trains every 6 hours
+     • Gradient descent: 500 epochs, learning rate 0.01
+     • Log-transformed target for skewed price distribution
+     • Fallback: category-based median with condition/age factors
+     • Confidence levels: high (50+ samples), medium, low
+
+  B. RECOMMENDATION ENGINE
+     • Content-based: similar listings by category, make, price, location
+     • Collaborative: "users who viewed X also viewed Y" (via ActivityLog)
+     • Location-based: trending near user's location
+     • Personalized: combines collaborative + trending, deduplicates
+
+  C. DEMAND FORECASTER
+     • Category demand over time (supply vs demand)
+     • Price trends by category (avg, min, max per month)
+     • Supply-demand gap analysis (high_demand/balanced/oversupply)
+     • Seasonal patterns (monthly distribution of listings)
+
+  D. SENTIMENT ANALYZER
+     • AFINN-165 lexicon-based scoring (400+ word dictionary)
+     • Negation-aware ("not good" = negative)
+     • Theme extraction (most frequent content words)
+     • Score normalized to -1 to +1 range
+     • Labels: positive, slightly_positive, neutral, slightly_negative, negative
+     • Machinery-specific vocabulary (leaking, overheating, certified, etc.)
+
+  E. SELLER TRUST SCORE (0-100)
+     • Rating component: 0-30 points
+     • Review volume: 0-20 points (logarithmic scale)
+     • Sentiment consistency: 0-20 points
+     • Verification badge: 0-15 points
+     • Account tenure: 0-15 points
+     • Labels: excellent (80+), good (60+), average (40+), low (20+)
+
+  F. LEAD SCORER (0-100)
+     • Profile completeness: 0-20 points
+     • Activity recency: 0-25 points
+     • Engagement depth: 0-30 points (listings, bookings, chats, reviews)
+     • Transaction history: 0-25 points
+     • Labels: hot (80+), warm (60+), lukewarm (40+), cold (20+), inactive
+
+9.15 ANALYTICS & MARKETING MODULE
+──────────────────────────────────
+  Files: analyticsController.js, CampaignVisit.js, useUtmTracker.ts
+  Features:
+    • UTM parameter tracking (source, medium, campaign, content, term)
+    • Session tracking with bounce rate
+    • Conversion funnel tracking (registered → listed → booked → subscribed)
+    • Campaign performance analytics
+    • Device/browser/location analytics
+    • Market trend data (price trends, demand forecasting)
+    • Referral system:
+      - Auto-generated unique referral codes
+      - Referral tracking (who referred whom)
+      - Referral leaderboard
+      - Referral statistics per user
+    • Dynamic XML sitemap generation (/sitemap.xml)
+
+9.16 SEO AUTOMATION MODULE
+──────────────────────────
+  Files: seoScorer.js, useSEO.ts
+  Features:
+    • Listing SEO quality score (0-100, grades A-F)
+    • Actionable SEO improvement tips
+    • JSON-LD Product Schema generation (schema.org)
+    • Dynamic meta tag generation (title, description, keywords, OG tags)
+    • XML sitemap generation for all approved listings
+    • Priority scoring (featured > verified > regular)
+
+9.17 INVOICE GENERATION MODULE
+──────────────────────────────
+  Files: invoiceController.js
+  Features:
+    • GST-compliant invoice generation
+    • Booking invoice (rental amount, deposit, commission breakdown)
+    • Subscription invoice
+    • HTML-based invoice template (printable)
+
+
+================================================================================
+ 10. API ENDPOINTS (COMPLETE LIST)
+================================================================================
+
+  METHOD  ENDPOINT                              AUTH    DESCRIPTION
+  ──────  ─────────────────────────────────────  ──────  ─────────────────────────
+  
+  AUTHENTICATION
+  POST    /api/auth/register                    No      User registration
+  POST    /api/auth/login                       No      Phone/password login
+  POST    /api/auth/send-otp                    No      Send OTP to phone
+  POST    /api/auth/verify-otp                  No      Verify OTP login
+  POST    /api/auth/refresh-token               No      Refresh access token
+  GET     /api/auth/me                          Yes     Get current user
+  PUT     /api/auth/profile                     Yes     Update profile
+  PUT     /api/auth/change-password             Yes     Change password
+
+  MACHINERY LISTINGS
+  POST    /api/machinery                        Yes     Create listing
+  GET     /api/machinery                        Opt     Get listings (with filters)
+  GET     /api/machinery/categories             No      Get categories & makes
+  GET     /api/machinery/my-listings            Yes     Get user's own listings
+  GET     /api/machinery/:id                    Opt     Get single listing
+  PUT     /api/machinery/:id                    Yes     Update listing
+  DELETE  /api/machinery/:id                    Yes     Delete listing
+  PUT     /api/machinery/:id/mark-sold          Yes     Mark sold/rented
+  PUT     /api/machinery/:id/renew              Yes     Renew listing
+
+  SPARE PARTS
+  POST    /api/parts                            Yes     Create part listing
+  GET     /api/parts                            No      Get parts (with filters)
+  GET     /api/parts/my-parts                   Yes     Get user's parts
+  GET     /api/parts/:id                        No      Get single part
+  DELETE  /api/parts/:id                        Yes     Delete part
+
+  OPERATORS
+  POST    /api/operators/profile                Yes     Create/update profile
+  GET     /api/operators                        No      Get all operators
+  GET     /api/operators/my-profile             Yes     Get own profile
+  GET     /api/operators/:id                    No      Get single operator
+
+  MECHANICS
+  POST    /api/mechanics/profile                Yes     Create/update profile
+  GET     /api/mechanics                        No      Get all mechanics
+  GET     /api/mechanics/my-profile             Yes     Get own profile
+  GET     /api/mechanics/:id                    No      Get single mechanic
+
+  REVIEWS
+  POST    /api/reviews                          Yes     Create review
+  GET     /api/reviews                          No      Get reviews (filtered)
+  PUT     /api/reviews/:id/respond              Yes     Respond to review
+
+  BOOKINGS
+  POST    /api/bookings                         Yes     Create booking
+  GET     /api/bookings                         Yes     Get user's bookings
+  PUT     /api/bookings/:id/status              Yes     Update booking status
+  GET     /api/bookings/availability/:listingId No      Check availability
+
+  CHATS
+  POST    /api/chats                            Yes     Start or get chat
+  GET     /api/chats                            Yes     Get all user's chats
+  GET     /api/chats/:chatId/messages           Yes     Get chat messages
+  POST    /api/chats/:chatId/messages           Yes     Send message
+
+  ADMIN (Requires admin/super_admin role)
+  GET     /api/admin/dashboard                  Admin   Dashboard statistics
+  GET     /api/admin/pending-listings           Admin   Pending listings queue
+  GET     /api/admin/listings                   Admin   All listings
+  PUT     /api/admin/listings/:id/approve       Admin   Approve listing
+  PUT     /api/admin/listings/:id/reject        Admin   Reject listing
+  PUT     /api/admin/listings/:id/feature       Admin   Toggle featured
+  GET     /api/admin/users                      Admin   All users
+  PUT     /api/admin/users/:id/ban              Admin   Ban/unban user
+  PUT     /api/admin/users/:id/role             Admin   Change user role
+  PUT     /api/admin/users/:id/verify           Admin   Verify user
+  DELETE  /api/admin/users/:id                  Admin   Deactivate user
+  GET     /api/admin/activity-log               Admin   Activity log viewer
+
+  CERTIFICATIONS
+  POST    /api/certifications                   Yes     Submit certification
+  GET     /api/certifications/my                Yes     Get user's certifications
+  GET     /api/certifications/pending           Admin   Pending certifications
+  GET     /api/certifications/:id               Yes     Get single certification
+  PUT     /api/certifications/:id/review        Admin   Review certification
+
+  FRAUD REPORTS
+  POST    /api/fraud-reports                    Yes     Submit fraud report
+  GET     /api/fraud-reports/my                 Yes     Get user's reports
+  GET     /api/fraud-reports/pending            Admin   Pending reports
+  PUT     /api/fraud-reports/:id/review         Admin   Review fraud report
+
+  SUBSCRIPTIONS
+  GET     /api/subscriptions/plans              No      Get available plans
+  GET     /api/subscriptions/mine               Yes     Get user's subscription
+  POST    /api/subscriptions/subscribe          Yes     Subscribe to plan
+  PUT     /api/subscriptions/cancel             Yes     Cancel subscription
+
+  NOTIFICATIONS
+  GET     /api/notifications                    Yes     Get user's notifications
+  GET     /api/notifications/unread-count       Yes     Get unread count
+  PUT     /api/notifications/read-all           Yes     Mark all as read
+  PUT     /api/notifications/:id/read           Yes     Mark single as read
+
+  NEWSLETTER
+  POST    /api/newsletter/subscribe             No      Subscribe to newsletter
+
+  ML / AI
+  GET     /api/ml/predict-price                 No      Predict price
+  GET     /api/ml/price-analysis/:id            No      Analyze listing price
+  GET     /api/ml/similar/:id                   No      Get similar listings
+  GET     /api/ml/recommendations               Opt     Get recommendations
+  GET     /api/ml/trending                      No      Get trending listings
+  GET     /api/ml/trust/:userId                 No      Get seller trust score
+  GET     /api/ml/seo/:id                       No      Get SEO score
+  POST    /api/ml/predict-inline                Yes     Inline price prediction
+  POST    /api/ml/track-view                    Opt     Track listing view
+  GET     /api/ml/leads                         Admin   Get lead scores
+
+  INVOICES
+  GET     /api/invoices/booking/:bookingId      Yes     Booking invoice
+  GET     /api/invoices/subscription/:id        Yes     Subscription invoice
+
+  ANALYTICS
+  POST    /api/analytics/track-visit            Opt     Track UTM visit
+  POST    /api/analytics/track-conversion       Opt     Track conversion
+  GET     /api/analytics/campaigns              Admin   Campaign analytics
+  GET     /api/analytics/demand-forecast        Admin   Demand forecast
+  GET     /api/analytics/market-trends          No      Public market trends
+  GET     /api/analytics/referral-stats         Yes     User's referral stats
+  GET     /api/analytics/referral-leaderboard   No      Referral leaderboard
+  GET     /api/sitemap.xml                      No      XML sitemap
+
+  UTILITY
+  GET     /health                               No      Health check
+
+  Auth Legend: Yes = Required, No = Not required,
+               Opt = Optional (enhanced response if logged in),
+               Admin = admin/super_admin role required
+
+  Total API Endpoints: 72
+
+
+================================================================================
+ 11. SECURITY IMPLEMENTATION
+================================================================================
+
+  1. AUTHENTICATION & AUTHORIZATION
+     • JWT-based stateless authentication (access + refresh tokens)
+     • Separate secrets for access and refresh tokens
+     • Role-based middleware: authenticate, optionalAuth, requireAdmin
+     • Banned user check on every authenticated request
+     • Account deactivation check
+
+  2. PASSWORD SECURITY
+     • Bcrypt hashing with 10 salt rounds
+     • Password field excluded from all queries by default
+     • OTP codes excluded from query responses
+
+  3. HTTP SECURITY HEADERS (Helmet.js)
+     • Content Security Policy (CSP) with strict directives
+     • X-Content-Type-Options: nosniff
+     • X-Frame-Options: DENY
+     • Strict-Transport-Security (HSTS)
+     • Cross-Origin Embedder Policy
+
+  4. CORS POLICY
+     • Whitelist-based origin validation
+     • Production mode: strict origin rejection
+     • Development mode: permissive (all origins)
+     • Credentials: enabled
+
+  5. RATE LIMITING (6 tiers)
+     ┌─────────────────┬───────────┬───────────────────────────────────┐
+     │ Limiter         │ Max/Window│ Purpose                           │
+     ├─────────────────┼───────────┼───────────────────────────────────┤
+     │ authLimiter     │ 10/15min  │ Prevent brute-force login        │
+     │ otpLimiter      │ 5/10min   │ Prevent OTP abuse                │
+     │ listingCreate   │ 15/1hr    │ Prevent spam listings            │
+     │ chatLimiter     │ 60/1min   │ Prevent message flooding         │
+     │ reviewLimiter   │ 10/1hr    │ Prevent review bombing           │
+     │ generalLimiter  │ 200/15min │ Global API protection            │
+     └─────────────────┴───────────┴───────────────────────────────────┘
+
+  6. INPUT SANITIZATION
+     • XSS prevention via input sanitizer middleware
+     • All request bodies, query params sanitized automatically
+
+  7. SPAM DETECTION (3-layer middleware)
+     • Duplicate listing detection (same make+model within 24h)
+     • Content analysis (phone numbers, URLs, caps, short text)
+     • Suspicious account flagging (3+ fraud reports)
+
+  8. DATA VALIDATION
+     • Sequelize model-level validations (email format, enums, ranges)
+     • Environment variable validation on startup (validateEnv.js)
+
+  9. SOFT DELETE
+     • Paranoid mode (deletedAt column) on 8 tables:
+       users, machinery_listings, part_listings, operator_profiles,
+       mechanic_profiles, reviews, certification_requests, fraud_reports
+
+  10. AUDIT TRAIL
+     • Immutable activity_logs table (updatedAt disabled)
+     • 30+ action types with severity levels (info, warning, critical)
+     • IP address and user agent tracking
+
+  11. ENVIRONMENT PROTECTION
+     • .env validation before server starts
+     • JWT_SECRET required in production (app crashes if missing)
+     • Unhandled rejection and uncaught exception handlers
+
+
+================================================================================
+ 12. FRONTEND PAGES & COMPONENTS
+================================================================================
+
+  27 PAGES (all lazy-loaded for code splitting):
+  ┌────────────────────────────────┬─────────────────────────────────────────┐
+  │ Page                          │ Description                              │
+  ├────────────────────────────────┼─────────────────────────────────────────┤
+  │ / (App.tsx)                   │ Landing page with 10 animated sections  │
+  │ /login                        │ Phone + password / OTP login            │
+  │ /register                     │ New user registration form              │
+  │ /verify-otp                   │ OTP verification page                   │
+  │ /profile                      │ User profile management                 │
+  │ /change-password              │ Password change form                    │
+  │ /browse                       │ Machinery search with 12+ filters      │
+  │ /listing/:id                  │ Listing detail with ML price analysis   │
+  │ /sell                         │ Create new machinery listing            │
+  │ /my-listings                  │ Manage own listings                     │
+  │ /parts                        │ Spare parts marketplace                 │
+  │ /operators                    │ Operator hiring marketplace             │
+  │ /mechanics                    │ Mechanic hiring marketplace             │
+  │ /bookings                     │ Rental booking management               │
+  │ /chats                        │ In-app messaging center                 │
+  │ /admin                        │ Admin dashboard (admin only)            │
+  │ /dashboard                    │ User dashboard with analytics           │
+  │ /market-insights              │ Market trends and price data            │
+  │ /notifications                │ Notification center                     │
+  │ /saved                        │ Saved/bookmarked listings               │
+  │ /subscriptions                │ Subscription plan selection             │
+  │ /certifications               │ Certification submission/status        │
+  │ /loan-eligibility             │ Equipment loan eligibility calculator   │
+  │ /about                        │ About YantraSetu                        │
+  │ /terms                        │ Terms and conditions                    │
+  │ /sample-report                │ Sample inspection report                │
+  │ /inspection-standards         │ Inspection standards guide              │
+  │ /contact-specialist           │ Contact specialist form                 │
+  └────────────────────────────────┴─────────────────────────────────────────┘
+
+  REUSABLE COMPONENTS:
+  • LazyImage — Lazy-loaded images with blur placeholder effect
+  • PageShell — Shared page layout (header, navigation, footer)
+  • SearchOverlay — Global search with suggestions
+
+  CUSTOM HOOKS:
+  • useAuth — Authentication state and actions
+  • useGeolocation — Browser GPS location access
+  • useSEO — Dynamic document title and meta tags
+  • useUtmTracker — UTM parameter capture from URL
+  • useMobile — Mobile viewport detection
+
+  DESIGN SYSTEM:
+  • Colors: Warm stone (#E9E3DA), near-black (#101214), safety orange (#FF6A00)
+  • Typography: Sora (headings), Inter (body), IBM Plex Mono (labels)
+  • Style: Industrial, editorial, high-contrast
+
+
+================================================================================
+ 13. DEPLOYMENT ARCHITECTURE
+================================================================================
+
+  Docker Multi-Stage Build (3 stages):
+
+  Stage 1: Frontend Builder
+    • Node 20 Alpine
+    • npm ci + npm run build → produces /dist
+
+  Stage 2: Backend Builder
+    • Node 20 Alpine
+    • npm ci --production → minimal dependencies
+
+  Stage 3: Production Runtime
+    • Node 20 Alpine (minimal image)
+    • Non-root user (yantrasetu:1001)
+    • Backend at /app/backend
+    • Frontend static files served from /app/backend/public
+    • Health check: GET /health (30s interval)
+    • Port: 5000
+    • NODE_ENV=production
+
+  Database:
+    • Production: PostgreSQL (with SSL, rejectUnauthorized: false)
+    • Development: SQLite (local file: ./database.sqlite)
+    • Auto-migration on startup (sync tables)
+
+  Environment Variables Required:
+    • DATABASE_URL (PostgreSQL connection string)
+    • JWT_SECRET (required in production)
+    • JWT_REFRESH_SECRET (optional, derived from JWT_SECRET)
+    • FRONTEND_URL (CORS origin)
+    • CORS_ORIGINS (comma-separated allowed origins)
+    • PORT (default: 5000)
+    • NODE_ENV (development/production)
+    • RATE_LIMIT_* (optional overrides for all limiters)
+
+
+================================================================================
+ 14. FUTURE ENHANCEMENTS
+================================================================================
+
+  Phase 2 (Months 5-7):
+    • Aadhaar-based eSign for rental agreements
+    • WhatsApp notification integration
+    • Parts shipping integration with logistics partners
+    • Mobile PWA (Progressive Web App) with offline support
+    • Payment gateway integration (Razorpay/PhonePe)
+
+  Phase 3 (Months 8-12):
+    • Native mobile apps (React Native)
+    • Video calling between buyers and sellers
+    • AR-based equipment inspection
+    • Equipment insurance marketplace
+    • EMI calculator with bank partnerships
+    • Multi-language support (Hindi, Tamil, Telugu, Marathi)
+    • Regional SEO optimization
+    • Advanced fraud detection with ML models
+
+
+================================================================================
+ 15. CONCLUSION
+================================================================================
+
+YantraSetu is a production-grade, full-stack marketplace platform that
+addresses the critical gap in India's heavy equipment industry. The platform
+implements:
+
+  • 16 database models with 80+ indexes and comprehensive relationships
+  • 72 REST API endpoints covering 17 functional modules
+  • 6 ML/AI services (price prediction, recommendations, sentiment analysis,
+    demand forecasting, lead scoring, SEO optimization)
+  • Enterprise-grade security with 11 security layers
+  • 27 frontend pages with lazy loading and code splitting
+  • Docker-based deployment with health checks
+  • Comprehensive admin dashboard with audit trail
+
+The platform is designed for scale, with location-based search, tiered
+subscriptions, automated moderation, and data-driven intelligence that
+sets it apart from traditional equipment classifieds.
+
+================================================================================
+                         END OF PROJECT REPORT
+================================================================================

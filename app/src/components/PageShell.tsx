@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Home, ShoppingBag, Plus, CalendarDays, User } from 'lucide-react';
+import { ArrowLeft, Home, ShoppingBag, Plus, CalendarDays, User, Briefcase } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface PageShellProps {
@@ -30,14 +30,13 @@ export default function PageShell({
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
-
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
     return location.pathname.startsWith(path);
   };
 
   return (
-    <div className="min-h-screen bg-[#E9E3DA]">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #EDE8E0 0%, #E7E2D9 50%, #E4DFD6 100%)' }}>
       {/* ─── Sticky Header ─── */}
       <header className="page-header">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
@@ -60,13 +59,23 @@ export default function PageShell({
               </span>
             )}
           </div>
-          <Link
-            to={backTo}
-            className="flex items-center gap-1.5 text-sm text-[#6F757C] hover:text-[#101214] transition-colors shrink-0"
-          >
-            <ArrowLeft size={16} />
-            <span className="hidden sm:inline">{backLabel}</span>
-          </Link>
+          <div className="flex items-center gap-3">
+            {/* Job Board Button */}
+            <Link
+              to="/jobs"
+              className="relative p-2 rounded-lg hover:bg-[#EDE8E0] transition-colors"
+              title="Job Board"
+            >
+              <Briefcase size={18} className="text-[#6F757C]" />
+            </Link>
+            <Link
+              to={backTo}
+              className="flex items-center gap-1.5 text-sm text-[#6F757C] hover:text-[#101214] transition-colors shrink-0"
+            >
+              <ArrowLeft size={16} />
+              <span className="hidden sm:inline">{backLabel}</span>
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -128,6 +137,7 @@ export default function PageShell({
           </button>
         </nav>
       )}
+
     </div>
   );
 }

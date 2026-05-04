@@ -46,11 +46,11 @@ export default function ChatsPage() {
 
   return (
     <PageShell breadcrumb="Messages" backTo="/" backLabel="Home">
-        <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] overflow-hidden" style={{ height: 'calc(100vh - 200px)', minHeight: '400px' }}>
+        <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] overflow-hidden" style={{ height: 'calc(100vh - 200px)', minHeight: '400px' }}>
           <div className="flex h-full">
             {/* Sidebar */}
-            <div className={`${activeChat ? 'hidden sm:flex' : 'flex'} w-full sm:w-72 md:w-80 border-r border-[#E9E3DA] flex-col`}>
-              <div className="p-4 border-b border-[#E9E3DA]"><h2 className="font-bold text-sm" style={{ fontFamily: 'Sora, sans-serif' }}>Conversations</h2></div>
+            <div className={`${activeChat ? 'hidden sm:flex' : 'flex'} w-full sm:w-72 md:w-80 border-r border-[#EDE8E0] flex-col`}>
+              <div className="p-4 border-b border-[#EDE8E0]"><h2 className="font-bold text-sm" style={{ fontFamily: 'Sora, sans-serif' }}>Conversations</h2></div>
               <div className="flex-1 overflow-y-auto">
                 {loading ? <div className="p-4 text-center"><Loader2 size={20} className="animate-spin text-[#FF6A00] mx-auto" /></div>
                 : chats.length === 0 ? <div className="p-4 text-center text-sm text-[#6F757C]">No conversations yet</div>
@@ -58,7 +58,7 @@ export default function ChatsPage() {
                   const other = getOtherUser(chat);
                   return (
                     <button key={chat.id} onClick={() => setActiveChat(chat.id)}
-                      className={`w-full p-4 text-left border-b border-[#E9E3DA] hover:bg-[#E9E3DA]/30 transition-colors ${activeChat === chat.id ? 'bg-[#E9E3DA]/50' : ''}`}>
+                      className={`w-full p-4 text-left border-b border-[#EDE8E0] hover:bg-[#EDE8E0]/30 transition-colors ${activeChat === chat.id ? 'bg-[#EDE8E0]/50' : ''}`}>
                       <p className="font-medium text-sm">{other?.firstName} {other?.lastName}</p>
                       <p className="text-xs text-[#6F757C] truncate mt-0.5">{chat.lastMessagePreview || 'No messages yet'}</p>
                     </button>
@@ -74,7 +74,7 @@ export default function ChatsPage() {
                     {messages.map(msg => (
                       <div key={msg.id} className={`flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[70%] px-4 py-2.5 rounded-lg text-sm ${
-                          msg.senderId === user?.id ? 'bg-[#FF6A00] text-white rounded-br-none' : 'bg-[#E9E3DA] text-[#101214] rounded-bl-none'
+                          msg.senderId === user?.id ? 'bg-[#FF6A00] text-white rounded-br-none' : 'bg-[#EDE8E0] text-[#101214] rounded-bl-none'
                         }`}>
                           <p>{msg.content}</p>
                           <p className={`text-[10px] mt-1 ${msg.senderId === user?.id ? 'text-white/60' : 'text-[#6F757C]'}`}>
@@ -85,9 +85,9 @@ export default function ChatsPage() {
                     ))}
                     <div ref={msgEnd} />
                   </div>
-                  <div className="p-3 sm:p-4 border-t border-[#E9E3DA] flex gap-2">
+                  <div className="p-3 sm:p-4 border-t border-[#EDE8E0] flex gap-2">
                     <input value={newMsg} onChange={e => setNewMsg(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()}
-                      placeholder="Type a message…" className="flex-1 px-4 py-3 bg-[#E9E3DA]/40 border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] min-h-[44px]" />
+                      placeholder="Type a message…" className="flex-1 px-4 py-3 bg-[#EDE8E0]/40 border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] min-h-[44px]" />
                     <button onClick={handleSend} disabled={sending || !newMsg.trim()} className="btn-primary px-4 disabled:opacity-50 min-h-[44px]"><Send size={16} /></button>
                   </div>
                 </>

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { mechanicsApi, chatsApi } from '../services/api';
-import { Loader2, MapPin, Star, Wrench, CheckCircle, Plus, X, Save, MessageCircle } from 'lucide-react';
+import { Loader2, MapPin, Star, Wrench, CheckCircle, Plus, X, Save, MessageCircle, ArrowRight, HardHat, Cog } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
 const SPECIALIZATION_OPTIONS = ['Engine', 'Hydraulics', 'Electrical', 'Welding', 'Tyres', 'PMS', 'Gearbox', 'Body Work', 'AC/Cooling', 'Other'];
@@ -128,7 +128,7 @@ export default function MechanicsPage() {
   };
 
   return (
-    <PageShell breadcrumb="Mechanics" backTo="/" backLabel="Home">
+    <PageShell breadcrumb="Mechanics" backTo="/services" backLabel="Services">
       {/* Title + button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
         <div>
@@ -168,7 +168,7 @@ export default function MechanicsPage() {
                   <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>Years of Experience *</label>
                   <input type="number" min={0} value={form.yearsOfExperience}
                     onChange={e => { setForm(p => ({ ...p, yearsOfExperience: e.target.value })); setFormErrors(p => ({ ...p, yearsOfExperience: '' })); }}
-                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[44px] ${formErrors.yearsOfExperience ? 'border-red-400' : 'border-[#E9E3DA]'}`}
+                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[44px] ${formErrors.yearsOfExperience ? 'border-red-400' : 'border-[#EDE8E0]'}`}
                     placeholder="e.g. 5" />
                   {formErrors.yearsOfExperience && <p className="text-red-500 text-[11px] mt-1">{formErrors.yearsOfExperience}</p>}
                 </div>
@@ -176,7 +176,7 @@ export default function MechanicsPage() {
                   <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>Daily Rate (₹) *</label>
                   <input type="number" min={0} value={form.dailyRate}
                     onChange={e => { setForm(p => ({ ...p, dailyRate: e.target.value })); setFormErrors(p => ({ ...p, dailyRate: '' })); }}
-                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[44px] ${formErrors.dailyRate ? 'border-red-400' : 'border-[#E9E3DA]'}`}
+                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[44px] ${formErrors.dailyRate ? 'border-red-400' : 'border-[#EDE8E0]'}`}
                     placeholder="e.g. 1200" />
                   {formErrors.dailyRate && <p className="text-red-500 text-[11px] mt-1">{formErrors.dailyRate}</p>}
                 </div>
@@ -184,21 +184,21 @@ export default function MechanicsPage() {
                   <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>Hourly Rate (₹)</label>
                   <input type="number" min={0} value={form.hourlyRate}
                     onChange={e => setForm(p => ({ ...p, hourlyRate: e.target.value }))}
-                    className="w-full px-3 py-3 rounded-lg border border-[#E9E3DA] text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[44px]"
+                    className="w-full px-3 py-3 rounded-lg border border-[#EDE8E0] text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[44px]"
                     placeholder="e.g. 200" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>Service Radius (km)</label>
                   <input type="number" min={0} value={form.serviceRadius}
                     onChange={e => setForm(p => ({ ...p, serviceRadius: e.target.value }))}
-                    className="w-full px-3 py-3 rounded-lg border border-[#E9E3DA] text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[44px]"
+                    className="w-full px-3 py-3 rounded-lg border border-[#EDE8E0] text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[44px]"
                     placeholder="e.g. 50" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>City *</label>
                   <input type="text" value={form.city}
                     onChange={e => { setForm(p => ({ ...p, city: e.target.value })); setFormErrors(p => ({ ...p, city: '' })); }}
-                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[44px] ${formErrors.city ? 'border-red-400' : 'border-[#E9E3DA]'}`}
+                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[44px] ${formErrors.city ? 'border-red-400' : 'border-[#EDE8E0]'}`}
                     placeholder="e.g. Pune" />
                   {formErrors.city && <p className="text-red-500 text-[11px] mt-1">{formErrors.city}</p>}
                 </div>
@@ -206,7 +206,7 @@ export default function MechanicsPage() {
                   <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>State *</label>
                   <input type="text" value={form.state}
                     onChange={e => { setForm(p => ({ ...p, state: e.target.value })); setFormErrors(p => ({ ...p, state: '' })); }}
-                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[44px] ${formErrors.state ? 'border-red-400' : 'border-[#E9E3DA]'}`}
+                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[44px] ${formErrors.state ? 'border-red-400' : 'border-[#EDE8E0]'}`}
                     placeholder="e.g. Maharashtra" />
                   {formErrors.state && <p className="text-red-500 text-[11px] mt-1">{formErrors.state}</p>}
                 </div>
@@ -220,7 +220,7 @@ export default function MechanicsPage() {
                       className={`px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                         form.specializations.includes(s)
                           ? 'bg-blue-500 text-white border border-blue-500'
-                          : 'bg-white text-[#6F757C] border border-[#E9E3DA] hover:border-blue-400'
+                          : 'bg-white text-[#6F757C] border border-[#EDE8E0] hover:border-blue-400'
                       }`}>
                       {s}
                     </button>
@@ -232,7 +232,7 @@ export default function MechanicsPage() {
               <div className="mb-4">
                 <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>Bio / Description</label>
                 <textarea value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} rows={3}
-                  className="w-full px-3 py-3 rounded-lg border border-[#E9E3DA] text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+                  className="w-full px-3 py-3 rounded-lg border border-[#EDE8E0] text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
                   placeholder="Describe your skills, certifications, and work experience…" />
               </div>
 
@@ -277,7 +277,7 @@ export default function MechanicsPage() {
           placeholder="Filter by city…"
           value={filters.city}
           onChange={e => setFilters(p => ({ ...p, city: e.target.value }))}
-          className="w-full sm:w-48 px-4 py-3 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:border-blue-500 focus:outline-none min-h-[44px]"
+          className="w-full sm:w-48 px-4 py-3 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:border-blue-500 focus:outline-none min-h-[44px]"
         />
         <label className="flex items-center gap-2 text-sm text-[#6F757C] min-h-[44px]">
           <input type="checkbox" checked={filters.isAvailable === 'true'}
@@ -298,7 +298,7 @@ export default function MechanicsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {mechanics.map(m => (
-            <div key={m.id} className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 hover:shadow-md transition-all">
+            <div key={m.id} className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6 hover:shadow-md transition-all">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                   <Wrench size={22} className="text-blue-600" />
@@ -336,7 +336,7 @@ export default function MechanicsPage() {
                 </div>
               )}
 
-              <div className="flex items-center justify-between border-t border-[#E9E3DA] pt-3">
+              <div className="flex items-center justify-between border-t border-[#EDE8E0] pt-3">
                 <div>
                   {m.hourlyRate && <p className="text-xs text-[#6F757C]">{fmt(m.hourlyRate)}/hr</p>}
                   {m.dailyRate && <p className="text-base font-bold text-[#FF6A00]" style={{ fontFamily: 'Sora, sans-serif' }}>{fmt(m.dailyRate)}<span className="text-xs font-normal text-[#6F757C]">/day</span></p>}
@@ -354,6 +354,32 @@ export default function MechanicsPage() {
           ))}
         </div>
       )}
+      {/* Cross-navigation to related services */}
+      <div className="mt-10 pt-6 border-t border-[#EDE8E0]">
+        <p className="text-xs font-bold text-[#6F757C] uppercase tracking-wider mb-3" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Related Services</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Link to="/operators" className="flex items-center gap-3 p-4 bg-white rounded-xl border border-[#EDE8E0] hover:border-orange-300 hover:shadow-sm transition-all group">
+            <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center flex-shrink-0">
+              <HardHat size={18} className="text-[#FF6A00]" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-bold group-hover:text-[#FF6A00] transition-colors">Hire an Operator</p>
+              <p className="text-xs text-[#6F757C]">Certified operators for your equipment</p>
+            </div>
+            <ArrowRight size={14} className="text-[#6F757C] opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Link>
+          <Link to="/parts" className="flex items-center gap-3 p-4 bg-white rounded-xl border border-[#EDE8E0] hover:border-green-300 hover:shadow-sm transition-all group">
+            <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Cog size={18} className="text-green-600" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-bold group-hover:text-green-600 transition-colors">Spare Parts</p>
+              <p className="text-xs text-[#6F757C]">Source genuine parts for your equipment</p>
+            </div>
+            <ArrowRight size={14} className="text-[#6F757C] opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Link>
+        </div>
+      </div>
     </PageShell>
   );
 }

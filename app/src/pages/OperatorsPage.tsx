@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { operatorsApi, chatsApi } from '../services/api';
-import { Loader2, MapPin, Star, Briefcase, User, CheckCircle, Plus, X, Save, MessageCircle } from 'lucide-react';
+import { Loader2, MapPin, Star, Briefcase, User, CheckCircle, Plus, X, Save, MessageCircle, ArrowRight, Wrench, Cog } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
 const EQUIPMENT_OPTIONS = ['Excavator', 'Crane', 'Loader', 'Bulldozer', 'Dumper', 'Backhoe Loader', 'Roller', 'Forklift', 'Tower Crane', 'Other'];
@@ -124,7 +124,7 @@ export default function OperatorsPage() {
   };
 
   return (
-    <PageShell breadcrumb="Operators" backTo="/" backLabel="Home">
+    <PageShell breadcrumb="Operators" backTo="/services" backLabel="Services">
       {/* Title + List Service button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
         <div>
@@ -167,7 +167,7 @@ export default function OperatorsPage() {
                   <input
                     type="number" min={0} value={form.yearsOfExperience}
                     onChange={e => { setForm(p => ({ ...p, yearsOfExperience: e.target.value })); setFormErrors(p => ({ ...p, yearsOfExperience: '' })); }}
-                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] min-h-[44px] ${formErrors.yearsOfExperience ? 'border-red-400' : 'border-[#E9E3DA]'}`}
+                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] min-h-[44px] ${formErrors.yearsOfExperience ? 'border-red-400' : 'border-[#EDE8E0]'}`}
                     placeholder="e.g. 5"
                   />
                   {formErrors.yearsOfExperience && <p className="text-red-500 text-[11px] mt-1">{formErrors.yearsOfExperience}</p>}
@@ -177,7 +177,7 @@ export default function OperatorsPage() {
                   <input
                     type="number" min={0} value={form.dayRate}
                     onChange={e => { setForm(p => ({ ...p, dayRate: e.target.value })); setFormErrors(p => ({ ...p, dayRate: '' })); }}
-                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] min-h-[44px] ${formErrors.dayRate ? 'border-red-400' : 'border-[#E9E3DA]'}`}
+                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] min-h-[44px] ${formErrors.dayRate ? 'border-red-400' : 'border-[#EDE8E0]'}`}
                     placeholder="e.g. 1500"
                   />
                   {formErrors.dayRate && <p className="text-red-500 text-[11px] mt-1">{formErrors.dayRate}</p>}
@@ -187,7 +187,7 @@ export default function OperatorsPage() {
                   <input
                     type="text" value={form.city}
                     onChange={e => { setForm(p => ({ ...p, city: e.target.value })); setFormErrors(p => ({ ...p, city: '' })); }}
-                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] min-h-[44px] ${formErrors.city ? 'border-red-400' : 'border-[#E9E3DA]'}`}
+                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] min-h-[44px] ${formErrors.city ? 'border-red-400' : 'border-[#EDE8E0]'}`}
                     placeholder="e.g. Bengaluru"
                   />
                   {formErrors.city && <p className="text-red-500 text-[11px] mt-1">{formErrors.city}</p>}
@@ -197,7 +197,7 @@ export default function OperatorsPage() {
                   <input
                     type="text" value={form.state}
                     onChange={e => { setForm(p => ({ ...p, state: e.target.value })); setFormErrors(p => ({ ...p, state: '' })); }}
-                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] min-h-[44px] ${formErrors.state ? 'border-red-400' : 'border-[#E9E3DA]'}`}
+                    className={`w-full px-3 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] min-h-[44px] ${formErrors.state ? 'border-red-400' : 'border-[#EDE8E0]'}`}
                     placeholder="e.g. Karnataka"
                   />
                   {formErrors.state && <p className="text-red-500 text-[11px] mt-1">{formErrors.state}</p>}
@@ -213,7 +213,7 @@ export default function OperatorsPage() {
                       className={`px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                         form.equipmentTypes.includes(eq)
                           ? 'bg-[#FF6A00] text-white border border-[#FF6A00]'
-                          : 'bg-white text-[#6F757C] border border-[#E9E3DA] hover:border-[#FF6A00]'
+                          : 'bg-white text-[#6F757C] border border-[#EDE8E0] hover:border-[#FF6A00]'
                       }`}
                     >
                       {eq}
@@ -227,7 +227,7 @@ export default function OperatorsPage() {
                 <label className="block text-xs font-semibold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>Bio / Description</label>
                 <textarea
                   value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} rows={3}
-                  className="w-full px-3 py-3 rounded-lg border border-[#E9E3DA] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] resize-none"
+                  className="w-full px-3 py-3 rounded-lg border border-[#EDE8E0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] resize-none"
                   placeholder="Describe your experience and what makes you a great operator…"
                 />
               </div>
@@ -273,7 +273,7 @@ export default function OperatorsPage() {
           placeholder="Filter by city…"
           value={filters.city}
           onChange={e => setFilters(p => ({ ...p, city: e.target.value }))}
-          className="w-full sm:w-48 px-4 py-3 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:border-[#FF6A00] focus:outline-none min-h-[44px]"
+          className="w-full sm:w-48 px-4 py-3 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:border-[#FF6A00] focus:outline-none min-h-[44px]"
         />
         <label className="flex items-center gap-2 text-sm text-[#6F757C] min-h-[44px]">
           <input
@@ -300,7 +300,7 @@ export default function OperatorsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {operators.map(op => (
-            <div key={op.id} className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 hover:shadow-md transition-all">
+            <div key={op.id} className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6 hover:shadow-md transition-all">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-[#FF6A00]/10 rounded-full flex items-center justify-center flex-shrink-0">
                   <User size={22} className="text-[#FF6A00]" />
@@ -325,19 +325,19 @@ export default function OperatorsPage() {
               {op.equipmentTypes?.length > 0 && (
                 <div className="chip-scroll mb-4">
                   {op.equipmentTypes.slice(0, 4).map((t: string) => (
-                    <span key={t} className="px-2.5 py-1 bg-[#E9E3DA] text-[10px] font-medium rounded-full capitalize whitespace-nowrap">
+                    <span key={t} className="px-2.5 py-1 bg-[#EDE8E0] text-[10px] font-medium rounded-full capitalize whitespace-nowrap">
                       {t}
                     </span>
                   ))}
                   {op.equipmentTypes.length > 4 && (
-                    <span className="px-2.5 py-1 bg-[#E9E3DA] text-[10px] font-medium rounded-full text-[#6F757C]">
+                    <span className="px-2.5 py-1 bg-[#EDE8E0] text-[10px] font-medium rounded-full text-[#6F757C]">
                       +{op.equipmentTypes.length - 4}
                     </span>
                   )}
                 </div>
               )}
 
-              <div className="flex items-center justify-between border-t border-[#E9E3DA] pt-3">
+              <div className="flex items-center justify-between border-t border-[#EDE8E0] pt-3">
                 {op.dayRate && (
                   <p className="text-base font-bold text-[#FF6A00]" style={{ fontFamily: 'Sora, sans-serif' }}>
                     {fmt(op.dayRate)}<span className="text-xs font-normal text-[#6F757C]">/day</span>
@@ -356,6 +356,32 @@ export default function OperatorsPage() {
           ))}
         </div>
       )}
+      {/* Cross-navigation to related services */}
+      <div className="mt-10 pt-6 border-t border-[#EDE8E0]">
+        <p className="text-xs font-bold text-[#6F757C] uppercase tracking-wider mb-3" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Related Services</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Link to="/mechanics" className="flex items-center gap-3 p-4 bg-white rounded-xl border border-[#EDE8E0] hover:border-blue-300 hover:shadow-sm transition-all group">
+            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Wrench size={18} className="text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-bold group-hover:text-blue-600 transition-colors">Find a Mechanic</p>
+              <p className="text-xs text-[#6F757C]">On-site repairs & maintenance</p>
+            </div>
+            <ArrowRight size={14} className="text-[#6F757C] opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Link>
+          <Link to="/parts" className="flex items-center gap-3 p-4 bg-white rounded-xl border border-[#EDE8E0] hover:border-green-300 hover:shadow-sm transition-all group">
+            <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Cog size={18} className="text-green-600" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-bold group-hover:text-green-600 transition-colors">Spare Parts</p>
+              <p className="text-xs text-[#6F757C]">Source genuine parts for your equipment</p>
+            </div>
+            <ArrowRight size={14} className="text-[#6F757C] opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Link>
+        </div>
+      </div>
     </PageShell>
   );
 }

@@ -103,6 +103,14 @@ router.get('/fraud-reports/my', authenticate, fraudController.getMyReports);
 router.get('/fraud-reports/pending', authenticate, requireAdmin, fraudController.getPendingReports);
 router.put('/fraud-reports/:id/review', authenticate, requireAdmin, fraudController.reviewReport);
 
+// Fleet Optimizer routes
+const fleetController = require('../controllers/fleetController');
+router.post('/fleet/optimize', optionalAuth, fleetController.optimizeFleet);
+router.get('/fleet/packages', fleetController.getFleetPackages);
+router.get('/fleet/segments', fleetController.getSegments);
+router.get('/fleet/owner/:ownerId', fleetController.getOwnerFleet);
+router.post('/fleet/book-project', authenticate, fleetController.bookProject);
+
 // Newsletter
 const { sequelize: seqInstance } = require('../config/database');
 router.post('/newsletter/subscribe', async (req, res) => {
@@ -158,6 +166,8 @@ router.get('/ml/seo/:id', mlController.getSeoScoreEndpoint);
 router.post('/ml/predict-inline', authenticate, mlController.predictPriceInline);
 router.post('/ml/track-view', optionalAuth, mlController.trackView);
 router.get('/ml/leads', authenticate, requireAdmin, mlController.getLeadScoresEndpoint);
+router.post('/ml/work-estimate', mlController.workEstimate);
+router.get('/ml/equipment-health', mlController.equipmentHealthScore);
 
 // ─── GST Invoice routes ───────────────────────────────
 const invoiceController = require('../controllers/invoiceController');
@@ -169,7 +179,7 @@ const analyticsController = require('../controllers/analyticsController');
 router.post('/analytics/track-visit', optionalAuth, analyticsController.trackVisit);
 router.post('/analytics/track-conversion', optionalAuth, analyticsController.trackConversion);
 router.get('/analytics/campaigns', authenticate, requireAdmin, analyticsController.getCampaignAnalytics);
-router.get('/analytics/demand-forecast', authenticate, requireAdmin, analyticsController.getDemandForecast);
+router.get('/analytics/demand-forecast', optionalAuth, analyticsController.getDemandForecast);
 router.get('/analytics/market-trends', analyticsController.getMarketTrends);
 router.get('/analytics/referral-stats', authenticate, analyticsController.getReferralStats);
 router.get('/analytics/referral-leaderboard', analyticsController.getReferralLeaderboard);

@@ -3,8 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { machineryApi, mlApi, type MachineryListing, type MachineryFilters, type CategoriesResponse } from '../services/api';
 import {
   Search, SlidersHorizontal, MapPin, ArrowLeft, ArrowRight,
-  Loader2, X, ChevronDown, Eye, Calendar, Gauge, Heart, Navigation,
-  Sparkles, Brain, TrendingUp, Zap
+  Loader2, X, ChevronDown, Eye, Calendar, Gauge, Heart, Navigation
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
 import { toggleSaved } from './SavedListingsPage';
@@ -123,7 +122,7 @@ export default function BrowsePage() {
 
   return (
     <PageShell
-      breadcrumb="Browse"
+      breadcrumb="Equipment"
       backTo="/"
       backLabel="Home"
     >
@@ -155,7 +154,7 @@ export default function BrowsePage() {
 
       {/* Active search query badge */}
       {activeQuery && (
-        <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-white rounded-lg shadow-sm border border-[#E9E3DA]">
+        <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-white rounded-lg shadow-sm border border-[#EDE8E0]">
           <Search size={14} className="text-[#6F757C]" />
           <span className="text-sm text-[#101214]" style={{ fontFamily: 'Inter, sans-serif' }}>Results for &ldquo;<strong>{activeQuery}</strong>&rdquo;</span>
           <button onClick={() => setFilter('query', undefined)} className="ml-auto p-1 text-[#6F757C] hover:text-[#101214] transition-colors">
@@ -170,7 +169,7 @@ export default function BrowsePage() {
         <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap">
           <button
             onClick={() => setFiltersOpen(!filtersOpen)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E9E3DA] rounded-lg shadow-sm text-sm font-medium hover:border-[#6F757C] transition-colors min-h-[44px]"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#EDE8E0] rounded-lg shadow-sm text-sm font-medium hover:border-[#6F757C] transition-colors min-h-[44px]"
             style={{ fontFamily: 'Sora, sans-serif' }}
           >
             <SlidersHorizontal size={16} /> Filters
@@ -183,7 +182,7 @@ export default function BrowsePage() {
             className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg shadow-sm text-sm font-medium transition-colors min-h-[44px] ${
               hasLocation
                 ? 'bg-[#FF6A00] text-white border border-[#FF6A00]'
-                : 'bg-white text-[#6F757C] border border-[#E9E3DA] hover:border-[#FF6A00] hover:text-[#FF6A00]'
+                : 'bg-white text-[#6F757C] border border-[#EDE8E0] hover:border-[#FF6A00] hover:text-[#FF6A00]'
             }`}
             style={{ fontFamily: 'Sora, sans-serif' }}
           >
@@ -194,7 +193,7 @@ export default function BrowsePage() {
           <select
             value={searchParams.get('sortBy') || 'createdAt'}
             onChange={(e) => setFilter('sortBy', e.target.value)}
-            className="ml-auto px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg shadow-sm text-sm text-[#6F757C] focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
+            className="ml-auto px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg shadow-sm text-sm text-[#6F757C] focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
             style={{ fontFamily: 'Inter, sans-serif' }}
           >
             <option value="createdAt">Newest</option>
@@ -214,7 +213,7 @@ export default function BrowsePage() {
                 className={`px-3 py-2 text-xs font-medium rounded-full transition-all capitalize whitespace-nowrap ${
                   activeCategory === cat
                     ? 'bg-[#FF6A00] text-white'
-                    : 'bg-white text-[#6F757C] hover:text-[#101214] border border-[#E9E3DA]'
+                    : 'bg-white text-[#6F757C] hover:text-[#101214] border border-[#EDE8E0]'
                 }`}
                 style={{ fontFamily: 'IBM Plex Mono, monospace' }}
               >
@@ -227,7 +226,7 @@ export default function BrowsePage() {
 
       {/* Expanded filters panel */}
       {filtersOpen && (
-        <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="block text-xs font-medium text-[#6F757C] mb-1.5 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Make</label>
             <input
@@ -235,7 +234,7 @@ export default function BrowsePage() {
               placeholder="e.g. Tata, Komatsu"
               value={searchParams.get('make') || ''}
               onChange={(e) => setFilter('make', e.target.value || undefined)}
-              className="w-full px-3 py-3 bg-[#E9E3DA]/40 border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
+              className="w-full px-3 py-3 bg-[#EDE8E0]/40 border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
             />
           </div>
           <div>
@@ -245,7 +244,7 @@ export default function BrowsePage() {
               placeholder="₹ Min"
               value={searchParams.get('minPrice') || ''}
               onChange={(e) => setFilter('minPrice', e.target.value || undefined)}
-              className="w-full px-3 py-3 bg-[#E9E3DA]/40 border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
+              className="w-full px-3 py-3 bg-[#EDE8E0]/40 border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
             />
           </div>
           <div>
@@ -255,7 +254,7 @@ export default function BrowsePage() {
               placeholder="₹ Max"
               value={searchParams.get('maxPrice') || ''}
               onChange={(e) => setFilter('maxPrice', e.target.value || undefined)}
-              className="w-full px-3 py-3 bg-[#E9E3DA]/40 border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
+              className="w-full px-3 py-3 bg-[#EDE8E0]/40 border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
             />
           </div>
           <div>
@@ -265,27 +264,25 @@ export default function BrowsePage() {
               placeholder="e.g. Maharashtra"
               value={searchParams.get('state') || ''}
               onChange={(e) => setFilter('state', e.target.value || undefined)}
-              className="w-full px-3 py-3 bg-[#E9E3DA]/40 border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
+              className="w-full px-3 py-3 bg-[#EDE8E0]/40 border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
             />
           </div>
         </div>
       )}
 
-      {/* AI Trending Bar */}
+      {/* Trending categories */}
       {aiTrending.length > 0 && !loading && listings.length > 0 && (
-        <div className="flex items-center gap-3 mb-5 px-4 py-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-100">
-          <Brain size={16} className="text-purple-500 shrink-0" />
+        <div className="flex items-center gap-3 mb-5 px-4 py-3 bg-white rounded-xl border border-[#EDE8E0]">
+          <Eye size={14} className="text-[#6F757C] shrink-0" />
           <p className="text-xs text-[#101214]">
-            <span className="font-bold">AI Insight:</span>{' '}
-            <span className="text-[#6F757C]">Trending now —</span>{' '}
+            <span className="font-bold font-mono text-[#6F757C]">TRENDING:</span>{' '}
             {aiTrending.map((cat, i) => (
               <span key={cat}>
-                <button onClick={() => setFilter('category', cat)} className="font-semibold text-purple-600 hover:underline capitalize">{cat}</button>
+                <button onClick={() => setFilter('category', cat)} className="font-semibold text-[#FF6A00] hover:underline capitalize">{cat}</button>
                 {i < aiTrending.length - 1 && ', '}
               </span>
             ))}
           </p>
-          <Zap size={14} className="text-purple-400 shrink-0 ml-auto" />
         </div>
       )}
 
@@ -316,10 +313,10 @@ export default function BrowsePage() {
               <Link
                 to={`/listing/${listing.id}`}
                 key={listing.id}
-                className="bg-white rounded-xl overflow-hidden shadow-sm border border-[#E9E3DA] hover:shadow-lg hover:-translate-y-1 transition-all group"
+                className="bg-white rounded-xl overflow-hidden shadow-sm border border-[#EDE8E0] hover:shadow-lg hover:-translate-y-1 transition-all group"
               >
                 {/* Image */}
-                <div className="relative h-52 sm:h-48 bg-[#E9E3DA]">
+                <div className="relative h-52 sm:h-48 bg-[#EDE8E0]">
                   {listing.images?.[0] ? (
                     <img
                       src={listing.images[0]}
@@ -415,12 +412,10 @@ export default function BrowsePage() {
                       <Eye size={12} /> {listing.viewCount}
                     </span>
                   </div>
-                  {/* AI indicators */}
-                  {listing.viewCount > 50 && (
-                    <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-[#E9E3DA]">
-                      <Sparkles size={12} className="text-purple-400" />
-                      <span className="text-[10px] text-purple-500 font-semibold" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>HIGH DEMAND</span>
-                      <TrendingUp size={10} className="text-purple-400 ml-auto" />
+                  {/* Popularity indicator — based on real view data */}
+                  {listing.viewCount > 100 && (
+                    <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-[#EDE8E0]">
+                      <span className="text-[10px] text-[#6F757C] font-medium font-mono">Popular · {listing.viewCount} views</span>
                     </div>
                   )}
                 </div>
@@ -434,7 +429,7 @@ export default function BrowsePage() {
               <button
                 disabled={pagination.page <= 1}
                 onClick={() => setFilter('page', String(pagination.page - 1))}
-                className="p-3 bg-white border border-[#E9E3DA] rounded-lg shadow-sm disabled:opacity-40 hover:border-[#6F757C] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="p-3 bg-white border border-[#EDE8E0] rounded-lg shadow-sm disabled:opacity-40 hover:border-[#6F757C] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 <ArrowLeft size={18} />
               </button>
@@ -444,7 +439,7 @@ export default function BrowsePage() {
               <button
                 disabled={pagination.page >= pagination.pages}
                 onClick={() => setFilter('page', String(pagination.page + 1))}
-                className="p-3 bg-white border border-[#E9E3DA] rounded-lg shadow-sm disabled:opacity-40 hover:border-[#6F757C] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="p-3 bg-white border border-[#EDE8E0] rounded-lg shadow-sm disabled:opacity-40 hover:border-[#6F757C] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 <ArrowRight size={18} />
               </button>

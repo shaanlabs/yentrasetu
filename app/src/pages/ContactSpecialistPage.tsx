@@ -50,9 +50,9 @@ export default function ContactSpecialistPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#E9E3DA' }}>
+    <div style={{ minHeight: '100vh', background: '#EDE8E0' }}>
       {/* Header */}
-      <div style={{ background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #E9E3DA', position: 'sticky', top: 0, zIndex: 50 }}>
+      <div style={{ background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #EDE8E0', position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Link to="/" style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.1rem', color: '#101214', textDecoration: 'none' }}>YantraSetu</Link>

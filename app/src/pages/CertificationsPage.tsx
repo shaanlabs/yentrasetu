@@ -100,14 +100,14 @@ export default function CertificationsPage() {
 
         {/* Submit Form */}
         {showForm && (
-          <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-6 mb-8">
+          <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-6 mb-8">
             <h2 className="font-semibold text-sm mb-5 text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>New Certification</h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-xs font-medium text-[#6F757C] mb-1.5">Certificate Type *</label>
                 <select value={form.certificationType} onChange={e => setForm(p => ({ ...p, certificationType: e.target.value }))}
-                  className="w-full px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30">
+                  className="w-full px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30">
                   <option value="">Select type…</option>
                   {CERT_TYPES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                 </select>
@@ -116,7 +116,7 @@ export default function CertificationsPage() {
                 <label className="block text-xs font-medium text-[#6F757C] mb-1.5">Document Name *</label>
                 <input type="text" placeholder="e.g. Heavy Equipment Operator License" value={form.documentName}
                   onChange={e => setForm(p => ({ ...p, documentName: e.target.value }))}
-                  className="w-full px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30" />
+                  className="w-full px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30" />
               </div>
             </div>
 
@@ -125,13 +125,13 @@ export default function CertificationsPage() {
                 <label className="block text-xs font-medium text-[#6F757C] mb-1.5">Certificate/License Number</label>
                 <input type="text" placeholder="e.g. DGMS/2024/1234" value={form.documentNumber}
                   onChange={e => setForm(p => ({ ...p, documentNumber: e.target.value }))}
-                  className="w-full px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30" />
+                  className="w-full px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30" />
               </div>
               <div>
                 <label className="block text-xs font-medium text-[#6F757C] mb-1.5">Issuing Authority</label>
                 <input type="text" placeholder="e.g. DGMS India" value={form.issuingAuthority}
                   onChange={e => setForm(p => ({ ...p, issuingAuthority: e.target.value }))}
-                  className="w-full px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30" />
+                  className="w-full px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30" />
               </div>
             </div>
 
@@ -139,12 +139,12 @@ export default function CertificationsPage() {
               <div>
                 <label className="block text-xs font-medium text-[#6F757C] mb-1.5">Issue Date</label>
                 <input type="date" value={form.issuedDate} onChange={e => setForm(p => ({ ...p, issuedDate: e.target.value }))}
-                  className="w-full px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30" />
+                  className="w-full px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30" />
               </div>
               <div>
                 <label className="block text-xs font-medium text-[#6F757C] mb-1.5">Expiry Date</label>
                 <input type="date" value={form.expiresAt} onChange={e => setForm(p => ({ ...p, expiresAt: e.target.value }))}
-                  className="w-full px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30" />
+                  className="w-full px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30" />
               </div>
             </div>
 
@@ -152,7 +152,7 @@ export default function CertificationsPage() {
             <div className="mb-6">
               <label className="block text-xs font-medium text-[#6F757C] mb-1.5">Document Image *</label>
               {form.documentImage ? (
-                <div className="relative w-full h-48 border border-[#E9E3DA] rounded-lg overflow-hidden bg-[#E9E3DA]">
+                <div className="relative w-full h-48 border border-[#EDE8E0] rounded-lg overflow-hidden bg-[#EDE8E0]">
                   <img src={form.documentImage} alt="Document" className="w-full h-full object-contain" />
                   <button type="button" onClick={() => setForm(p => ({ ...p, documentImage: '' }))}
                     className="absolute top-2 right-2 w-7 h-7 bg-white rounded-full shadow flex items-center justify-center"><X size={14} /></button>
@@ -176,7 +176,7 @@ export default function CertificationsPage() {
 
         {/* Certifications List */}
         {certs.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-12 text-center">
+          <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-12 text-center">
             <Shield size={48} className="mx-auto text-[#6F757C] opacity-30 mb-4" />
             <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1.1rem' }}>No certifications yet</h2>
             <p className="text-sm text-[#6F757C] mt-2">Submit your certificates to get a verified badge on your profile.</p>
@@ -188,7 +188,7 @@ export default function CertificationsPage() {
               const StIcon = st.icon;
               const typeLabel = CERT_TYPES.find(c => c.value === cert.certificationType)?.label || cert.certificationType;
               return (
-                <div key={cert.id} className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 flex items-center justify-between gap-4">
+                <div key={cert.id} className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 flex items-center justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-bold text-sm truncate" style={{ fontFamily: 'Sora, sans-serif' }}>{cert.documentName}</h3>

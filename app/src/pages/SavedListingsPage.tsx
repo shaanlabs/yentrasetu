@@ -71,7 +71,7 @@ export default function SavedListingsPage() {
           <p className="text-sm text-[#6F757C] mb-4">{listings.length} saved listing{listings.length !== 1 ? 's' : ''}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {listings.map(listing => (
-              <div key={listing.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-[#E9E3DA] hover:shadow-lg transition-all group relative">
+              <div key={listing.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-[#EDE8E0] hover:shadow-lg transition-all group relative">
                 {/* Remove button */}
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemove(listing.id); }}
@@ -83,7 +83,7 @@ export default function SavedListingsPage() {
 
                 <Link to={`/listing/${listing.id}`}>
                   {/* Image */}
-                  <div className="relative h-52 sm:h-48 bg-[#E9E3DA]">
+                  <div className="relative h-52 sm:h-48 bg-[#EDE8E0]">
                     {listing.images?.[0] ? (
                       <img src={listing.images[0]} alt={`${listing.make} ${listing.model}`} className="w-full h-full object-cover" />
                     ) : (

@@ -5,7 +5,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { 
   Search, Menu, X, Plus, User, LogIn, ArrowRight, Truck as TruckIcon, Clock, Wrench,
-  Home, ShoppingBag, CalendarDays, Bell, Heart, LayoutDashboard
+  Home, ShoppingBag, Bell, Heart, LayoutDashboard
 } from 'lucide-react';
 import { useAuth } from './contexts/AuthContext';
 import { apiClient, notificationsApi } from './services/api';
@@ -486,11 +486,10 @@ function App() {
         <div className="nav-logo">YantraSetu</div>
         
         <div className="nav-links hidden md:flex">
-          <a onClick={() => navigate('/browse?type=sale')} style={{ cursor: 'pointer' }}>Buy</a>
-          <a onClick={() => navigate('/browse?type=rent')} style={{ cursor: 'pointer' }}>Rent</a>
-          <a onClick={() => navigate(isAuthenticated ? '/sell' : '/login')} style={{ cursor: 'pointer' }}>Sell</a>
-          <a onClick={() => navigate('/parts')} style={{ cursor: 'pointer' }}>Parts</a>
-          <a onClick={() => navigate('/operators')} style={{ cursor: 'pointer' }}>Services</a>
+          <a onClick={() => navigate('/browse')} style={{ cursor: 'pointer' }}>Equipment</a>
+          <a onClick={() => navigate('/services')} style={{ cursor: 'pointer' }}>Services</a>
+          <a onClick={() => navigate(isAuthenticated ? '/sell' : '/login')} style={{ cursor: 'pointer' }}>List Machine</a>
+          <a onClick={() => navigate('/loan-eligibility')} style={{ cursor: 'pointer' }}>Finance</a>
           <a onClick={() => navigate('/subscriptions')} style={{ cursor: 'pointer' }}>Plans</a>
         </div>
 
@@ -549,7 +548,7 @@ function App() {
       {/* Mobile Menu — rendered via Portal to avoid GSAP DOM conflicts */}
       {createPortal(
         <div 
-          className={`fixed inset-0 bg-[#E9E3DA] z-[9999] pt-24 px-6 md:hidden mobile-menu-overlay ${
+          className={`fixed inset-0 bg-[#EDE8E0] z-[9999] pt-24 px-6 md:hidden mobile-menu-overlay ${
             mobileMenuOpen ? 'mobile-menu-open' : 'mobile-menu-closed'
           }`}
           style={{ 
@@ -566,11 +565,10 @@ function App() {
             <X size={24} />
           </button>
           <div className="flex flex-col gap-6">
-            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/browse?type=sale'); }}>Buy</a>
-            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/browse?type=rent'); }}>Rent</a>
-            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/sell' : '/login'); }}>Sell</a>
-            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/parts'); }}>Parts</a>
-            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/operators'); }}>Services</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/browse'); }}>Equipment</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/services'); }}>Services</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate(isAuthenticated ? '/sell' : '/login'); }}>List Machine</a>
+            <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/loan-eligibility'); }}>Finance</a>
             <a className="text-2xl font-bold" style={{ cursor: 'pointer', fontFamily: 'Sora, sans-serif' }} onClick={() => { setMobileMenuOpen(false); navigate('/subscriptions'); }}>Plans</a>
             <button 
               className="btn-primary flex items-center justify-center gap-2 mt-4"
@@ -624,7 +622,7 @@ function App() {
           <div className="absolute inset-0 bg-[#FF6A00] opacity-[0.06]" />
         </div>
         
-        <div className="hero-content absolute right-0 top-0 w-full md:w-[48vw] h-full bg-[#E9E3DA] flex flex-col justify-center px-8 md:px-[4vw]">
+        <div className="hero-content absolute right-0 top-0 w-full md:w-[48vw] h-full bg-[#EDE8E0] flex flex-col justify-center px-8 md:px-[4vw]">
           <div className="max-w-[500px]">
             <h1 className="hero-headline mb-6">
               <span className="hero-headline-word block">India's Heavy</span>
@@ -633,21 +631,21 @@ function App() {
             </h1>
             
             <p className="text-[#6F757C] text-base md:text-lg mb-8 leading-relaxed">
-              Buy, sell, and rent verified excavators, cranes, loaders, and trucks—inspected, documented, and ready to work.
+              Buy, sell, rent equipment. Hire operators. Find mechanics. Get financing—all on one platform.
             </p>
 
             <div className="flex flex-col gap-4 mb-10">
-              <button className="hero-cta btn-primary flex items-center justify-center gap-2" onClick={() => navigate('/browse?type=sale')}>
-                Browse Machines for Sale
+              <button className="hero-cta btn-primary flex items-center justify-center gap-2" onClick={() => navigate('/browse')}>
+                Browse Equipment
                 <ArrowRight size={18} />
               </button>
-              <button className="hero-cta btn-secondary" onClick={() => navigate('/browse?type=rent')}>
-                Rent Equipment by the Month
+              <button className="hero-cta btn-secondary" onClick={() => navigate('/services')}>
+                Explore All Services
               </button>
             </div>
 
             <p className="mono text-[#6F757C] mb-4">
-              INSPECTED LISTINGS • NATIONWIDE DELIVERY
+              EQUIPMENT • OPERATORS • MECHANICS • PARTS • FINANCE
             </p>
 
             <button onClick={() => { const el = document.getElementById('categories'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} className="link-arrow">
@@ -659,7 +657,7 @@ function App() {
       </section>
 
       {/* Section 2: Category Mosaic */}
-      <section ref={categoryRef} id="categories" className="pinned-section z-20 bg-[#E9E3DA]">
+      <section ref={categoryRef} id="categories" className="pinned-section z-20 bg-[#EDE8E0]">
         <div className="absolute inset-0 grid grid-cols-1 md:grid-cols-3 grid-rows-2">
           {/* Top Left - Excavators */}
           <div className="cat-tile-top-left relative h-[50vh] md:h-auto">
@@ -675,7 +673,7 @@ function App() {
           </div>
 
           {/* Top Center - Text */}
-          <div className="cat-text-tile bg-[#E9E3DA] p-6 md:p-8 flex flex-col justify-center h-[40vh] md:h-auto border-2 border-[rgba(16,18,20,0.08)]">
+          <div className="cat-text-tile bg-[#EDE8E0] p-6 md:p-8 flex flex-col justify-center h-[40vh] md:h-auto border-2 border-[rgba(16,18,20,0.08)]">
             <h2 className="section-heading mb-4">Shop by Category</h2>
             <p className="text-[#6F757C] mb-6 text-sm md:text-base">
               From earthmoving to lifting to transport—find machines that match your scope and site.
@@ -725,7 +723,7 @@ function App() {
           </div>
 
           {/* Bottom Right - Sell Text */}
-          <div className="cat-text-tile bg-[#E9E3DA] p-6 md:p-8 flex flex-col justify-center h-[40vh] md:h-auto border-2 border-[rgba(16,18,20,0.08)]">
+          <div className="cat-text-tile bg-[#EDE8E0] p-6 md:p-8 flex flex-col justify-center h-[40vh] md:h-auto border-2 border-[rgba(16,18,20,0.08)]">
             <h3 className="text-xl md:text-2xl font-bold mb-3">Sell Your Machine</h3>
             <p className="text-[#6F757C] mb-4 text-sm md:text-base">
               List in minutes. Get offers from contractors and dealers.
@@ -739,7 +737,7 @@ function App() {
       </section>
 
       {/* Section 3: How It Works */}
-      <section ref={howItWorksRef} className="pinned-section z-30 bg-[#E9E3DA]">
+      <section ref={howItWorksRef} className="pinned-section z-30 bg-[#EDE8E0]">
         <div className="hiw-image absolute left-0 top-0 w-full md:w-[50vw] h-full">
           <img 
             src="/images/howitworks_operator.jpg" 
@@ -749,7 +747,7 @@ function App() {
           <div className="absolute inset-0 bg-[#FF6A00] opacity-[0.06]" />
         </div>
 
-        <div className="absolute right-0 top-0 w-full md:w-[50vw] h-full bg-[#E9E3DA] flex flex-col justify-center px-8 md:px-[4vw]">
+        <div className="absolute right-0 top-0 w-full md:w-[50vw] h-full bg-[#EDE8E0] flex flex-col justify-center px-8 md:px-[4vw]">
           <div className="max-w-[480px]">
             <h2 className="hiw-heading section-heading mb-8">How YantraSetu Works</h2>
 
@@ -800,7 +798,7 @@ function App() {
       </section>
 
       {/* Section 4: Featured Listings */}
-      <section ref={featuredRef} id="buy" className="pinned-section z-40 bg-[#E9E3DA]">
+      <section ref={featuredRef} id="buy" className="pinned-section z-40 bg-[#EDE8E0]">
         <div className="absolute inset-0 flex flex-col md:flex-row">
           {/* Panel A */}
           <div className="featured-panel featured-panel-left relative w-full md:w-[34vw] h-[33vh] md:h-full">
@@ -859,7 +857,7 @@ function App() {
       </section>
 
       {/* Section 5: Value Props */}
-      <section ref={valuePropsRef} className="pinned-section z-50 bg-[#E9E3DA]">
+      <section ref={valuePropsRef} className="pinned-section z-50 bg-[#EDE8E0]">
         <div className="vp-image absolute left-0 top-0 w-full md:w-[50vw] h-full">
           <img 
             src="/images/valueprops_machine.jpg" 
@@ -869,7 +867,7 @@ function App() {
           <div className="absolute inset-0 bg-[#FF6A00] opacity-[0.06]" />
         </div>
 
-        <div className="absolute right-0 top-0 w-full md:w-[50vw] h-full bg-[#E9E3DA] flex flex-col justify-center px-8 md:px-[4vw]">
+        <div className="absolute right-0 top-0 w-full md:w-[50vw] h-full bg-[#EDE8E0] flex flex-col justify-center px-8 md:px-[4vw]">
           <div className="max-w-[480px]">
             <h2 className="section-heading mb-8">Built for Contractors. Backed by Inspection.</h2>
 
@@ -914,7 +912,7 @@ function App() {
       </section>
 
       {/* Section 5.5: AI-Powered Intelligence Showcase */}
-      <section className="relative z-[55] bg-[#101214] py-20 md:py-28 overflow-hidden">
+      <section className="relative z-[55] bg-[#0C0E10] py-20 md:py-28 overflow-hidden">
         {/* Animated background pattern */}
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 25px 25px, #FF6A00 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-[#FF6A00]/10 to-transparent rounded-full blur-3xl" />
@@ -939,22 +937,22 @@ function App() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* AI Feature 1: Price Intelligence */}
             <div className="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-[#FF6A00]/30 transition-all cursor-default">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#FF6A00] to-[#FF8C38] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-[#FF6A00] rounded-xl flex items-center justify-center mb-4">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
               </div>
               <h3 className="text-white font-bold text-lg mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>AI Price Intelligence</h3>
               <p className="text-gray-400 text-sm leading-relaxed">ML models predict fair market value using historical data, condition analysis, and regional demand patterns.</p>
               <div className="mt-4 flex items-center gap-2">
                 <div className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full w-[87%] bg-gradient-to-r from-[#FF6A00] to-[#FF8C38] rounded-full" />
+                  <div className="h-full w-[80%] bg-[#FF6A00] rounded-full" />
                 </div>
-                <span className="text-[10px] text-[#FF6A00] font-bold" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>87% accuracy</span>
+                <span className="text-[10px] text-[#FF6A00] font-bold font-mono">Gradient Descent</span>
               </div>
             </div>
 
             {/* AI Feature 2: Demand Forecasting */}
             <div className="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-purple-400/30 transition-all cursor-default">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-[#8b5cf6] rounded-xl flex items-center justify-center mb-4">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
               </div>
               <h3 className="text-white font-bold text-lg mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>Demand Forecasting</h3>
@@ -970,7 +968,7 @@ function App() {
 
             {/* AI Feature 3: Trust & Sentiment */}
             <div className="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-green-400/30 transition-all cursor-default">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-[#22c55e] rounded-xl flex items-center justify-center mb-4">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               </div>
               <h3 className="text-white font-bold text-lg mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>Trust & Sentiment AI</h3>
@@ -989,29 +987,29 @@ function App() {
 
             {/* AI Feature 4: Smart Recommendations */}
             <div className="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-blue-400/30 transition-all cursor-default">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-[#3b82f6] rounded-xl flex items-center justify-center mb-4">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               </div>
               <h3 className="text-white font-bold text-lg mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>Smart Recommendations</h3>
               <p className="text-gray-400 text-sm leading-relaxed">Collaborative filtering + content-based engine delivers personalized equipment suggestions matched to your needs.</p>
               <div className="mt-4 flex items-center gap-2 text-xs text-blue-400">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                <span className="font-bold">3× higher engagement</span>
+                <span className="font-bold">Cosine Similarity Engine</span>
               </div>
             </div>
           </div>
 
-          {/* AI stats bar */}
+          {/* Technical methodology bar */}
           <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 border-t border-white/10 pt-10">
             {[
-              { value: '50K+', label: 'Data points analyzed daily' },
-              { value: '87%', label: 'Price prediction accuracy' },
-              { value: '< 2s', label: 'AI response time' },
-              { value: '24/7', label: 'Continuous model training' },
+              { value: '6', label: 'ML models in production' },
+              { value: 'O(n·m)', label: 'Fleet matching complexity' },
+              { value: 'Real-time', label: 'Demand signal processing' },
+              { value: 'Multi-factor', label: 'Trust scoring system' },
             ].map((stat, i) => (
               <div key={i} className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>{stat.value}</p>
-                <p className="text-xs text-gray-500" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{stat.label}</p>
+                <p className="text-2xl md:text-3xl font-bold text-white mb-1 font-heading">{stat.value}</p>
+                <p className="text-xs text-gray-500 font-mono">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -1019,12 +1017,12 @@ function App() {
       </section>
 
       {/* Section 6: Testimonial */}
-      <section ref={testimonialRef} className="relative z-[60] bg-[#E9E3DA] py-20 md:py-32">
+      <section ref={testimonialRef} className="relative z-[60] bg-[#F7F4F0] py-20 md:py-32">
         <div className="testimonial-content max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="relative">
-              <span className="quote-mark absolute -top-8 -left-4">"</span>
-              <blockquote className="text-xl md:text-2xl font-medium leading-relaxed mb-6 relative z-10">
+              <span className="quote-mark absolute -top-8 -left-4 text-[#FF6A00] opacity-20 text-8xl italic font-serif">"</span>
+              <blockquote className="text-xl md:text-2xl font-medium leading-relaxed mb-6 relative z-10 text-[#101214]">
                 I needed three excavators on short notice. YantraSetu had inspected options with reports I could share with my PM. Closed in 48 hours.
               </blockquote>
               <div className="flex items-center gap-4">
@@ -1050,7 +1048,7 @@ function App() {
       </section>
 
       {/* Section 7: Safety + Inspection */}
-      <section ref={safetyRef} className="pinned-section z-[70] bg-[#E9E3DA]">
+      <section ref={safetyRef} className="pinned-section z-[70] bg-[#EDE8E0]">
         <div className="safety-image absolute left-0 top-0 w-full md:w-[50vw] h-full">
           <img 
             src="/images/safety_quarry.jpg" 
@@ -1060,7 +1058,7 @@ function App() {
           <div className="absolute inset-0 bg-[#FF6A00] opacity-[0.06]" />
         </div>
 
-        <div className="absolute right-0 top-0 w-full md:w-[50vw] h-full bg-[#E9E3DA] flex flex-col justify-center px-8 md:px-[4vw]">
+        <div className="absolute right-0 top-0 w-full md:w-[50vw] h-full bg-[#EDE8E0] flex flex-col justify-center px-8 md:px-[4vw]">
           <div className="max-w-[480px]">
             <h2 className="safety-heading section-heading mb-8">Every Machine is Documented.</h2>
 
@@ -1122,7 +1120,7 @@ function App() {
       </section>
 
       {/* Section 9: Location + Service Network */}
-      <section ref={networkRef} className="relative z-[90] bg-[#E9E3DA] py-20 md:py-32">
+      <section ref={networkRef} className="relative z-[90] bg-[#EDE8E0] py-20 md:py-32">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <h2 className="network-heading section-heading mb-12">Nationwide Network. Local Support.</h2>
 
@@ -1152,7 +1150,7 @@ function App() {
       </section>
 
       {/* Section 10: Coverage Map */}
-      <section id="coverage" className="relative z-[90] bg-white py-20 md:py-32 overflow-hidden">
+      <section id="coverage" className="relative z-[90] bg-white/70 backdrop-blur-sm py-20 md:py-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center gap-16">
           <div className="flex-1">
             <h2 className="section-heading mb-6">Our Growing Footprint.</h2>
@@ -1180,7 +1178,7 @@ function App() {
             </div>
           </div>
           <div className="flex-1 relative">
-            <div className="relative aspect-square w-full bg-[#E9E3DA] rounded-2xl overflow-hidden border border-[#101214]/5 flex items-center justify-center p-8">
+            <div className="relative aspect-square w-full bg-[#EDE8E0] rounded-2xl overflow-hidden border border-[#101214]/5 flex items-center justify-center p-8">
               {/* Map Placeholder Graphic */}
               <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#FF6A00_1.5px,transparent_1.5px)] [background-size:24px_24px]" />
               <div className="relative z-10 w-full h-full flex items-center justify-center">
@@ -1279,22 +1277,22 @@ function App() {
           <Home size={20} />
           <span>Home</span>
         </button>
-        <button className="nav-item" onClick={() => navigate('/browse?type=sale')}>
+        <button className="nav-item" onClick={() => navigate('/browse')}>
           <ShoppingBag size={20} />
-          <span>Buy</span>
+          <span>Equipment</span>
         </button>
         <button className="nav-item-post" onClick={() => navigate(isAuthenticated ? '/sell' : '/login')}>
           <div className="post-circle">
             <Plus size={24} color="white" strokeWidth={2.5} />
           </div>
         </button>
-        <button className="nav-item" onClick={() => navigate('/browse?type=rent')}>
-          <CalendarDays size={20} />
-          <span>Rent</span>
+        <button className="nav-item" onClick={() => navigate('/services')}>
+          <Wrench size={20} />
+          <span>Services</span>
         </button>
-        <button className="nav-item" onClick={() => navigate(isAuthenticated ? '/profile' : '/login')}>
+        <button className="nav-item" onClick={() => navigate(isAuthenticated ? '/dashboard' : '/login')}>
           <User size={20} />
-          <span>{isAuthenticated ? 'Profile' : 'Sign In'}</span>
+          <span>{isAuthenticated ? 'Dashboard' : 'Sign In'}</span>
         </button>
       </nav>
     </div>

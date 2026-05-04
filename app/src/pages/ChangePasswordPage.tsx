@@ -58,7 +58,7 @@ export default function ChangePasswordPage() {
     return <PageShell breadcrumb="Password" backTo="/profile" backLabel="Profile"><div className="flex items-center justify-center py-32"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div></PageShell>;
   }
 
-  const inputClass = 'w-full pl-11 pr-12 py-3.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm min-h-[48px]';
+  const inputClass = 'w-full pl-11 pr-12 py-3.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm min-h-[48px]';
   const labelClass = 'block text-xs font-medium text-[#6F757C] mb-1.5 uppercase tracking-wider';
 
   return (
@@ -81,7 +81,7 @@ export default function ChangePasswordPage() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 space-y-5">
+          <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6 space-y-5">
             <div>
               <label className={labelClass} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Current Password</label>
               <div className="relative">

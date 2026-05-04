@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Play, Pause, Square, Clock, CheckCircle, AlertTriangle, Camera } from 'lucide-react';
+import { Play, Pause, Square, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 
 interface UsageTimerProps {
   bookingId: string;
@@ -127,13 +127,13 @@ export default function UsageTimer({ bookingId, machineName, dailyRate, onComple
   const progressPercent = Math.min(100, (elapsed / (8 * 3600)) * 100); // 8-hour day = 100%
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] overflow-hidden">
       {/* Header */}
       <div className={`px-5 py-3 flex items-center justify-between ${
         status === 'running' ? 'bg-green-50 border-b border-green-200' :
         status === 'paused' ? 'bg-yellow-50 border-b border-yellow-200' :
         status === 'completed' ? 'bg-blue-50 border-b border-blue-200' :
-        'bg-[#F9F7F4] border-b border-[#E9E3DA]'
+        'bg-[#F9F7F4] border-b border-[#EDE8E0]'
       }`}>
         <div className="flex items-center gap-2">
           <Clock size={16} className={
@@ -149,7 +149,7 @@ export default function UsageTimer({ bookingId, machineName, dailyRate, onComple
           status === 'running' ? 'bg-green-100 text-green-700' :
           status === 'paused' ? 'bg-yellow-100 text-yellow-700' :
           status === 'completed' ? 'bg-blue-100 text-blue-700' :
-          'bg-[#E9E3DA] text-[#6F757C]'
+          'bg-[#EDE8E0] text-[#6F757C]'
         }`} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
           {status === 'idle' ? 'NOT STARTED' : status.toUpperCase()}
         </span>
@@ -183,7 +183,7 @@ export default function UsageTimer({ bookingId, machineName, dailyRate, onComple
             <span>0h</span>
             <span>8h (full day)</span>
           </div>
-          <div className="w-full h-2.5 bg-[#E9E3DA] rounded-full overflow-hidden">
+          <div className="w-full h-2.5 bg-[#EDE8E0] rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-1000 ${
                 status === 'running' ? 'bg-gradient-to-r from-green-400 to-green-600' :

@@ -62,7 +62,7 @@ export default function PartsPage() {
           placeholder="Search by part name, number, or OEM..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-white border border-[#E9E3DA] py-3.5 pl-12 pr-10 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:border-transparent transition-all min-h-[48px]"
+          className="w-full bg-white border border-[#EDE8E0] py-3.5 pl-12 pr-10 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:border-transparent transition-all min-h-[48px]"
           style={{ fontFamily: 'Inter, sans-serif' }}
         />
         {searchQuery && (
@@ -85,7 +85,7 @@ export default function PartsPage() {
               className={`px-3 py-2 text-xs font-medium rounded-full capitalize whitespace-nowrap ${
                 filters.category === c
                   ? 'bg-[#FF6A00] text-white'
-                  : 'bg-white border border-[#E9E3DA] text-[#6F757C] hover:text-[#101214]'
+                  : 'bg-white border border-[#EDE8E0] text-[#6F757C] hover:text-[#101214]'
               }`}
               style={{ fontFamily: 'IBM Plex Mono, monospace' }}
             >
@@ -96,7 +96,7 @@ export default function PartsPage() {
         <select
           value={filters.condition}
           onChange={e => setF('condition', e.target.value)}
-          className="sm:ml-auto px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#6F757C] focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
+          className="sm:ml-auto px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#6F757C] focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
         >
           <option value="">All Conditions</option>
           {CONDS.map(c => <option key={c} value={c} className="capitalize">{c}</option>)}
@@ -119,8 +119,8 @@ export default function PartsPage() {
           <p className="text-sm text-[#6F757C] mb-4">{pagination.total} part{pagination.total !== 1 ? 's' : ''}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {parts.map(part => (
-              <div key={part.id} className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] overflow-hidden hover:shadow-md transition-all group">
-                <div className="h-44 sm:h-40 bg-[#E9E3DA] flex items-center justify-center relative">
+              <div key={part.id} className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] overflow-hidden hover:shadow-md transition-all group">
+                <div className="h-44 sm:h-40 bg-[#EDE8E0] flex items-center justify-center relative">
                   {part.images?.[0] ? (
                     <img src={part.images[0]} className="w-full h-full object-cover" alt={part.partName} />
                   ) : (
@@ -169,7 +169,7 @@ export default function PartsPage() {
               <button
                 disabled={pagination.page <= 1}
                 onClick={() => setF('page', pagination.page - 1)}
-                className="p-3 bg-white border border-[#E9E3DA] rounded-lg shadow-sm disabled:opacity-40 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="p-3 bg-white border border-[#EDE8E0] rounded-lg shadow-sm disabled:opacity-40 min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 <ArrowLeft size={18} />
               </button>
@@ -179,7 +179,7 @@ export default function PartsPage() {
               <button
                 disabled={pagination.page >= pagination.pages}
                 onClick={() => setF('page', pagination.page + 1)}
-                className="p-3 bg-white border border-[#E9E3DA] rounded-lg shadow-sm disabled:opacity-40 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="p-3 bg-white border border-[#EDE8E0] rounded-lg shadow-sm disabled:opacity-40 min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 <ArrowRight size={18} />
               </button>

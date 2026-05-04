@@ -66,7 +66,7 @@ export default function RegisterPage() {
         userType: form.userType,
         referralCode: form.referralCode || undefined,
       } as any);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Registration failed.');
     } finally {
@@ -74,11 +74,11 @@ export default function RegisterPage() {
     }
   };
 
-  const inputClass = 'w-full pl-11 pr-4 py-3.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm min-h-[48px]';
+  const inputClass = 'w-full pl-11 pr-4 py-3.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm min-h-[48px]';
   const labelClass = 'block text-xs font-medium text-[#6F757C] mb-1.5 uppercase tracking-wider';
 
   return (
-    <div className="min-h-screen bg-[#E9E3DA] flex">
+    <div className="min-h-screen bg-[#EDE8E0] flex">
       {/* Left panel */}
       <div className="hidden lg:block lg:w-[50vw] relative">
         <img
@@ -184,7 +184,7 @@ export default function RegisterPage() {
                     className={`p-3 rounded-lg border text-left transition-all min-h-[56px] ${
                       form.userType === t.value
                         ? 'border-[#FF6A00] bg-[#FF6A00]/5 shadow-sm'
-                        : 'border-[#E9E3DA] bg-white hover:border-[#6F757C]'
+                        : 'border-[#EDE8E0] bg-white hover:border-[#6F757C]'
                     }`}
                   >
                     <Building2 size={16} className={form.userType === t.value ? 'text-[#FF6A00]' : 'text-[#6F757C]'} />

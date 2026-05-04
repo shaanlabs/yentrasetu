@@ -24,7 +24,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login({ phone, password });
-      navigate('/');
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Login failed. Please try again.');
     } finally {
@@ -51,7 +51,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#E9E3DA] flex">
+    <div className="min-h-screen bg-[#EDE8E0] flex">
       {/* Left panel — image (desktop only) */}
       <div className="hidden lg:block lg:w-[50vw] relative">
         <img
@@ -141,7 +141,7 @@ export default function LoginPage() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Enter phone number"
-                  className="w-full pl-11 pr-4 py-3.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm min-h-[48px]"
+                  className="w-full pl-11 pr-4 py-3.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm min-h-[48px]"
                   style={{ fontFamily: 'Inter, sans-serif' }}
                 />
               </div>
@@ -163,7 +163,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter password"
-                    className="w-full pl-11 pr-12 py-3.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm min-h-[48px]"
+                    className="w-full pl-11 pr-12 py-3.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm min-h-[48px]"
                     style={{ fontFamily: 'Inter, sans-serif' }}
                   />
                   <button

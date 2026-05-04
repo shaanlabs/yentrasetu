@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import App from './App';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // ─── Lazy-loaded pages (code-split into separate chunks) ───────
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -31,6 +32,9 @@ const SavedListingsPage = lazy(() => import('./pages/SavedListingsPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const MarketInsightsPage = lazy(() => import('./pages/MarketInsightsPage'));
 const WhyYantraSetuPage = lazy(() => import('./pages/WhyYantraSetuPage'));
+const FleetOptimizerPage = lazy(() => import('./pages/FleetOptimizerPage'));
+const ServicesPage = lazy(() => import('./pages/ServicesPage'));
+const JobBoardPage = lazy(() => import('./pages/JobBoardPage'));
 
 // ─── Loading fallback ──────────────────────────────────────────
 function PageLoader() {
@@ -40,12 +44,12 @@ function PageLoader() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#E9E3DA',
+      background: '#EDE8E0',
     }}>
       <div style={{
         width: 32,
         height: 32,
-        border: '3px solid #E9E3DA',
+        border: '3px solid #EDE8E0',
         borderTopColor: '#FF6A00',
         borderRadius: '50%',
         animation: 'spin 0.8s linear infinite',
@@ -57,7 +61,11 @@ function PageLoader() {
 
 /** Wrap a lazy component with Suspense */
 function SL({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={<PageLoader />}>{children}</Suspense>;
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <ErrorBoundary>{children}</ErrorBoundary>
+    </Suspense>
+  );
 }
 
 export const router = createBrowserRouter([
@@ -102,12 +110,15 @@ export const router = createBrowserRouter([
   { path: '/inspection-standards', element: <SL><InspectionStandardsPage /></SL> },
   { path: '/contact-specialist', element: <SL><ContactSpecialistPage /></SL> },
   { path: '/why', element: <SL><WhyYantraSetuPage /></SL> },
+  { path: '/fleet-optimizer', element: <SL><FleetOptimizerPage /></SL> },
+  { path: '/services', element: <SL><ServicesPage /></SL> },
+  { path: '/jobs', element: <SL><JobBoardPage /></SL> },
 
   // 404
   {
     path: '*',
     element: (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem', fontFamily: 'Inter, sans-serif', color: '#101214', background: '#E9E3DA' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem', fontFamily: 'Inter, sans-serif', color: '#101214', background: '#EDE8E0' }}>
         <h1 style={{ fontSize: '4rem', fontWeight: 700, margin: 0 }}>404</h1>
         <p style={{ color: '#6F757C' }}>Page not found.</p>
         <a href="/" style={{ color: '#FF6A00', textDecoration: 'underline' }}>Back to home</a>

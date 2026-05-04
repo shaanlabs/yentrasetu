@@ -98,7 +98,7 @@ export default function VerifyOtpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#E9E3DA] flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-[#EDE8E0] flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-[420px] text-center">
         <Link to="/" className="inline-block mb-10">
           <span style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.5rem', color: '#101214' }}>
@@ -142,7 +142,7 @@ export default function VerifyOtpPage() {
               value={digit}
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
-              className="w-12 h-14 text-center text-xl font-bold bg-white border-2 border-[#E9E3DA] rounded-lg focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm"
+              className="w-12 h-14 text-center text-xl font-bold bg-white border-2 border-[#EDE8E0] rounded-lg focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm"
               style={{ fontFamily: 'Sora, sans-serif', color: '#101214' }}
               disabled={loading}
             />

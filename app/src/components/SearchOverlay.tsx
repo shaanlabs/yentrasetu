@@ -67,7 +67,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       <div className="absolute inset-0 bg-[#101214]/70 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative max-w-2xl mx-4 sm:mx-auto mt-[5vh] sm:mt-[10vh] bg-[#E9E3DA] rounded-xl shadow-2xl overflow-hidden animate-[slideDown_0.2s_ease-out]">
+      <div className="relative max-w-2xl mx-4 sm:mx-auto mt-[5vh] sm:mt-[10vh] bg-[#EDE8E0] rounded-xl shadow-2xl overflow-hidden animate-[slideDown_0.2s_ease-out]">
         {/* Search input */}
         <form onSubmit={handleSearch} className="flex items-center border-b border-[#101214]/10 px-6">
           <Search size={20} className="text-[#6F757C] flex-shrink-0" />
@@ -90,7 +90,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             <div>
               <label className="block text-[10px] font-medium text-[#6F757C] mb-1 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Category</label>
               <select value={category} onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3 py-2 bg-white border border-[#E9E3DA] rounded text-sm focus:outline-none focus:border-[#FF6A00]">
+                className="w-full px-3 py-2 bg-white border border-[#EDE8E0] rounded text-sm focus:outline-none focus:border-[#FF6A00]">
                 <option value="">All</option>
                 {CATEGORIES.map((c) => <option key={c} value={c} className="capitalize">{c}</option>)}
               </select>
@@ -98,12 +98,12 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             <div>
               <label className="block text-[10px] font-medium text-[#6F757C] mb-1 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Make</label>
               <input type="text" value={make} onChange={(e) => setMake(e.target.value)} placeholder="e.g. Komatsu"
-                className="w-full px-3 py-2 bg-white border border-[#E9E3DA] rounded text-sm focus:outline-none focus:border-[#FF6A00]" />
+                className="w-full px-3 py-2 bg-white border border-[#EDE8E0] rounded text-sm focus:outline-none focus:border-[#FF6A00]" />
             </div>
             <div>
               <label className="block text-[10px] font-medium text-[#6F757C] mb-1 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Location</label>
               <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Maharashtra"
-                className="w-full px-3 py-2 bg-white border border-[#E9E3DA] rounded text-sm focus:outline-none focus:border-[#FF6A00]" />
+                className="w-full px-3 py-2 bg-white border border-[#EDE8E0] rounded text-sm focus:outline-none focus:border-[#FF6A00]" />
             </div>
           </div>
         )}
@@ -114,7 +114,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
           <div className="flex flex-wrap gap-2">
             {POPULAR.map((item) => (
               <button key={item.label} onClick={() => quickSearch(item.cat)}
-                className="px-3 py-1.5 bg-white text-[#101214] text-xs font-medium rounded-full border border-[#E9E3DA] hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors"
+                className="px-3 py-1.5 bg-white text-[#101214] text-xs font-medium rounded-full border border-[#EDE8E0] hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors"
                 style={{ fontFamily: 'Sora, sans-serif' }}>
                 {item.label}
               </button>

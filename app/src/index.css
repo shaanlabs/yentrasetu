@@ -5,21 +5,29 @@
 @tailwind utilities;
 
 :root {
-  --bg-primary: #E9E3DA;
+  --bg-primary: #EDE8E0;
   --bg-secondary: #101214;
   --accent: #FF6A00;
   --accent-hover: #E85D00;
+  --accent-glow: rgba(255, 106, 0, 0.15);
   --text-primary: #101214;
   --text-secondary: #6F757C;
   --border-light: rgba(16, 18, 20, 0.08);
+  --border-subtle: rgba(16, 18, 20, 0.04);
   --card-bg: #FFFFFF;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+  --card-bg-elevated: rgba(255, 255, 255, 0.85);
+  --surface-warm: #F7F4F0;
+  --surface-cool: #F2F0EE;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
-  --shadow-sm: 0 1px 3px rgba(16, 18, 20, 0.06);
-  --shadow-md: 0 4px 16px rgba(16, 18, 20, 0.08);
-  --shadow-lg: 0 10px 30px rgba(16, 18, 20, 0.12);
+  --shadow-xs: 0 1px 2px rgba(16, 18, 20, 0.04);
+  --shadow-sm: 0 2px 8px rgba(16, 18, 20, 0.06);
+  --shadow-md: 0 4px 20px rgba(16, 18, 20, 0.08);
+  --shadow-lg: 0 12px 40px rgba(16, 18, 20, 0.12);
+  --shadow-xl: 0 20px 60px rgba(16, 18, 20, 0.16);
   --mobile-bottom-nav-h: 64px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -38,7 +46,8 @@ html {
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg-primary);
+  background: linear-gradient(180deg, #EDE8E0 0%, #E7E2D9 40%, #E4DFD6 100%);
+  background-attachment: fixed;
   color: var(--text-primary);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -51,12 +60,39 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.1;
 }
 
+/* ─── Font utility classes (use these instead of inline styles) ── */
+.font-heading {
+  font-family: 'Sora', sans-serif;
+}
+
+.font-mono {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.font-data {
+  font-family: 'IBM Plex Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
 .mono {
   font-family: 'IBM Plex Mono', monospace;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-size: 11px;
   font-weight: 500;
+}
+
+/* ─── Loading skeleton ──────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #EDE8E0 25%, #f0ece5 50%, #EDE8E0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* ─── Grain overlay ─────────────────────────────────────────── */
@@ -165,11 +201,11 @@ h1, h2, h3, h4, h5, h6 {
   padding: 20px 24px;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   box-shadow: var(--shadow-sm);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
 }
 
 .value-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-md);
 }
 
@@ -205,7 +241,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-fixed.scrolled {
-  background-color: rgba(233, 227, 218, 0.95);
+  background-color: rgba(237, 232, 224, 0.95);
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 20px rgba(16, 18, 20, 0.08);
 }
@@ -367,10 +403,11 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── Inner-page header ─────────────────────────────────────── */
 .page-header {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(16, 18, 20, 0.05);
+  box-shadow: 0 1px 12px rgba(16, 18, 20, 0.04);
   position: sticky;
   top: 0;
   z-index: 50;

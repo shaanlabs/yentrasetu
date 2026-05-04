@@ -2,10 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import PageShell from '../components/PageShell';
 import {
-  Phone, Clock, IndianRupee, MapPin, CheckCircle, XCircle,
-  Zap, Shield, ArrowRight, ArrowDown, Play, Timer,
+  Phone, IndianRupee, MapPin, CheckCircle, XCircle,
+  Zap, Shield, ArrowDown, Play, Timer,
   TrendingUp, Star, FileText, AlertTriangle, Users, Globe,
-  Smartphone, Wrench, Search
+  Wrench, Search
 } from 'lucide-react';
 
 /* ── Animated counter hook ── */
@@ -92,7 +92,7 @@ function BookingRace() {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-[#E9E3DA] overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-lg border border-[#EDE8E0] overflow-hidden">
       {/* Header */}
       <div className="bg-[#101214] text-white p-5 text-center">
         <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>
@@ -101,7 +101,7 @@ function BookingRace() {
         <p className="text-xs text-white/60">See which one books a JCB first</p>
       </div>
 
-      <div className="grid grid-cols-2 divide-x divide-[#E9E3DA]">
+      <div className="grid grid-cols-2 divide-x divide-[#EDE8E0]">
         {/* Phone Call side */}
         <div className="p-4 sm:p-5">
           <div className="flex items-center gap-2 mb-4">
@@ -169,7 +169,7 @@ function BookingRace() {
       </div>
 
       {/* Start button */}
-      <div className="p-4 bg-[#F9F7F4] border-t border-[#E9E3DA] text-center">
+      <div className="p-4 bg-[#F9F7F4] border-t border-[#EDE8E0] text-center">
         {!started ? (
           <button onClick={start} className="px-8 py-3 bg-[#FF6A00] text-white font-bold rounded-xl text-sm hover:bg-[#e55f00] transition-all flex items-center gap-2 mx-auto shadow-lg shadow-[#FF6A00]/20" style={{ fontFamily: 'Sora, sans-serif' }}>
             <Play size={16} /> Start the Race
@@ -257,7 +257,7 @@ export default function WhyYantraSetuPage() {
           { ref: stat3.ref, value: stat3.count, suffix: 'M+', label: 'Small contractors', sub: 'Who can\'t afford to buy' },
           { ref: stat4.ref, value: stat4.count, suffix: ' min', label: 'To book on YantraSetu', sub: 'vs 2-4 days traditional' },
         ].map((s, i) => (
-          <div key={i} ref={s.ref} className="text-center p-5 bg-white rounded-xl shadow-sm border border-[#E9E3DA]">
+          <div key={i} ref={s.ref} className="text-center p-5 bg-white rounded-xl shadow-sm border border-[#EDE8E0]">
             <p className="text-3xl sm:text-4xl font-bold text-[#FF6A00]" style={{ fontFamily: 'Sora, sans-serif' }}>
               {s.prefix}{s.value}{s.suffix}
             </p>
@@ -324,13 +324,13 @@ export default function WhyYantraSetuPage() {
               severity: 'bg-yellow-500',
             },
           ].map((r, i) => (
-            <details key={i} className="group bg-white rounded-xl shadow-sm border border-[#E9E3DA] overflow-hidden">
+            <details key={i} className="group bg-white rounded-xl shadow-sm border border-[#EDE8E0] overflow-hidden">
               <summary className="flex items-center gap-3 p-4 cursor-pointer hover:bg-[#F9F7F4] transition-colors list-none">
                 <span className={`w-2 h-2 rounded-full ${r.severity} flex-shrink-0`} />
                 <p className="text-sm font-bold flex-1" style={{ fontFamily: 'Sora, sans-serif' }}>{r.risk}</p>
                 <ArrowDown size={14} className="text-[#6F757C] group-open:rotate-180 transition-transform" />
               </summary>
-              <div className="px-4 pb-4 pt-1 border-t border-[#E9E3DA]">
+              <div className="px-4 pb-4 pt-1 border-t border-[#EDE8E0]">
                 <p className="text-sm text-[#6F757C] leading-relaxed">{r.answer}</p>
               </div>
             </details>

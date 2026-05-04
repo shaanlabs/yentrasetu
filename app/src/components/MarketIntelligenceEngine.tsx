@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import {
-  TrendingUp, TrendingDown, BarChart3, Activity,
-  Brain, Sparkles, MapPin, IndianRupee, Target,
-  ArrowRight, Info, ChevronDown
+  TrendingUp, TrendingDown, Activity,
+  Brain, Sparkles, IndianRupee,
+  Info, ChevronDown
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -176,7 +176,7 @@ export default function MarketIntelligenceEngine({ category = 'Backhoe Loader', 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-[#E9E3DA] overflow-hidden ${compact ? '' : ''}`}>
+    <div className={`bg-white rounded-xl shadow-sm border border-[#EDE8E0] overflow-hidden ${compact ? '' : ''}`}>
       {/* Header */}
       <div className="px-5 py-3 bg-gradient-to-r from-[#101214] to-[#1a1e22] text-white flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -201,7 +201,7 @@ export default function MarketIntelligenceEngine({ category = 'Backhoe Loader', 
               className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
                 selectedCategory === c
                   ? 'bg-[#FF6A00] text-white shadow-sm'
-                  : 'bg-[#F9F7F4] text-[#6F757C] hover:bg-[#E9E3DA]'
+                  : 'bg-[#F9F7F4] text-[#6F757C] hover:bg-[#EDE8E0]'
               }`}
             >
               {c}
@@ -210,7 +210,7 @@ export default function MarketIntelligenceEngine({ category = 'Backhoe Loader', 
         </div>
 
         {/* Tab buttons */}
-        <div className="flex border-b border-[#E9E3DA] mb-4">
+        <div className="flex border-b border-[#EDE8E0] mb-4">
           {[
             { key: 'pricing', label: 'Price Clusters', icon: IndianRupee },
             { key: 'demand', label: 'Demand Forecast', icon: TrendingUp },
@@ -289,7 +289,7 @@ export default function MarketIntelligenceEngine({ category = 'Backhoe Loader', 
               <div className="flex gap-1">
                 {data.suppliers.map((s, i) => (
                   <div key={s} className="flex-1 text-center">
-                    <div className="h-12 bg-[#E9E3DA] rounded relative overflow-hidden">
+                    <div className="h-12 bg-[#EDE8E0] rounded relative overflow-hidden">
                       <div className="absolute bottom-0 left-0 right-0 bg-[#FF6A00] transition-all duration-500 rounded-t"
                         style={{ height: `${data.marketShares[i]}%` }} />
                     </div>
@@ -442,7 +442,7 @@ export default function MarketIntelligenceEngine({ category = 'Backhoe Loader', 
         )}
 
         {/* Algorithm legend */}
-        <div className="mt-4 pt-3 border-t border-[#E9E3DA]">
+        <div className="mt-4 pt-3 border-t border-[#EDE8E0]">
           <details className="group">
             <summary className="flex items-center gap-2 text-[10px] text-[#6F757C] cursor-pointer hover:text-[#101214]">
               <Info size={10} />

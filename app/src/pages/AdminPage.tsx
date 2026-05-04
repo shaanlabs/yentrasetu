@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { adminApi, certificationsApi, fraudApi } from '../services/api';
+import { adminApi, certificationsApi, fraudApi, bookingsApi } from '../services/api';
 import {
   ArrowLeft, Loader2, Users, Package, Wrench, Calendar, Star, CheckCircle, XCircle, Clock,
   Shield, AlertTriangle, Eye, TrendingUp, Activity, BarChart3, Search,
@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
-type Tab = 'overview' | 'users' | 'listings' | 'analytics' | 'certifications' | 'fraud' | 'activity';
+type Tab = 'overview' | 'users' | 'listings' | 'bookings' | 'analytics' | 'certifications' | 'fraud' | 'activity';
 
 // ─── Mini SVG Chart Components ─────────────────────────
 function MiniBarChart({ data, height = 60, color = '#FF6A00' }: { data: number[]; height?: number; color?: string }) {
@@ -119,6 +119,8 @@ export default function AdminPage() {
   const [actionId, setActionId] = useState<string | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
   const [notesId, setNotesId] = useState<string | null>(null);
+  const [allBookings, setAllBookings] = useState<any[]>([]);
+  const [bookingsLoading, setBookingsLoading] = useState(false);
 
   // Filter states
   const [userSearch, setUserSearch] = useState('');
@@ -255,7 +257,7 @@ export default function AdminPage() {
   if (!isAdmin) return (
     <PageShell breadcrumb="Admin">
       <div className="flex items-center justify-center py-20">
-        <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-10 text-center max-w-md">
+        <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-10 text-center max-w-md">
           <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4"><XCircle size={32} className="text-red-500" /></div>
           <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.25rem', marginBottom: '0.5rem' }}>Access Denied</h1>
           <p className="text-sm text-[#6F757C] mb-6">Admin role required.</p>
@@ -270,6 +272,7 @@ export default function AdminPage() {
     { key: 'overview', label: 'Overview', icon: BarChart3 },
     { key: 'users', label: 'Users', icon: Users, badge: stats?.users },
     { key: 'listings', label: 'Listings', icon: Package, badge: stats?.pendingListings },
+    { key: 'bookings', label: 'Bookings', icon: Calendar, badge: stats?.bookings },
     { key: 'analytics', label: 'Analytics', icon: TrendingUp },
     { key: 'certifications', label: 'Certs', icon: Shield, badge: pendingCerts.length },
     { key: 'fraud', label: 'Fraud', icon: AlertTriangle, badge: fraudReports.length },
@@ -319,7 +322,7 @@ export default function AdminPage() {
         <div className="flex-1 min-w-0 pb-20 lg:pb-0">
           <h1 className="text-xl font-bold mb-6 flex items-center gap-3" style={{ fontFamily: 'Sora, sans-serif' }}>
             {tabs.find(t => t.key === tab)?.label || 'Admin'}
-            <button onClick={() => { setLoading(true); window.location.reload(); }} className="ml-auto p-2 rounded-lg hover:bg-[#E9E3DA] transition-colors" title="Refresh">
+            <button onClick={() => { setLoading(true); window.location.reload(); }} className="ml-auto p-2 rounded-lg hover:bg-[#EDE8E0] transition-colors" title="Refresh">
               <RefreshCw size={16} className="text-[#6F757C]" />
             </button>
           </h1>
@@ -339,7 +342,7 @@ export default function AdminPage() {
                   { label: 'Mechanics', value: stats.mechanics, icon: Settings, color: '#6366F1' },
                   { label: 'Reviews', value: stats.reviews, icon: Star, color: '#F97316' },
                 ].map(c => (
-                  <div key={c.label} className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 hover:shadow-md transition-shadow">
+                  <div key={c.label} className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-3">
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: c.color + '15' }}>
                         <c.icon size={20} style={{ color: c.color }} />
@@ -387,7 +390,7 @@ export default function AdminPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Registrations chart */}
                 {stats.registrationsPerDay?.length > 0 && (
-                  <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5">
+                  <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5">
                     <h3 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
                       <TrendingUp size={14} className="text-[#FF6A00]" /> New Users (30d)
                     </h3>
@@ -399,7 +402,7 @@ export default function AdminPage() {
                 )}
                 {/* Listings by category */}
                 {stats.listingsByCategory?.length > 0 && (
-                  <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5">
+                  <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5">
                     <h3 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
                       <BarChart3 size={14} className="text-[#FF6A00]" /> Listings by Category
                     </h3>
@@ -422,7 +425,7 @@ export default function AdminPage() {
               {/* Users by Role + Top Cities */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {stats.usersByRole?.length > 0 && (
-                  <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5">
+                  <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5">
                     <h3 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
                       <Users size={14} className="text-[#FF6A00]" /> Users by Role
                     </h3>
@@ -432,7 +435,7 @@ export default function AdminPage() {
                         return (
                           <div key={r.userType} className="flex items-center gap-3">
                             <span className="text-xs text-[#6F757C] w-20 capitalize truncate">{ROLE_LABELS[r.userType] || r.userType}</span>
-                            <div className="flex-1 h-2 bg-[#E9E3DA] rounded-full overflow-hidden">
+                            <div className="flex-1 h-2 bg-[#EDE8E0] rounded-full overflow-hidden">
                               <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: CAT_COLORS[i] }} />
                             </div>
                             <span className="text-xs font-bold w-8 text-right" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{r.count}</span>
@@ -443,7 +446,7 @@ export default function AdminPage() {
                   </div>
                 )}
                 {stats.topCities?.length > 0 && (
-                  <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5">
+                  <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5">
                     <h3 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
                       <MapPin size={14} className="text-[#FF6A00]" /> Top Cities
                     </h3>
@@ -451,7 +454,7 @@ export default function AdminPage() {
                       {stats.topCities.slice(0, 6).map((c: any, i: number) => (
                         <div key={c.city} className="flex items-center gap-3">
                           <span className="text-xs text-[#6F757C] w-24 truncate">{c.city}</span>
-                          <div className="flex-1 h-2 bg-[#E9E3DA] rounded-full overflow-hidden">
+                          <div className="flex-1 h-2 bg-[#EDE8E0] rounded-full overflow-hidden">
                             <div className="h-full rounded-full" style={{ width: `${Math.round((Number(c.count) / Number(stats.topCities[0].count)) * 100)}%`, background: CAT_COLORS[i] }} />
                           </div>
                           <span className="text-xs font-bold w-8 text-right" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{c.count}</span>
@@ -474,15 +477,15 @@ export default function AdminPage() {
                   <input type="text" placeholder="Search name, phone, email..." value={userSearch}
                     onChange={e => setUserSearch(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && loadUsers()}
-                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00]" />
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00]" />
                 </div>
                 <select value={userRoleFilter} onChange={e => { setUserRoleFilter(e.target.value); }}
-                  className="px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#6F757C] focus:outline-none focus:border-[#FF6A00]">
+                  className="px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#6F757C] focus:outline-none focus:border-[#FF6A00]">
                   <option value="">All Roles</option>
                   {Object.entries(ROLE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                 </select>
                 <select value={userStatusFilter} onChange={e => { setUserStatusFilter(e.target.value); }}
-                  className="px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#6F757C] focus:outline-none focus:border-[#FF6A00]">
+                  className="px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#6F757C] focus:outline-none focus:border-[#FF6A00]">
                   <option value="">All Status</option>
                   <option value="active">Active</option>
                   <option value="banned">Banned</option>
@@ -495,11 +498,11 @@ export default function AdminPage() {
               </div>
 
               {/* Users Table */}
-              <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] overflow-hidden">
+              <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-[#E9E3DA] bg-[#f9f7f4]">
+                      <tr className="border-b border-[#EDE8E0] bg-[#f9f7f4]">
                         <th className="text-left px-4 py-3 text-[11px] font-medium text-[#6F757C] uppercase" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>User</th>
                         <th className="text-left px-3 py-3 text-[11px] font-medium text-[#6F757C] uppercase hidden sm:table-cell" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Role</th>
                         <th className="text-center px-3 py-3 text-[11px] font-medium text-[#6F757C] uppercase hidden md:table-cell" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Status</th>
@@ -508,7 +511,7 @@ export default function AdminPage() {
                     </thead>
                     <tbody>
                       {allUsers.map(u => (
-                        <tr key={u.id} className="border-b border-[#E9E3DA]/50 hover:bg-[#f9f7f4] transition-colors">
+                        <tr key={u.id} className="border-b border-[#EDE8E0]/50 hover:bg-[#f9f7f4] transition-colors">
                           <td className="px-4 py-3">
                             <p className="font-medium text-sm">{u.firstName} {u.lastName}</p>
                             <p className="text-[11px] text-[#6F757C]">{u.phone} {u.email && `· ${u.email}`}</p>
@@ -524,7 +527,7 @@ export default function AdminPage() {
                               </div>
                             ) : (
                               <button onClick={() => { setRoleChangeId(u.id); setSelectedRole(u.userType); }}
-                                className="px-2 py-1 text-[10px] font-bold rounded bg-[#E9E3DA] text-[#6F757C] hover:bg-[#d1cbc2] capitalize" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                                className="px-2 py-1 text-[10px] font-bold rounded bg-[#EDE8E0] text-[#6F757C] hover:bg-[#d1cbc2] capitalize" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
                                 {ROLE_LABELS[u.userType] || u.userType}
                               </button>
                             )}
@@ -558,12 +561,12 @@ export default function AdminPage() {
                 </div>
                 {/* Pagination */}
                 {usersPagination && usersPagination.pages > 1 && (
-                  <div className="flex items-center justify-between px-4 py-3 border-t border-[#E9E3DA] bg-[#f9f7f4]">
+                  <div className="flex items-center justify-between px-4 py-3 border-t border-[#EDE8E0] bg-[#f9f7f4]">
                     <span className="text-xs text-[#6F757C]">{usersPagination.total} users</span>
                     <div className="flex items-center gap-2">
-                      <button disabled={usersPagination.page <= 1} onClick={() => loadUsers(usersPagination.page - 1)} className="p-1.5 rounded border border-[#E9E3DA] disabled:opacity-40"><ChevronLeft size={14} /></button>
+                      <button disabled={usersPagination.page <= 1} onClick={() => loadUsers(usersPagination.page - 1)} className="p-1.5 rounded border border-[#EDE8E0] disabled:opacity-40"><ChevronLeft size={14} /></button>
                       <span className="text-xs" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{usersPagination.page}/{usersPagination.pages}</span>
-                      <button disabled={usersPagination.page >= usersPagination.pages} onClick={() => loadUsers(usersPagination.page + 1)} className="p-1.5 rounded border border-[#E9E3DA] disabled:opacity-40"><ChevronRight size={14} /></button>
+                      <button disabled={usersPagination.page >= usersPagination.pages} onClick={() => loadUsers(usersPagination.page + 1)} className="p-1.5 rounded border border-[#EDE8E0] disabled:opacity-40"><ChevronRight size={14} /></button>
                     </div>
                   </div>
                 )}
@@ -604,10 +607,10 @@ export default function AdminPage() {
                   <input type="text" placeholder="Search make, model..." value={listingSearch}
                     onChange={e => setListingSearch(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && loadListings()}
-                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00]" />
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00]" />
                 </div>
                 <select value={listingStatusFilter} onChange={e => setListingStatusFilter(e.target.value)}
-                  className="px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#6F757C] focus:outline-none focus:border-[#FF6A00]">
+                  className="px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#6F757C] focus:outline-none focus:border-[#FF6A00]">
                   <option value="">All Status</option>
                   <option value="approved">Approved</option>
                   <option value="pending">Pending</option>
@@ -618,11 +621,11 @@ export default function AdminPage() {
               </div>
 
               {/* Listings Table */}
-              <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] overflow-hidden">
+              <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-[#E9E3DA] bg-[#f9f7f4]">
+                      <tr className="border-b border-[#EDE8E0] bg-[#f9f7f4]">
                         <th className="text-left px-4 py-3 text-[11px] font-medium text-[#6F757C] uppercase" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Listing</th>
                         <th className="text-center px-3 py-3 text-[11px] font-medium text-[#6F757C] uppercase hidden sm:table-cell" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Status</th>
                         <th className="text-right px-3 py-3 text-[11px] font-medium text-[#6F757C] uppercase hidden sm:table-cell" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Price</th>
@@ -631,7 +634,7 @@ export default function AdminPage() {
                     </thead>
                     <tbody>
                       {allListings.map(l => (
-                        <tr key={l.id} className="border-b border-[#E9E3DA]/50 hover:bg-[#f9f7f4] transition-colors">
+                        <tr key={l.id} className="border-b border-[#EDE8E0]/50 hover:bg-[#f9f7f4] transition-colors">
                           <td className="px-4 py-3">
                             <p className="font-medium text-sm">{l.make} {l.model}</p>
                             <p className="text-[11px] text-[#6F757C]">{l.owner?.firstName} {l.owner?.lastName} · {l.category}</p>
@@ -664,12 +667,12 @@ export default function AdminPage() {
                   </table>
                 </div>
                 {listingsPagination && listingsPagination.pages > 1 && (
-                  <div className="flex items-center justify-between px-4 py-3 border-t border-[#E9E3DA] bg-[#f9f7f4]">
+                  <div className="flex items-center justify-between px-4 py-3 border-t border-[#EDE8E0] bg-[#f9f7f4]">
                     <span className="text-xs text-[#6F757C]">{listingsPagination.total} listings</span>
                     <div className="flex items-center gap-2">
-                      <button disabled={listingsPagination.page <= 1} onClick={() => loadListings(listingsPagination.page - 1)} className="p-1.5 rounded border border-[#E9E3DA] disabled:opacity-40"><ChevronLeft size={14} /></button>
+                      <button disabled={listingsPagination.page <= 1} onClick={() => loadListings(listingsPagination.page - 1)} className="p-1.5 rounded border border-[#EDE8E0] disabled:opacity-40"><ChevronLeft size={14} /></button>
                       <span className="text-xs" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{listingsPagination.page}/{listingsPagination.pages}</span>
-                      <button disabled={listingsPagination.page >= listingsPagination.pages} onClick={() => loadListings(listingsPagination.page + 1)} className="p-1.5 rounded border border-[#E9E3DA] disabled:opacity-40"><ChevronRight size={14} /></button>
+                      <button disabled={listingsPagination.page >= listingsPagination.pages} onClick={() => loadListings(listingsPagination.page + 1)} className="p-1.5 rounded border border-[#EDE8E0] disabled:opacity-40"><ChevronRight size={14} /></button>
                     </div>
                   </div>
                 )}
@@ -677,11 +680,84 @@ export default function AdminPage() {
             </div>
           )}
 
+          {/* ━━━ BOOKINGS TAB ━━━ */}
+          {tab === 'bookings' && (
+            <div className="space-y-4">
+              <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-bold flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
+                    <Calendar size={16} className="text-[#FF6A00]" /> All Bookings
+                  </h3>
+                  <button onClick={() => {
+                    setBookingsLoading(true);
+                    bookingsApi.getMyBookings()
+                      .then(d => setAllBookings(d.bookings))
+                      .catch(() => setAllBookings([]))
+                      .finally(() => setBookingsLoading(false));
+                  }} className="text-xs px-3 py-1.5 bg-[#FF6A00] text-white rounded-lg font-medium flex items-center gap-1">
+                    <RefreshCw size={12} /> Load Bookings
+                  </button>
+                </div>
+                {bookingsLoading ? (
+                  <div className="flex justify-center py-12"><Loader2 size={24} className="animate-spin text-[#FF6A00]" /></div>
+                ) : allBookings.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Calendar size={32} className="mx-auto text-[#6F757C] mb-2 opacity-40" />
+                    <p className="text-sm text-[#6F757C]">Click "Load Bookings" to view all platform bookings</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-[#EDE8E0] bg-[#f9f7f4]">
+                          <th className="text-left px-4 py-3 text-[11px] font-medium text-[#6F757C] uppercase" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Equipment</th>
+                          <th className="text-left px-3 py-3 text-[11px] font-medium text-[#6F757C] uppercase hidden sm:table-cell" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Renter</th>
+                          <th className="text-center px-3 py-3 text-[11px] font-medium text-[#6F757C] uppercase" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Status</th>
+                          <th className="text-right px-3 py-3 text-[11px] font-medium text-[#6F757C] uppercase hidden sm:table-cell" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Amount</th>
+                          <th className="text-right px-4 py-3 text-[11px] font-medium text-[#6F757C] uppercase" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Dates</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {allBookings.map((b: any) => (
+                          <tr key={b.id} className="border-b border-[#EDE8E0]/50 hover:bg-[#f9f7f4] transition-colors">
+                            <td className="px-4 py-3">
+                              <p className="font-medium text-sm">{b.listing?.make} {b.listing?.model}</p>
+                              <p className="text-[11px] text-[#6F757C]">{b.listing?.category}</p>
+                            </td>
+                            <td className="px-3 py-3 hidden sm:table-cell">
+                              <p className="text-sm">{b.renter?.firstName} {b.renter?.lastName}</p>
+                              <p className="text-[11px] text-[#6F757C]">{b.renter?.phone}</p>
+                            </td>
+                            <td className="px-3 py-3 text-center">
+                              <span className={`px-2 py-0.5 text-[10px] font-bold rounded capitalize ${({
+                                pending: 'bg-yellow-100 text-yellow-800',
+                                confirmed: 'bg-blue-100 text-blue-800',
+                                active: 'bg-green-100 text-green-800',
+                                completed: 'bg-gray-100 text-gray-600',
+                                cancelled: 'bg-red-100 text-red-800',
+                                disputed: 'bg-purple-100 text-purple-800',
+                              } as Record<string, string>)[b.status] || 'bg-gray-100 text-gray-600'}`} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                                {b.status}
+                              </span>
+                            </td>
+                            <td className="px-3 py-3 text-right hidden sm:table-cell font-bold text-[#FF6A00]">{formatPrice(b.totalAmount || 0)}</td>
+                            <td className="px-4 py-3 text-right text-xs text-[#6F757C]">{b.startDate} → {b.endDate}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+
           {/* ━━━ ANALYTICS TAB ━━━ */}
           {tab === 'analytics' && stats && (
             <div className="space-y-6">
               {/* Big registration chart */}
-              <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-6">
+              <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-6">
                 <h3 className="text-sm font-bold mb-4 flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
                   <TrendingUp size={16} className="text-[#FF6A00]" /> User Registrations — Last 30 Days
                 </h3>
@@ -698,7 +774,7 @@ export default function AdminPage() {
 
               {/* Category & City breakdown */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-6">
+                <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-6">
                   <h3 className="text-sm font-bold mb-4 flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
                     <Package size={16} className="text-[#FF6A00]" /> Listings by Category
                   </h3>
@@ -718,7 +794,7 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-6">
+                <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-6">
                   <h3 className="text-sm font-bold mb-4 flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
                     <Globe size={16} className="text-[#FF6A00]" /> Top Cities
                   </h3>
@@ -731,7 +807,7 @@ export default function AdminPage() {
                             <span className="text-[#6F757C]">{c.city}</span>
                             <span className="font-bold" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{c.count}</span>
                           </div>
-                          <div className="h-2 bg-[#E9E3DA] rounded-full overflow-hidden">
+                          <div className="h-2 bg-[#EDE8E0] rounded-full overflow-hidden">
                             <div className="h-full rounded-full transition-all" style={{ width: `${(Number(c.count) / maxCount) * 100}%`, background: CAT_COLORS[i] }} />
                           </div>
                         </div>
@@ -743,20 +819,20 @@ export default function AdminPage() {
 
               {/* Revenue & Platform Health */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-gradient-to-br from-[#FF6A00] to-[#FF8C38] rounded-xl p-6 text-white">
-                  <DollarSign size={24} className="mb-3 opacity-80" />
-                  <p className="text-2xl font-bold" style={{ fontFamily: 'Sora, sans-serif' }}>{formatPrice(stats.revenue || 0)}</p>
-                  <p className="text-xs opacity-80 mt-1">Total Booking Revenue</p>
+                <div className="bg-[#101214] rounded-xl p-6 text-white">
+                  <DollarSign size={20} className="mb-3 text-[#FF6A00]" />
+                  <p className="text-2xl font-bold font-heading">{formatPrice(stats.revenue || 0)}</p>
+                  <p className="text-xs text-white/50 mt-1">Total Booking Revenue</p>
                 </div>
-                <div className="bg-gradient-to-br from-[#3B82F6] to-[#6366F1] rounded-xl p-6 text-white">
-                  <Award size={24} className="mb-3 opacity-80" />
-                  <p className="text-2xl font-bold" style={{ fontFamily: 'Sora, sans-serif' }}>{stats.activeSubscriptions || 0}</p>
-                  <p className="text-xs opacity-80 mt-1">Active Subscriptions</p>
+                <div className="bg-white rounded-xl border border-[#EDE8E0] p-6">
+                  <Award size={20} className="mb-3 text-[#6F757C]" />
+                  <p className="text-2xl font-bold font-heading">{stats.activeSubscriptions || 0}</p>
+                  <p className="text-xs text-[#6F757C] mt-1">Active Subscriptions</p>
                 </div>
-                <div className="bg-gradient-to-br from-[#10B981] to-[#14B8A6] rounded-xl p-6 text-white">
-                  <Activity size={24} className="mb-3 opacity-80" />
-                  <p className="text-2xl font-bold" style={{ fontFamily: 'Sora, sans-serif' }}>{stats.todayActivity || 0}</p>
-                  <p className="text-xs opacity-80 mt-1">Actions Today</p>
+                <div className="bg-white rounded-xl border border-[#EDE8E0] p-6">
+                  <Activity size={20} className="mb-3 text-[#6F757C]" />
+                  <p className="text-2xl font-bold font-heading">{stats.todayActivity || 0}</p>
+                  <p className="text-xs text-[#6F757C] mt-1">Actions Today</p>
                 </div>
               </div>
             </div>
@@ -767,14 +843,14 @@ export default function AdminPage() {
             <>
               <h2 className="font-semibold text-sm text-[#6F757C] mb-4 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Pending Certifications</h2>
               {pendingCerts.length === 0 ? (
-                <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-8 text-center">
+                <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-8 text-center">
                   <Shield size={32} className="mx-auto text-green-500 mb-2" />
                   <p className="text-sm text-[#6F757C]">No certifications awaiting review.</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {pendingCerts.map(c => (
-                    <div key={c.id} className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5">
+                    <div key={c.id} className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5">
                       <div className="flex items-start justify-between mb-3">
                         <div>
                           <h3 className="font-bold text-sm" style={{ fontFamily: 'Sora, sans-serif' }}>{c.documentName}</h3>
@@ -793,10 +869,10 @@ export default function AdminPage() {
                       {notesId === c.id && (
                         <input type="text" placeholder="Admin notes (optional)…" value={adminNotes}
                           onChange={e => setAdminNotes(e.target.value)}
-                          className="w-full px-3 py-2 mb-3 text-sm bg-[#E9E3DA] border border-[#D1CBC2] rounded-lg focus:outline-none" />
+                          className="w-full px-3 py-2 mb-3 text-sm bg-[#EDE8E0] border border-[#D1CBC2] rounded-lg focus:outline-none" />
                       )}
                       <div className="flex gap-2">
-                        {notesId !== c.id && <button onClick={() => { setNotesId(c.id); setAdminNotes(''); }} className="text-xs px-3 py-1.5 bg-[#E9E3DA] text-[#6F757C] rounded-lg">Add Notes</button>}
+                        {notesId !== c.id && <button onClick={() => { setNotesId(c.id); setAdminNotes(''); }} className="text-xs px-3 py-1.5 bg-[#EDE8E0] text-[#6F757C] rounded-lg">Add Notes</button>}
                         <button onClick={() => handleCertAction(c.id, 'approved')} disabled={actionId === c.id}
                           className="text-xs px-4 py-2 bg-green-600 text-white rounded-lg font-medium disabled:opacity-50"><CheckCircle size={12} className="inline mr-1" /> Approve</button>
                         <button onClick={() => handleCertAction(c.id, 'rejected')} disabled={actionId === c.id}
@@ -814,19 +890,19 @@ export default function AdminPage() {
             <>
               <h2 className="font-semibold text-sm text-[#6F757C] mb-4 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Open Fraud Reports</h2>
               {fraudReports.length === 0 ? (
-                <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-8 text-center">
+                <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-8 text-center">
                   <AlertTriangle size={32} className="mx-auto text-green-500 mb-2" />
-                  <p className="text-sm text-[#6F757C]">No open fraud reports. 🎉</p>
+                  <p className="text-sm text-[#6F757C]">No open fraud reports.</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {fraudReports.map(r => (
-                    <div key={r.id} className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5">
+                    <div key={r.id} className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5">
                       <div className="flex items-start justify-between mb-2">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${r.status === 'investigating' ? 'bg-yellow-50 text-yellow-700' : 'bg-red-50 text-red-700'}`}>{r.status}</span>
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#E9E3DA] text-[#6F757C] capitalize">{r.targetType}</span>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#EDE8E0] text-[#6F757C] capitalize">{r.targetType}</span>
                           </div>
                           <h3 className="font-bold text-sm" style={{ fontFamily: 'Sora, sans-serif' }}>{REASON_LABELS[r.reason] || r.reason}</h3>
                           <p className="text-xs text-[#6F757C] mt-0.5">Reported by {r.reporter?.firstName} {r.reporter?.lastName} · ID: {r.targetId?.slice(0, 8)}…</p>
@@ -838,10 +914,10 @@ export default function AdminPage() {
                       <p className="text-xs text-[#101214] bg-[#f5f3ef] rounded-lg p-3 mb-3">{r.description}</p>
                       {notesId === r.id && (
                         <input type="text" placeholder="Admin notes…" value={adminNotes} onChange={e => setAdminNotes(e.target.value)}
-                          className="w-full px-3 py-2 mb-3 text-sm bg-[#E9E3DA] border border-[#D1CBC2] rounded-lg focus:outline-none" />
+                          className="w-full px-3 py-2 mb-3 text-sm bg-[#EDE8E0] border border-[#D1CBC2] rounded-lg focus:outline-none" />
                       )}
                       <div className="flex gap-2 flex-wrap">
-                        {notesId !== r.id && <button onClick={() => { setNotesId(r.id); setAdminNotes(''); }} className="text-xs px-3 py-1.5 bg-[#E9E3DA] text-[#6F757C] rounded-lg">Notes</button>}
+                        {notesId !== r.id && <button onClick={() => { setNotesId(r.id); setAdminNotes(''); }} className="text-xs px-3 py-1.5 bg-[#EDE8E0] text-[#6F757C] rounded-lg">Notes</button>}
                         {r.status === 'pending' && (
                           <button onClick={() => handleFraudAction(r.id, 'investigating')} disabled={actionId === r.id}
                             className="text-xs px-3 py-1.5 bg-yellow-100 text-yellow-700 rounded-lg font-medium disabled:opacity-50"><Clock size={12} className="inline mr-1" /> Investigate</button>
@@ -861,14 +937,14 @@ export default function AdminPage() {
           {/* ━━━ ACTIVITY LOG TAB ━━━ */}
           {tab === 'activity' && (
             <div className="space-y-4">
-              <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] overflow-hidden">
+              <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] overflow-hidden">
                 {activityLogs.length === 0 ? (
                   <div className="p-8 text-center">
                     <Activity size={32} className="mx-auto text-[#6F757C] mb-2 opacity-40" />
                     <p className="text-sm text-[#6F757C]">No activity logs yet. They will appear as users interact with the platform.</p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-[#E9E3DA]/50">
+                  <div className="divide-y divide-[#EDE8E0]/50">
                     {activityLogs.map(log => (
                       <div key={log.id} className="px-5 py-3 flex items-start gap-3 hover:bg-[#f9f7f4] transition-colors">
                         <span className={`mt-0.5 px-1.5 py-0.5 text-[9px] font-bold rounded ${SEVERITY_BADGE[log.severity] || 'bg-blue-500/20 text-blue-400'}`}>{log.severity?.toUpperCase()}</span>
@@ -885,12 +961,12 @@ export default function AdminPage() {
                   </div>
                 )}
                 {activityPagination && activityPagination.pages > 1 && (
-                  <div className="flex items-center justify-between px-4 py-3 border-t border-[#E9E3DA] bg-[#f9f7f4]">
+                  <div className="flex items-center justify-between px-4 py-3 border-t border-[#EDE8E0] bg-[#f9f7f4]">
                     <span className="text-xs text-[#6F757C]">{activityPagination.total} entries</span>
                     <div className="flex items-center gap-2">
-                      <button disabled={activityPagination.page <= 1} onClick={() => loadActivity(activityPagination.page - 1)} className="p-1.5 rounded border border-[#E9E3DA] disabled:opacity-40"><ChevronLeft size={14} /></button>
+                      <button disabled={activityPagination.page <= 1} onClick={() => loadActivity(activityPagination.page - 1)} className="p-1.5 rounded border border-[#EDE8E0] disabled:opacity-40"><ChevronLeft size={14} /></button>
                       <span className="text-xs" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{activityPagination.page}/{activityPagination.pages}</span>
-                      <button disabled={activityPagination.page >= activityPagination.pages} onClick={() => loadActivity(activityPagination.page + 1)} className="p-1.5 rounded border border-[#E9E3DA] disabled:opacity-40"><ChevronRight size={14} /></button>
+                      <button disabled={activityPagination.page >= activityPagination.pages} onClick={() => loadActivity(activityPagination.page + 1)} className="p-1.5 rounded border border-[#EDE8E0] disabled:opacity-40"><ChevronRight size={14} /></button>
                     </div>
                   </div>
                 )}

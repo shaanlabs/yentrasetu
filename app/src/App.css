@@ -228,6 +228,15 @@ img[loading] {
   transform: translateY(-10px) scale(0.95);
 }
 
+/* ─── Section visual separators ─────────────────────────────── */
+.section-divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #FF6A00, #FF8533);
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    MOBILE LAYOUT: HOMEPAGE SECTIONS
    ═══════════════════════════════════════════════════════════════ */
@@ -256,13 +265,22 @@ img[loading] {
   .pinned-section {
     position: relative !important;
     height: auto !important;
+    min-height: 0 !important;
     width: 100% !important;
     overflow: visible !important;
     padding: 0 !important;
   }
 
+  /* Force ALL children of pinned sections into relative flow */
+  .pinned-section > * {
+    position: relative !important;
+    width: 100% !important;
+    inset: auto !important;
+  }
+
   .pinned-section > div.absolute.inset-0,
-  .pinned-section > div[class*="absolute inset-0"] {
+  .pinned-section > div[class*="absolute inset-0"],
+  .pinned-section > div[class*="absolute"] {
     position: relative !important;
     display: flex !important;
     flex-direction: column !important;
@@ -275,8 +293,18 @@ img[loading] {
   .pin-spacer {
     display: block !important;
     height: auto !important;
+    min-height: 0 !important;
     padding: 0 !important;
     overflow: visible !important;
+  }
+
+  /* Category mosaic grid — force single column on mobile */
+  .pinned-section > div[class*="grid"] {
+    display: flex !important;
+    flex-direction: column !important;
+    position: relative !important;
+    height: auto !important;
+    inset: auto !important;
   }
 
   /* Category tiles */
@@ -285,11 +313,13 @@ img[loading] {
   .cat-tile-bottom-center {
     height: 35vh !important;
     min-height: 220px !important;
+    position: relative !important;
   }
 
   .cat-text-tile {
     height: auto !important;
     padding: 28px 20px !important;
+    position: relative !important;
   }
 
   /* Featured panels */
@@ -322,12 +352,14 @@ img[loading] {
   }
 
   /* The right-side content panels in split sections */
-  .pinned-section > div.absolute.right-0,
-  .pinned-section > div[class*="absolute right-0"] {
+  .pinned-section > div[class*="right-0"],
+  .pinned-section > div[class*="absolute right"],
+  .pinned-section > div.absolute.right-0 {
     position: relative !important;
     width: 100% !important;
     height: auto !important;
     padding: 32px 20px !important;
+    inset: auto !important;
   }
 
   /* Financing panel */
@@ -338,6 +370,7 @@ img[loading] {
     padding: 40px 20px !important;
     background: #101214 !important;
     color: white !important;
+    inset: auto !important;
   }
 
   /* Safety items */
@@ -352,6 +385,12 @@ img[loading] {
     border-radius: 6px !important;
     margin-bottom: 8px !important;
   }
+
+  /* Remove any 100vh sections on mobile */
+  .pinned-section[class*="z-"] {
+    min-height: 0 !important;
+    height: auto !important;
+  }
 }
 
 /* ─── Bottom nav page spacing ───────────────────────────────── */
@@ -359,6 +398,15 @@ img[loading] {
   body {
     padding-bottom: calc(var(--mobile-bottom-nav-h, 64px) + env(safe-area-inset-bottom, 0px));
   }
+}
+
+/* ─── Enhanced visual depth for inner pages ─────────────────── */
+.page-header {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(16, 18, 20, 0.06);
+  box-shadow: 0 1px 8px rgba(16, 18, 20, 0.04);
 }
 
 /* ─── Reduced motion ────────────────────────────────────────── */

@@ -90,7 +90,7 @@ export default function AvailabilityCalendar({ bookedDates = [], onSelect, compa
   const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
   return (
-    <div className={compact ? '' : 'bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-4 sm:p-5'}>
+    <div className={compact ? '' : 'bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-4 sm:p-5'}>
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
@@ -111,13 +111,13 @@ export default function AvailabilityCalendar({ bookedDates = [], onSelect, compa
           )}
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={prevMonth} className="p-1.5 hover:bg-[#E9E3DA] rounded-lg transition-colors">
+          <button onClick={prevMonth} className="p-1.5 hover:bg-[#EDE8E0] rounded-lg transition-colors">
             <ChevronLeft size={16} />
           </button>
           <span className="text-xs font-medium text-[#101214] min-w-[120px] text-center" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
             {monthName}
           </span>
-          <button onClick={nextMonth} className="p-1.5 hover:bg-[#E9E3DA] rounded-lg transition-colors">
+          <button onClick={nextMonth} className="p-1.5 hover:bg-[#EDE8E0] rounded-lg transition-colors">
             <ChevronRight size={16} />
           </button>
         </div>
@@ -155,7 +155,7 @@ export default function AvailabilityCalendar({ bookedDates = [], onSelect, compa
               onClick={() => handleDayClick(day)}
               disabled={past || booked}
               className={`h-8 rounded-lg text-xs font-medium transition-all relative
-                ${past ? 'text-[#E9E3DA] cursor-not-allowed' : ''}
+                ${past ? 'text-[#EDE8E0] cursor-not-allowed' : ''}
                 ${booked ? 'bg-red-100 text-red-400 cursor-not-allowed line-through' : ''}
                 ${!past && !booked && !inRange ? 'text-[#101214] hover:bg-[#FF6A00]/10 hover:text-[#FF6A00]' : ''}
                 ${inRange && !start && !end ? 'bg-[#FF6A00]/10 text-[#FF6A00]' : ''}
@@ -176,7 +176,7 @@ export default function AvailabilityCalendar({ bookedDates = [], onSelect, compa
 
       {/* Selected range info */}
       {selectStart && selectEnd && (
-        <div className="mt-3 pt-3 border-t border-[#E9E3DA] flex items-center justify-between">
+        <div className="mt-3 pt-3 border-t border-[#EDE8E0] flex items-center justify-between">
           <span className="text-xs text-[#6F757C]">
             Selected: <strong className="text-[#101214]">{selectStart}</strong> → <strong className="text-[#101214]">{selectEnd}</strong>
           </span>
@@ -188,7 +188,7 @@ export default function AvailabilityCalendar({ bookedDates = [], onSelect, compa
 
       {/* Legend */}
       {!compact && (
-        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-[#E9E3DA]">
+        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-[#EDE8E0]">
           <span className="flex items-center gap-1.5 text-[10px] text-[#6F757C]">
             <span className="w-3 h-3 rounded bg-green-50 border border-green-200 flex items-center justify-center"><Check size={8} className="text-green-500" /></span>
             Available

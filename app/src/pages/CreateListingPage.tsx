@@ -4,8 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { machineryApi, mlApi } from '../services/api';
 import {
   ArrowLeft, ArrowRight, Plus, Loader2, MapPin, IndianRupee, ImagePlus, X,
-  Navigation, Sparkles, BarChart3, TrendingUp, Clock, Calendar, Users,
-  Shield, Zap, CheckCircle, AlertCircle, Brain
+  Navigation, Sparkles, BarChart3, Clock, Calendar,
+  Zap, CheckCircle, AlertCircle
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
@@ -79,11 +79,11 @@ export default function CreateListingPage() {
   const u = (f: string, v: any) => { setForm(p => ({ ...p, [f]: v })); setError(''); };
   const subCats = form.category ? CATEGORIES[form.category] || [] : [];
   const lbl = 'block text-xs font-medium text-[#6F757C] mb-1.5 uppercase tracking-wider';
-  const inp = 'w-full px-4 py-3.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none shadow-sm min-h-[48px]';
+  const inp = 'w-full px-4 py-3.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none shadow-sm min-h-[48px]';
   const isSale = form.listingType === 'sale';
   const isRent = form.listingType === 'rent';
 
-  const totalSteps = form.listingType ? 4 : 0;
+
 
   const fetchAiEstimate = async () => {
     if (!form.category || !form.make) return;
@@ -153,13 +153,13 @@ export default function CreateListingPage() {
             <button
               onClick={() => { u('listingType', 'sale'); setStep(1); }}
               className={`group relative bg-white rounded-2xl border-2 p-8 text-left transition-all hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] ${
-                form.listingType === 'sale' ? 'border-[#FF6A00] shadow-lg' : 'border-[#E9E3DA] hover:border-[#FF6A00]'
+                form.listingType === 'sale' ? 'border-[#FF6A00] shadow-lg' : 'border-[#EDE8E0] hover:border-[#FF6A00]'
               }`}
             >
-              <div className="w-16 h-16 bg-gradient-to-br from-[#FF6A00] to-[#FF8C38] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <IndianRupee size={28} className="text-white" />
+              <div className="w-14 h-14 bg-[#FF6A00] rounded-xl flex items-center justify-center mb-6">
+                <IndianRupee size={24} className="text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>Sell Equipment</h3>
+              <h3 className="text-xl font-bold mb-2 font-heading">Sell Equipment</h3>
               <p className="text-sm text-[#6F757C] mb-4">List your machinery for outright sale. Set your price, negotiate, and close the deal.</p>
               <ul className="space-y-2">
                 <li className="flex items-center gap-2 text-xs text-[#6F757C]">
@@ -184,13 +184,13 @@ export default function CreateListingPage() {
             <button
               onClick={() => { u('listingType', 'rent'); setStep(1); }}
               className={`group relative bg-white rounded-2xl border-2 p-8 text-left transition-all hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] ${
-                form.listingType === 'rent' ? 'border-blue-500 shadow-lg' : 'border-[#E9E3DA] hover:border-blue-500'
+                form.listingType === 'rent' ? 'border-blue-500 shadow-lg' : 'border-[#EDE8E0] hover:border-blue-500'
               }`}
             >
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Calendar size={28} className="text-white" />
+              <div className="w-14 h-14 bg-[#3b82f6] rounded-xl flex items-center justify-center mb-6">
+                <Calendar size={24} className="text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>Rent Out Equipment</h3>
+              <h3 className="text-xl font-bold mb-2 font-heading">Rent Out Equipment</h3>
               <p className="text-sm text-[#6F757C] mb-4">Make money from idle equipment. Set daily, weekly, or monthly rental rates.</p>
               <ul className="space-y-2">
                 <li className="flex items-center gap-2 text-xs text-[#6F757C]">
@@ -212,16 +212,10 @@ export default function CreateListingPage() {
             </button>
           </div>
 
-          {/* AI Tip */}
-          <div className="mt-8 flex items-start gap-3 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-100">
-            <Brain size={20} className="text-purple-500 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-[#101214]">AI Market Tip</p>
-              <p className="text-xs text-[#6F757C] mt-0.5">
-                Construction equipment rentals are seeing 23% higher demand this quarter. Consider listing for rent to maximize returns.
-              </p>
-            </div>
-          </div>
+          {/* Tip */}
+          <p className="mt-8 text-center text-xs text-[#6F757C]">
+            Not sure? You can always change the listing type later from your dashboard.
+          </p>
         </div>
       </PageShell>
     );
@@ -230,7 +224,7 @@ export default function CreateListingPage() {
   const accentColor = isSale ? '#FF6A00' : '#3b82f6';
   const accentBg = isSale ? 'bg-[#FF6A00]' : 'bg-blue-500';
   const accentText = isSale ? 'text-[#FF6A00]' : 'text-blue-600';
-  const accentBorder = isSale ? 'border-[#FF6A00]' : 'border-blue-500';
+
 
   return (
     <PageShell breadcrumb={isSale ? "Sell Equipment" : "Rent Out Equipment"} backTo="/" backLabel="Cancel">
@@ -254,7 +248,7 @@ export default function CreateListingPage() {
         {/* Progress */}
         <div className="flex gap-2 mb-8">
           {[1,2,3,4].map(s => (
-            <div key={s} className="flex-1 h-1.5 rounded-full transition-all" style={{ background: s <= step ? accentColor : '#E9E3DA' }} />
+            <div key={s} className="flex-1 h-1.5 rounded-full transition-all" style={{ background: s <= step ? accentColor : '#EDE8E0' }} />
           ))}
         </div>
 
@@ -262,7 +256,7 @@ export default function CreateListingPage() {
 
         {/* ═══ STEP 1: Machine Information ═══ */}
         {step === 1 && (
-          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 space-y-5">
+          <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6 space-y-5">
             <h2 className="font-semibold text-sm text-[#6F757C] uppercase tracking-wider flex items-center gap-2" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
               <Zap size={14} className={accentText} /> Machine Information
             </h2>
@@ -313,7 +307,7 @@ export default function CreateListingPage() {
         {/* ═══ STEP 2: Pricing (different for Sale vs Rent) ═══ */}
         {step === 2 && (
           <div className="space-y-5">
-            <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 space-y-5">
+            <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6 space-y-5">
               <h2 className="font-semibold text-sm text-[#6F757C] uppercase tracking-wider flex items-center gap-2" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
                 {isSale ? <><IndianRupee size={14} className="text-[#FF6A00]" /> Sale Price</> :
                           <><Clock size={14} className="text-blue-500" /> Rental Rates</>}
@@ -335,11 +329,11 @@ export default function CreateListingPage() {
                       <p className="text-xs text-[#6F757C]">Buyers can make counter-offers</p></div>
                   </label>
                   <div className="grid grid-cols-2 gap-3">
-                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-[#E9E3DA] hover:border-[#FF6A00] transition-colors">
+                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-[#EDE8E0] hover:border-[#FF6A00] transition-colors">
                       <input type="checkbox" checked={form.warrantyAvailable} onChange={e => u('warrantyAvailable', e.target.checked)} className="w-4 h-4 accent-[#FF6A00]" />
                       <div><span className="text-xs font-medium">Warranty Available</span></div>
                     </label>
-                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-[#E9E3DA] hover:border-[#FF6A00] transition-colors">
+                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-[#EDE8E0] hover:border-[#FF6A00] transition-colors">
                       <input type="checkbox" checked={form.insuranceValid} onChange={e => u('insuranceValid', e.target.checked)} className="w-4 h-4 accent-[#FF6A00]" />
                       <div><span className="text-xs font-medium">Insurance Valid</span></div>
                     </label>
@@ -410,16 +404,16 @@ export default function CreateListingPage() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-[#E9E3DA] hover:border-blue-400 transition-colors">
+                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-[#EDE8E0] hover:border-blue-400 transition-colors">
                       <input type="checkbox" checked={form.operatorAvailable} onChange={e => u('operatorAvailable', e.target.checked)} className="w-4 h-4 accent-blue-500" />
                       <div><span className="text-xs font-medium">Operator Available</span>
                         <p className="text-[10px] text-[#6F757C]">Extra charge</p></div>
                     </label>
-                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-[#E9E3DA] hover:border-blue-400 transition-colors">
+                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-[#EDE8E0] hover:border-blue-400 transition-colors">
                       <input type="checkbox" checked={form.fuelIncluded} onChange={e => u('fuelIncluded', e.target.checked)} className="w-4 h-4 accent-blue-500" />
                       <div><span className="text-xs font-medium">Fuel Included</span></div>
                     </label>
-                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-[#E9E3DA] hover:border-blue-400 transition-colors">
+                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-[#EDE8E0] hover:border-blue-400 transition-colors">
                       <input type="checkbox" checked={form.deliveryAvailable} onChange={e => u('deliveryAvailable', e.target.checked)} className="w-4 h-4 accent-blue-500" />
                       <div><span className="text-xs font-medium">Delivery Available</span></div>
                     </label>
@@ -435,10 +429,10 @@ export default function CreateListingPage() {
               </div>
             )}
             {aiPrediction && !aiLoading && (
-              <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-100 rounded-xl p-5">
+              <div className="bg-white border border-[#EDE8E0] rounded-xl p-5">
                 <div className="flex items-center gap-2 mb-3">
-                  <Brain size={18} className="text-purple-500" />
-                  <span className="text-sm font-bold text-[#101214]">AI Price Intelligence</span>
+                  <BarChart3 size={18} className="text-[#6F757C]" />
+                  <span className="text-sm font-bold text-[#101214]">Price Estimate</span>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -469,7 +463,7 @@ export default function CreateListingPage() {
             )}
 
             {seoScore && !aiLoading && (
-              <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-[#E9E3DA]">
+              <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-[#EDE8E0]">
                 <BarChart3 size={18} className={
                   (seoScore.overall || seoScore.score || 0) >= 70 ? 'text-green-500' :
                   (seoScore.overall || seoScore.score || 0) >= 40 ? 'text-yellow-500' : 'text-red-500'
@@ -481,7 +475,7 @@ export default function CreateListingPage() {
                       {seoScore.overall || seoScore.score || 0}/100
                     </span>
                   </div>
-                  <div className="w-full h-1.5 bg-[#E9E3DA] rounded-full mt-1 overflow-hidden">
+                  <div className="w-full h-1.5 bg-[#EDE8E0] rounded-full mt-1 overflow-hidden">
                     <div className="h-full rounded-full transition-all bg-gradient-to-r from-[#FF6A00] to-green-500"
                       style={{ width: `${seoScore.overall || seoScore.score || 0}%` }} />
                   </div>
@@ -503,7 +497,7 @@ export default function CreateListingPage() {
 
         {/* ═══ STEP 3: Location ═══ */}
         {step === 3 && (
-          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 space-y-5">
+          <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6 space-y-5">
             <h2 className="font-semibold text-sm text-[#6F757C] uppercase tracking-wider flex items-center gap-2" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
               <MapPin size={14} className={accentText} /> Equipment Location
             </h2>
@@ -550,7 +544,7 @@ export default function CreateListingPage() {
         {/* ═══ STEP 4: Photos & Description ═══ */}
         {step === 4 && (
           <div className="space-y-5">
-            <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 space-y-5">
+            <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6 space-y-5">
               <h2 className="font-semibold text-sm text-[#6F757C] uppercase tracking-wider flex items-center gap-2" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
                 <ImagePlus size={14} className={accentText} /> Photos & Description
               </h2>
@@ -559,14 +553,14 @@ export default function CreateListingPage() {
                 <label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Photos (up to 5)</label>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
                   {images.map((img, i) => (
-                    <div key={i} className="relative aspect-square rounded-lg border border-[#E9E3DA] overflow-hidden group">
+                    <div key={i} className="relative aspect-square rounded-lg border border-[#EDE8E0] overflow-hidden group">
                       <img src={img} className="w-full h-full object-cover" alt="" />
                       <button onClick={() => setImages(prev => prev.filter((_, j) => j !== i))}
                         className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><X size={12} /></button>
                     </div>
                   ))}
                   {images.length < 5 && (
-                    <label className="aspect-square rounded-lg border-2 border-dashed border-[#E9E3DA] hover:border-[#FF6A00] flex flex-col items-center justify-center cursor-pointer text-[#6F757C] hover:text-[#FF6A00] transition-colors">
+                    <label className="aspect-square rounded-lg border-2 border-dashed border-[#EDE8E0] hover:border-[#FF6A00] flex flex-col items-center justify-center cursor-pointer text-[#6F757C] hover:text-[#FF6A00] transition-colors">
                       <ImagePlus size={20} />
                       <span className="text-[10px] mt-1">Add</span>
                       <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
@@ -598,15 +592,15 @@ export default function CreateListingPage() {
             </div>
 
             {/* Preview Card */}
-            <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6">
               <p className="text-xs text-[#6F757C] uppercase tracking-wider mb-3" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
                 Listing Preview
               </p>
               <div className="flex gap-4 items-start">
                 {images[0] ? (
-                  <img src={images[0]} className="w-20 h-20 rounded-lg object-cover border border-[#E9E3DA]" alt="" />
+                  <img src={images[0]} className="w-20 h-20 rounded-lg object-cover border border-[#EDE8E0]" alt="" />
                 ) : (
-                  <div className="w-20 h-20 rounded-lg bg-[#E9E3DA] flex items-center justify-center"><ImagePlus size={20} className="text-[#6F757C] opacity-40" /></div>
+                  <div className="w-20 h-20 rounded-lg bg-[#EDE8E0] flex items-center justify-center"><ImagePlus size={20} className="text-[#6F757C] opacity-40" /></div>
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>YantraSetu Classic ER Diagram</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style type="text/css">
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            background: #ffffff;
+        }
+
+        /* Hide the network while it calculates so there is no 'video' effect */
+        #mynetwork {
+            width: 100%;
+            height: 100vh;
+            background-color: #ffffff;
+            visibility: hidden;
+        }
+
+        #loading {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 12px;
+            z-index: 10;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            border: 1px solid #ddd;
+            z-index: 10;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            background: #FF6A00;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #E65C00;
+        }
+
+        button.secondary {
+            background: #444;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loading">Generating Static Image Layout...<br><span
+            style="font-size: 16px; font-weight: normal; margin-top: 10px; display: block;">Organizing 300+ attributes
+            perfectly. This takes about 3 seconds.</span></div>
+
+    <div id="controls">
+        <h3 style="margin-top: 0;">YantraSetu ER Diagram</h3>
+        <p><strong>Entities </strong> <span
+                style="display:inline-block; width:15px; height:15px; background:#7e7e7e; border:2px solid black;"></span>
+        </p>
+        <p><strong>Attributes </strong> <span
+                style="display:inline-block; border-radius:50%; width:15px; height:10px; background:white; border:2px solid black;"></span>
+        </p>
+        <p><strong>Relationships </strong> <span
+                style="display:inline-block; width:15px; height:15px; background:white; border:2px solid black; transform:rotate(45deg);"></span>
+        </p>
+        <button onclick="downloadImage()">⬇️ Download Image (PNG)</button>
+        <button class="secondary" onclick="network.fit()">🔍 Reset Zoom</button>
+    </div>
+
+    <div id="mynetwork"></div>
+
+    <script type="text/javascript">
+        const schema = {
+            User: ["id", "phone", "email", "password", "firstName", "lastName", "userType", "accountTier", "companyName", "gstNumber", "address", "city", "state", "pincode", "latitude", "longitude", "isVerified", "isActive", "isBanned", "banReason", "rating", "reviewCount", "profileImage", "otpCode", "otpExpiresAt", "lastLoginAt", "subscriptionExpiry", "referralCode", "referredBy", "metadata", "createdAt", "updatedAt", "deletedAt"],
+            MachineryListing: ["id", "userId", "listingType", "category", "subCategory", "make", "model", "year", "hoursUsed", "condition", "price", "priceNegotiable", "description", "rentalUnit", "securityDeposit", "minimumRentalDuration", "withOperator", "operatorRate", "deliveryAvailable", "deliveryRadius", "address", "city", "state", "district", "pincode", "latitude", "longitude", "status", "isVerified", "isFeatured", "featuredUntil", "isActive", "rejectionReason", "rcBookUrl", "insuranceUrl", "inspectionReportUrl", "images", "videoUrl", "viewCount", "contactUnlockCount", "expiresAt", "metadata", "createdAt", "updatedAt", "deletedAt"],
+            PartListing: ["id", "userId", "partName", "partNumber", "oemPartNumber", "category", "condition", "price", "quantity", "description", "compatibleMakes", "compatibleModels", "compatibleYears", "city", "state", "pincode", "latitude", "longitude", "status", "isActive", "images", "viewCount", "contactUnlockCount", "expiresAt", "metadata", "createdAt", "updatedAt", "deletedAt"],
+            OperatorProfile: ["id", "userId", "yearsOfExperience", "equipmentTypes", "hasDGMSLicense", "dgmsLicenseUrl", "hasCraneCertificate", "craneCertificateUrl", "hasJCBExcavatorCertificate", "jcbExcavatorCertificateUrl", "hasDrivingLicense", "drivingLicenseUrl", "otherCertifications", "workHistory", "isAvailable", "availabilityCalendar", "dayRate", "projectRate", "city", "state", "pincode", "latitude", "longitude", "willingToRelocate", "isVerified", "verificationStatus", "isActive", "rating", "reviewCount", "profileViews", "hireCount", "bio", "metadata", "createdAt", "updatedAt", "deletedAt"],
+            MechanicProfile: ["id", "userId", "yearsOfExperience", "specializations", "brandExpertise", "hasITICertification", "itiCertificateUrl", "hasDiploma", "diplomaUrl", "brandCertifications", "otherCertifications", "isAvailable", "availabilityCalendar", "hourlyRate", "dailyRate", "visitCharge", "city", "state", "pincode", "latitude", "longitude", "serviceRadius", "isVerified", "verificationStatus", "isActive", "rating", "reviewCount", "profileViews", "serviceCount", "bio", "metadata", "createdAt", "updatedAt", "deletedAt"],
+            Chat: ["id", "buyerId", "sellerId", "listingType", "listingId", "status", "leadFeePaid", "leadFeeAmount", "leadFeePaidAt", "lastMessageAt", "lastMessagePreview", "buyerUnreadCount", "sellerUnreadCount", "metadata", "createdAt", "updatedAt"],
+            Message: ["id", "chatId", "senderId", "messageType", "content", "mediaUrl", "isRead", "readAt", "isDeleted", "metadata", "createdAt", "updatedAt"],
+            Review: ["id", "reviewerId", "revieweeId", "reviewType", "entityId", "rating", "title", "comment", "punctualityRating", "qualityRating", "communicationRating", "valueRating", "isVerified", "isVisible", "isFlagged", "flagReason", "response", "respondedAt", "helpfulCount", "metadata", "createdAt", "updatedAt", "deletedAt"],
+            RentalBooking: ["id", "listingId", "ownerId", "renterId", "startDate", "endDate", "duration", "rentalRate", "rentalUnit", "totalRentalAmount", "securityDeposit", "platformCommission", "commissionPercentage", "totalAmount", "withOperator", "operatorRate", "operatorTotal", "status", "paymentStatus", "amountPaid", "depositStatus", "depositReleasedAt", "depositReleaseAmount", "agreementUrl", "renterSignedAt", "ownerSignedAt", "deliveryAddress", "deliveryDate", "returnDate", "cancelledBy", "cancellationReason", "cancelledAt", "cancellationFee", "payoutStatus", "payoutAmount", "payoutTransactionId", "payoutCompletedAt", "ownerNotes", "renterNotes", "adminNotes", "metadata", "createdAt", "updatedAt"],
+            Transaction: ["id", "userId", "transactionType", "relatedType", "relatedId", "amount", "currency", "paymentMethod", "paymentGateway", "gatewayTransactionId", "status", "isSecurityDeposit", "securityDepositStatus", "commissionAmount", "commissionPercentage", "description", "metadata", "completedAt", "refundedAt", "createdAt", "updatedAt"],
+            Subscription: ["id", "userId", "plan", "status", "startDate", "endDate", "maxListings", "featuredListings", "amount", "metadata", "createdAt", "updatedAt"],
+            CertificationRequest: ["id", "userId", "certificationType", "documentName", "documentNumber", "documentImage", "issuingAuthority", "issuedDate", "expiresAt", "status", "adminNotes", "reviewedBy", "reviewedAt", "createdAt", "updatedAt", "deletedAt"],
+            FraudReport: ["id", "reporterId", "targetType", "targetId", "reason", "description", "evidenceImages", "status", "adminNotes", "resolution", "reviewedBy", "reviewedAt", "createdAt", "updatedAt", "deletedAt"],
+            Notification: ["id", "userId", "type", "title", "body", "data", "isRead", "createdAt", "updatedAt"],
+            ActivityLog: ["id", "userId", "action", "targetType", "targetId", "metadata", "ipAddress", "userAgent", "severity", "createdAt"],
+            CampaignVisit: ["id", "userId", "source", "medium", "campaign", "term", "content", "landingPage", "ipAddress", "userAgent", "sessionDuration", "createdAt", "updatedAt"]
+        };
+
+        const relationships = [
+            { name: "Owns", from: "User", to: "MachineryListing" },
+            { name: "Sells", from: "User", to: "PartListing" },
+            { name: "Has_Profile", from: "User", to: "OperatorProfile" },
+            { name: "Has_Profile", from: "User", to: "MechanicProfile" },
+            { name: "Participates", from: "User", to: "Chat" },
+            { name: "Sends", from: "User", to: "Message" },
+            { name: "Receives", from: "User", to: "Review" },
+            { name: "Rents", from: "User", to: "RentalBooking" },
+            { name: "Performs", from: "User", to: "Transaction" },
+            { name: "Subscribes", from: "User", to: "Subscription" },
+            { name: "Submits", from: "User", to: "CertificationRequest" },
+            { name: "Reports", from: "User", to: "FraudReport" },
+            { name: "Notified", from: "User", to: "Notification" },
+            { name: "Visits", from: "User", to: "CampaignVisit" },
+            { name: "Booked_Via", from: "MachineryListing", to: "RentalBooking" },
+            { name: "Contains", from: "Chat", to: "Message" },
+            { name: "Reviewed_By", from: "User", to: "CertificationRequest" }
+        ];
+
+        const nodes = new vis.DataSet();
+        const edges = new vis.DataSet();
+
+        // Loop through entities and map nodes (boxes) and attributes (ovals)
+        Object.keys(schema).forEach(entityName => {
+            // Entity box - INCREASED SIZES 
+            nodes.add({
+                id: entityName,
+                label: entityName,
+                shape: 'box',
+                color: { background: '#7e7e7e', border: '#222222' },
+                borderWidth: 4,
+                font: { color: 'white', size: 100, face: 'arial', bold: true }, // MUCH LARGER FONT
+                margin: { top: 20, right: 30, bottom: 20, left: 30 },
+                mass: 14
+            });
+
+            schema[entityName].forEach(attr => {
+                const attrId = entityName + '_' + attr;
+                let label = attr;
+                let fontColor = '#111111';
+                let bold = false;
+                let borderWidth = 2;
+
+                if (attr === 'id' || attr.endsWith('Id')) {
+                    label = '#' + attr;
+                    bold = true;
+                    borderWidth = 5;
+                }
+
+                nodes.add({
+                    id: attrId,
+                    label: label,
+                    shape: 'ellipse',
+                    color: { background: '#ffffff', border: '#333333' },
+                    borderWidth: borderWidth,
+                    font: { size: 40, color: fontColor, face: 'arial', bold: bold }, // INCREASED FONT
+                    margin: { top: 10, right: 15, bottom: 10, left: 15 },
+                    mass: 1
+                });
+
+                edges.add({
+                    from: entityName,
+                    to: attrId,
+                    color: { color: '#666666' },
+                    width: 3,
+                    length: 120, // Give attributes a little more breathing room
+                    smooth: false
+                });
+            });
+        });
+
+        // Add Relationship Diamonds
+        relationships.forEach((rel, index) => {
+            const relId = 'rel_' + index;
+
+            nodes.add({
+                id: relId,
+                label: rel.name,
+                shape: 'diamond',
+                color: { background: '#ffffff', border: '#111111' },
+                font: { size: 45, color: '#000000', bold: true, face: 'arial' }, // INCREASED FONT
+                borderWidth: 3,
+                mass: 5
+            });
+
+            edges.add({
+                from: rel.from,
+                to: relId,
+                color: { color: '#000000' },
+                width: 5,
+                smooth: false,
+                length: 400 // Distance between entity and diamond
+            });
+
+            edges.add({
+                from: relId,
+                to: rel.to,
+                color: { color: '#000000' },
+                width: 5,
+                smooth: false,
+                length: 400
+            });
+        });
+
+        const container = document.getElementById('mynetwork');
+        const data = { nodes: nodes, edges: edges };
+
+        // Configure physics to be extremely dense and stable
+        const options = {
+            physics: {
+                solver: 'forceAtlas2Based',
+                forceAtlas2Based: {
+                    gravitationalConstant: -800, // Reduced repulsion so they stay much tighter
+                    centralGravity: 0.05,        // Pulls everything tightly to the center
+                    springLength: 30,          // Very short springs for attributes
+                    springConstant: 0.5,
+                    damping: 0.9
+                },
+                stabilization: {
+                    enabled: true,
+                    iterations: 1500, // Pre-calculate 1500 frames before showing anything
+                    updateInterval: 50,
+                }
+            },
+            interaction: { hover: false, dragNodes: true, zoomView: true, dragView: true },
+            edges: { smooth: false },
+            layout: { improvedLayout: false }
+        };
+
+        const network = new vis.Network(container, data, options);
+
+        network.on("stabilizationProgress", function (params) {
+            let percentage = Math.round((params.iterations / params.total) * 100);
+            document.getElementById('loading').innerHTML = `Generating Static Image Layout...<br><span style="font-size: 16px; font-weight: normal; margin-top: 10px; display: block;">Organizing 300+ attributes tightly together. ${percentage}%</span>`;
+        });
+
+        network.on("stabilizationIterationsDone", function () {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('mynetwork').style.visibility = 'visible';
+            network.fit({ animation: false });
+            network.setOptions({ physics: { enabled: false } });
+        });
+
+        // Function to download a massive High-Res PNG
+        function downloadImage() {
+            // Change button text to show progress
+            const btn = document.querySelector('button');
+            const origText = btn.innerText;
+            btn.innerText = "⏳ Generating 8000x8000 PNG... Please wait...";
+            btn.disabled = true;
+
+            const container = document.getElementById('mynetwork');
+
+            // 1. Temporarily force the container to be an enormous 8000x8000 canvas
+            // This ensures the exported image is extremely high resolution.
+            const originalWidth = container.style.width || "100%";
+            const originalHeight = container.style.height || "100vh";
+
+            container.style.width = '8000px';
+            container.style.height = '8000px';
+
+            // 2. Force network to redraw at this massive scale and fit all nodes
+            network.redraw();
+            network.fit({ animation: false });
+
+            // 3. Wait a moment for canvas to actually render the new pixels
+            setTimeout(() => {
+                const canvas = document.querySelector('.vis-network canvas');
+                if (!canvas) return;
+
+                // Capture image data
+                const imageURL = canvas.toDataURL("image/png", 1.0);
+
+                // Trigger download
+                const link = document.createElement('a');
+                link.download = 'YantraSetu_HighRes_ER_Diagram.png';
+                link.href = imageURL;
+                link.click();
+
+                // 4. Restore original screen size
+                container.style.width = originalWidth;
+                container.style.height = originalHeight;
+                network.redraw();
+                network.fit({ animation: false });
+
+                // Restore button
+                btn.innerText = origText;
+                btn.disabled = false;
+            }, 1000);
+        }
+
+
+    </script>
+</body>
+
+</html>

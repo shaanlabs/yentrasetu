@@ -8,13 +8,12 @@ import {
   Loader2, Share2, ChevronLeft, ChevronRight,
   Flag, X, Upload, AlertTriangle, Heart, MessageCircle,
   Star, Calculator, ExternalLink, ZoomIn, Copy, Check,
-  Brain, TrendingDown, TrendingUp, Sparkles, ShieldCheck, BarChart3, ArrowRight, Zap
+  TrendingDown, TrendingUp, Sparkles, ShieldCheck, BarChart3, ArrowRight,
+  ShoppingCart, CheckCircle2
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
 import QuickBookModal from '../components/QuickBookModal';
 import AvailabilityCalendar from '../components/AvailabilityCalendar';
-import MarketIntelligenceEngine from '../components/MarketIntelligenceEngine';
-
 const FRAUD_REASONS = [
   { value: 'fake_listing', label: 'Fake Listing' },
   { value: 'misleading_photos', label: 'Misleading Photos' },
@@ -83,7 +82,7 @@ export default function ListingDetailPage() {
   const [aiPriceAnalysis, setAiPriceAnalysis] = useState<any>(null);
   const [aiTrustScore, setAiTrustScore] = useState<any>(null);
   const [aiSimilar, setAiSimilar] = useState<any[]>([]);
-  const [aiLoading, setAiLoading] = useState(false);
+
 
   useEffect(() => {
     if (!id) return;
@@ -265,7 +264,7 @@ export default function ListingDetailPage() {
     return (
       <PageShell breadcrumb="Listing Unavailable" backTo="/browse" backLabel="Browse">
         <div className="flex flex-col items-center justify-center py-24 gap-5 text-center max-w-md mx-auto">
-          <div className="w-20 h-20 rounded-full bg-[#E9E3DA] flex items-center justify-center">
+          <div className="w-20 h-20 rounded-full bg-[#EDE8E0] flex items-center justify-center">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6F757C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
             </svg>
@@ -304,7 +303,7 @@ export default function ListingDetailPage() {
         {/* Left — images + details */}
         <div className="lg:col-span-3">
           {/* Image gallery */}
-          <div className="relative bg-white rounded-xl overflow-hidden shadow-sm border border-[#E9E3DA] mb-5">
+          <div className="relative bg-white rounded-xl overflow-hidden shadow-sm border border-[#EDE8E0] mb-5">
             {images.length > 0 ? (
               <>
                 <div
@@ -357,7 +356,7 @@ export default function ListingDetailPage() {
                 </div>
               </>
             ) : (
-              <div className="w-full h-[280px] sm:h-[400px] flex items-center justify-center bg-[#E9E3DA]">
+              <div className="w-full h-[280px] sm:h-[400px] flex items-center justify-center bg-[#EDE8E0]">
                 <Gauge size={64} className="text-[#6F757C] opacity-20" />
               </div>
             )}
@@ -383,7 +382,7 @@ export default function ListingDetailPage() {
           </div>
 
           {/* Machine Details */}
-          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 mb-5">
+          <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6 mb-5">
             <h2
               className="font-semibold text-sm text-[#6F757C] mb-4 uppercase tracking-wider"
               style={{ fontFamily: 'IBM Plex Mono, monospace' }}
@@ -414,7 +413,7 @@ export default function ListingDetailPage() {
 
           {/* Description */}
           {listing.description && (
-            <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 mb-5">
+            <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6 mb-5">
               <h2
                 className="font-semibold text-sm text-[#6F757C] mb-3 uppercase tracking-wider"
                 style={{ fontFamily: 'IBM Plex Mono, monospace' }}
@@ -428,7 +427,7 @@ export default function ListingDetailPage() {
           )}
 
           {/* ── Seller Reviews Section ── */}
-          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-sm text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
                 Seller Reviews
@@ -447,7 +446,7 @@ export default function ListingDetailPage() {
             ) : (
               <div className="space-y-4">
                 {reviews.map((r: any) => (
-                  <div key={r.id} className="border-b border-[#E9E3DA] pb-4 last:border-0 last:pb-0">
+                  <div key={r.id} className="border-b border-[#EDE8E0] pb-4 last:border-0 last:pb-0">
                     <div className="flex items-center gap-2 mb-1">
                       <div className="flex items-center gap-0.5">
                         {[1,2,3,4,5].map(s => (
@@ -475,7 +474,7 @@ export default function ListingDetailPage() {
 
             {/* Write review button */}
             {isAuthenticated && !isOwner && (
-              <div className="mt-4 pt-4 border-t border-[#E9E3DA]">
+              <div className="mt-4 pt-4 border-t border-[#EDE8E0]">
                 {reviewMsg && (
                   <div className={`px-3 py-2 rounded-lg text-xs mb-3 ${reviewMsg.startsWith('✅') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                     {reviewMsg}
@@ -504,17 +503,17 @@ export default function ListingDetailPage() {
                       placeholder="Review title (optional)"
                       value={reviewForm.title}
                       onChange={e => setReviewForm(p => ({ ...p, title: e.target.value }))}
-                      className="w-full px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
+                      className="w-full px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] min-h-[44px]"
                     />
                     <textarea
                       rows={3}
                       placeholder="Share your experience..."
                       value={reviewForm.comment}
                       onChange={e => setReviewForm(p => ({ ...p, comment: e.target.value }))}
-                      className="w-full px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] resize-none"
+                      className="w-full px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-[#FF6A00] resize-none"
                     />
                     <div className="flex gap-2">
-                      <button onClick={() => setShowReviewForm(false)} className="flex-1 py-2.5 text-sm border border-[#E9E3DA] rounded-lg hover:bg-[#E9E3DA] min-h-[44px]">Cancel</button>
+                      <button onClick={() => setShowReviewForm(false)} className="flex-1 py-2.5 text-sm border border-[#EDE8E0] rounded-lg hover:bg-[#EDE8E0] min-h-[44px]">Cancel</button>
                       <button
                         onClick={handleReviewSubmit}
                         disabled={reviewSubmitting}
@@ -530,11 +529,11 @@ export default function ListingDetailPage() {
           </div>
           {/* ── AI Similar Listings Section ── */}
           {aiSimilar.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6 mt-5">
+            <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6 mt-5">
               <div className="flex items-center gap-2 mb-4">
-                <Brain size={16} className="text-purple-500" />
-                <h2 className="font-semibold text-sm text-purple-600 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                  AI-Recommended Similar
+                <BarChart3 size={16} className="text-[#6F757C]" />
+                <h2 className="font-semibold text-sm text-[#6F757C] uppercase tracking-wider font-mono">
+                  Similar Listings
                 </h2>
               </div>
               <div className="space-y-3">
@@ -542,9 +541,9 @@ export default function ListingDetailPage() {
                   <Link
                     key={sl.id}
                     to={`/listing/${sl.id}`}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-[#E9E3DA] hover:border-purple-300 transition-colors group"
+                    className="flex items-center gap-3 p-3 rounded-lg border border-[#EDE8E0] hover:border-purple-300 transition-colors group"
                   >
-                    <div className="w-14 h-14 bg-[#E9E3DA] rounded-lg flex-shrink-0 overflow-hidden">
+                    <div className="w-14 h-14 bg-[#EDE8E0] rounded-lg flex-shrink-0 overflow-hidden">
                       {sl.images?.[0] ? (
                         <img src={sl.images[0]} className="w-full h-full object-cover" alt="" />
                       ) : (
@@ -569,7 +568,7 @@ export default function ListingDetailPage() {
         {/* Right — pricing + seller + actions */}
         <div className="lg:col-span-2 space-y-5">
           {/* Price card */}
-          <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6">
             <h1 className="text-xl sm:text-2xl font-bold mb-1" style={{ fontFamily: 'Sora, sans-serif', color: '#101214' }}>
               {listing.make} {listing.model}
             </h1>
@@ -579,7 +578,7 @@ export default function ListingDetailPage() {
               {listing.city && <span className="flex items-center gap-1"><MapPin size={14} /> {listing.city}</span>}
             </div>
 
-            <div className="border-t border-[#E9E3DA] pt-5">
+            <div className="border-t border-[#EDE8E0] pt-5">
               {listing.listingType === 'rent' ? (
                 <div className="space-y-2">
                   {listing.rentalRateDaily && <div className="flex justify-between text-sm"><span className="text-[#6F757C]">Daily</span><span className="font-bold">{formatPrice(listing.rentalRateDaily)}</span></div>}
@@ -618,13 +617,13 @@ export default function ListingDetailPage() {
                   {/* Save */}
                   <button
                     onClick={handleToggleSaved}
-                    className={`p-3 rounded-lg transition-colors ${saved ? 'bg-red-50 text-red-500' : 'bg-[#E9E3DA] text-[#6F757C]'}`}
+                    className={`p-3 rounded-lg transition-colors ${saved ? 'bg-red-50 text-red-500' : 'bg-[#EDE8E0] text-[#6F757C]'}`}
                     title={saved ? 'Saved' : 'Save'}
                   >
                     <Heart size={18} className={saved ? 'fill-red-500' : ''} />
                   </button>
                   {/* Share */}
-                  <button onClick={handleShare} className="p-3 bg-[#E9E3DA] rounded-lg hover:bg-[#d9d3ca] transition-colors" title="Share">
+                  <button onClick={handleShare} className="p-3 bg-[#EDE8E0] rounded-lg hover:bg-[#d9d3ca] transition-colors" title="Share">
                     <Share2 size={18} className="text-[#101214]" />
                   </button>
                   {/* Report */}
@@ -639,30 +638,12 @@ export default function ListingDetailPage() {
                   )}
                 </div>
 
-                {/* Booking for Rent */}
-                {listing.listingType === 'rent' && (
-                  <div className="flex flex-col gap-2">
-                    <button
-                      onClick={() => setShowQuickBook(true)}
-                      className="w-full py-3 text-sm font-bold rounded-lg flex items-center justify-center gap-2 bg-[#FF6A00] text-white hover:bg-[#e55f00] transition-all min-h-[44px] shadow-lg shadow-[#FF6A00]/20"
-                      style={{ fontFamily: 'Sora, sans-serif' }}
-                    >
-                      <Zap size={15} /> Quick Book — 2 Minutes
-                    </button>
-                    <button
-                      onClick={() => setShowBooking(!showBooking)}
-                      className="w-full py-2.5 text-xs font-medium rounded-lg flex items-center justify-center gap-2 border border-[#E9E3DA] text-[#6F757C] hover:border-blue-300 hover:text-blue-600 transition-all"
-                    >
-                      <Calendar size={13} /> {showBooking ? 'Close Details' : 'Detailed Booking Form'}
-                    </button>
-                  </div>
-                )}
               </div>
             )}
 
             {/* ── AI Price Verdict ── */}
             {aiPriceAnalysis && (
-              <div className="mt-5 pt-5 border-t border-[#E9E3DA]">
+              <div className="mt-5 pt-5 border-t border-[#EDE8E0]">
                 <div className="flex items-center gap-2 mb-3">
                   <Sparkles size={14} className="text-purple-500" />
                   <span className="text-[10px] font-bold text-purple-600 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>AI Price Analysis</span>
@@ -704,38 +685,7 @@ export default function ListingDetailPage() {
               </div>
             )}
 
-            {/* ── AI Depreciation Forecast (sale only) ── */}
-            {listing.listingType === 'sale' && listing.year && (
-              <div className="mt-4 pt-4 border-t border-[#E9E3DA]">
-                <div className="flex items-center gap-2 mb-3">
-                  <Brain size={14} className="text-blue-500" />
-                  <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>AI Value Forecast</span>
-                </div>
-                {(() => {
-                  const age = new Date().getFullYear() - listing.year;
-                  const price = Number(listing.price);
-                  const depRates = [0.85, 0.72, 0.62]; // 1yr, 2yr, 3yr
-                  return (
-                    <div className="space-y-2">
-                      {['1 Year', '2 Years', '3 Years'].map((label, i) => {
-                        const futureVal = Math.round(price * depRates[i]);
-                        const pct = Math.round(depRates[i] * 100);
-                        return (
-                          <div key={label} className="flex items-center gap-3">
-                            <span className="text-[10px] text-[#6F757C] w-14" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{label}</span>
-                            <div className="flex-1 h-2 bg-[#E9E3DA] rounded-full overflow-hidden">
-                              <div className="h-full rounded-full bg-gradient-to-r from-blue-400 to-blue-600 transition-all" style={{ width: `${pct}%` }} />
-                            </div>
-                            <span className="text-xs font-bold text-[#101214] w-20 text-right">{formatPrice(futureVal)}</span>
-                          </div>
-                        );
-                      })}
-                      <p className="text-[10px] text-[#6F757C] mt-1" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Based on {age}yr age, {listing.condition} condition</p>
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
+
 
             {/* EMI Calculator Toggle (Sale only) */}
             {listing.listingType === 'sale' && (
@@ -751,7 +701,7 @@ export default function ListingDetailPage() {
 
           {/* ── EMI Calculator Panel ── */}
           {showEmi && listing.listingType === 'sale' && (
-            <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6">
               <h2 className="font-semibold text-sm text-[#6F757C] mb-4 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
                 EMI Calculator
               </h2>
@@ -761,21 +711,21 @@ export default function ListingDetailPage() {
                     <span>Down Payment</span><span className="font-medium text-[#101214]">{emiDown}% — {formatPrice(listing.price * emiDown / 100)}</span>
                   </div>
                   <input type="range" min={10} max={50} step={5} value={emiDown} onChange={e => setEmiDown(Number(e.target.value))}
-                    className="w-full h-2 bg-[#E9E3DA] rounded-lg appearance-none cursor-pointer accent-[#FF6A00]" />
+                    className="w-full h-2 bg-[#EDE8E0] rounded-lg appearance-none cursor-pointer accent-[#FF6A00]" />
                 </div>
                 <div>
                   <div className="flex justify-between text-xs text-[#6F757C] mb-1">
                     <span>Tenure</span><span className="font-medium text-[#101214]">{emiTenure} years</span>
                   </div>
                   <input type="range" min={1} max={7} step={1} value={emiTenure} onChange={e => setEmiTenure(Number(e.target.value))}
-                    className="w-full h-2 bg-[#E9E3DA] rounded-lg appearance-none cursor-pointer accent-[#FF6A00]" />
+                    className="w-full h-2 bg-[#EDE8E0] rounded-lg appearance-none cursor-pointer accent-[#FF6A00]" />
                 </div>
                 <div>
                   <div className="flex justify-between text-xs text-[#6F757C] mb-1">
                     <span>Interest Rate</span><span className="font-medium text-[#101214]">{emiRate}%</span>
                   </div>
                   <input type="range" min={8} max={16} step={0.5} value={emiRate} onChange={e => setEmiRate(Number(e.target.value))}
-                    className="w-full h-2 bg-[#E9E3DA] rounded-lg appearance-none cursor-pointer accent-[#FF6A00]" />
+                    className="w-full h-2 bg-[#EDE8E0] rounded-lg appearance-none cursor-pointer accent-[#FF6A00]" />
                 </div>
                 <div className="bg-[#FF6A00]/5 rounded-lg p-4 text-center border border-[#FF6A00]/20">
                   <p className="text-xs text-[#6F757C] mb-1">Estimated Monthly EMI</p>
@@ -792,14 +742,6 @@ export default function ListingDetailPage() {
                 </button>
               </div>
             </div>
-          )}
-
-          {/* ── Market Intelligence Engine ── */}
-          {listing.listingType === 'rent' && (
-            <MarketIntelligenceEngine
-              category={listing.category || 'Backhoe Loader'}
-              currentPrice={listing.rentalRateDaily || listing.price}
-            />
           )}
 
           {/* ── Availability Calendar ── */}
@@ -833,13 +775,13 @@ export default function ListingDetailPage() {
                       <label className="block text-xs font-medium text-[#6F757C] mb-1">Start Date</label>
                       <input type="date" value={bookingForm.startDate} onChange={e => setBookingForm(p => ({ ...p, startDate: e.target.value }))}
                         min={new Date().toISOString().split('T')[0]}
-                        className="w-full px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-blue-400 min-h-[44px]" />
+                        className="w-full px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-blue-400 min-h-[44px]" />
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-[#6F757C] mb-1">End Date</label>
                       <input type="date" value={bookingForm.endDate} onChange={e => setBookingForm(p => ({ ...p, endDate: e.target.value }))}
                         min={bookingForm.startDate || new Date().toISOString().split('T')[0]}
-                        className="w-full px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-blue-400 min-h-[44px]" />
+                        className="w-full px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-blue-400 min-h-[44px]" />
                     </div>
                   </div>
 
@@ -852,7 +794,7 @@ export default function ListingDetailPage() {
                   <textarea
                     rows={2} placeholder="Any special requirements? (optional)"
                     value={bookingForm.renterNotes} onChange={e => setBookingForm(p => ({ ...p, renterNotes: e.target.value }))}
-                    className="w-full px-3 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:border-blue-400 resize-none"
+                    className="w-full px-3 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:border-blue-400 resize-none"
                   />
 
                   {/* Cost breakdown */}
@@ -882,7 +824,7 @@ export default function ListingDetailPage() {
 
           {/* Seller card + AI Trust Score */}
           {listing.owner && (
-            <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6">
               <h2 className="font-semibold text-sm text-[#6F757C] mb-4 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Seller</h2>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-[#FF6A00]/10 rounded-full flex items-center justify-center">
@@ -901,14 +843,14 @@ export default function ListingDetailPage() {
                 </div>
               </div>
               <div className="flex gap-2 flex-wrap mb-4">
-                <span className="px-2.5 py-1 bg-[#E9E3DA] text-[#6F757C] text-xs rounded capitalize" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                <span className="px-2.5 py-1 bg-[#EDE8E0] text-[#6F757C] text-xs rounded capitalize" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
                   {listing.owner.userType}
                 </span>
               </div>
 
               {/* ── AI Trust Score ── */}
               {aiTrustScore && (
-                <div className="border-t border-[#E9E3DA] pt-4">
+                <div className="border-t border-[#EDE8E0] pt-4">
                   <div className="flex items-center gap-2 mb-3">
                     <ShieldCheck size={14} className="text-purple-500" />
                     <span className="text-[10px] font-bold text-purple-600 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>AI Trust Score</span>
@@ -917,7 +859,7 @@ export default function ListingDetailPage() {
                     {/* Circular gauge */}
                     <div className="relative w-16 h-16">
                       <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                        <circle cx="18" cy="18" r="15.5" fill="none" stroke="#E9E3DA" strokeWidth="3" />
+                        <circle cx="18" cy="18" r="15.5" fill="none" stroke="#EDE8E0" strokeWidth="3" />
                         <circle cx="18" cy="18" r="15.5" fill="none" stroke={aiTrustScore.trustScore?.score >= 70 ? '#22c55e' : aiTrustScore.trustScore?.score >= 40 ? '#f59e0b' : '#ef4444'}
                           strokeWidth="3" strokeLinecap="round"
                           strokeDasharray={`${(aiTrustScore.trustScore?.score || 0) * 0.975} 97.5`}
@@ -950,7 +892,7 @@ export default function ListingDetailPage() {
 
           {/* Other listings from seller */}
           {otherListings.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6">
               <h2 className="font-semibold text-sm text-[#6F757C] mb-4 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
                 More from this seller
               </h2>
@@ -959,9 +901,9 @@ export default function ListingDetailPage() {
                   <Link
                     key={ol.id}
                     to={`/listing/${ol.id}`}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-[#E9E3DA] hover:border-[#FF6A00] transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-lg border border-[#EDE8E0] hover:border-[#FF6A00] transition-colors"
                   >
-                    <div className="w-14 h-14 bg-[#E9E3DA] rounded-lg flex-shrink-0 overflow-hidden">
+                    <div className="w-14 h-14 bg-[#EDE8E0] rounded-lg flex-shrink-0 overflow-hidden">
                       {ol.images?.[0] ? (
                         <img src={ol.images[0]} className="w-full h-full object-cover" />
                       ) : (
@@ -1008,7 +950,7 @@ export default function ListingDetailPage() {
           <button onClick={handleWhatsApp} className="p-3 bg-[#25D366] text-white rounded-lg flex-shrink-0">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           </button>
-          <button onClick={handleToggleSaved} className={`p-3 rounded-lg flex-shrink-0 ${saved ? 'bg-red-50 text-red-500' : 'bg-[#E9E3DA]'}`}>
+          <button onClick={handleToggleSaved} className={`p-3 rounded-lg flex-shrink-0 ${saved ? 'bg-red-50 text-red-500' : 'bg-[#EDE8E0]'}`}>
             <Heart size={16} className={saved ? 'fill-red-500' : ''} />
           </button>
         </div>
@@ -1054,17 +996,17 @@ export default function ListingDetailPage() {
           <div className="bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full sm:max-w-sm p-5 sm:p-6" onClick={e => e.stopPropagation()}>
             <h2 className="font-bold text-lg mb-4" style={{ fontFamily: 'Sora, sans-serif' }}>Share this listing</h2>
             <div className="space-y-3">
-              <button onClick={handleCopyLink} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-[#E9E3DA] hover:border-[#FF6A00] transition-colors text-sm min-h-[48px]">
+              <button onClick={handleCopyLink} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-[#EDE8E0] hover:border-[#FF6A00] transition-colors text-sm min-h-[48px]">
                 {copied ? <Check size={18} className="text-green-500" /> : <Copy size={18} className="text-[#6F757C]" />}
                 {copied ? 'Copied!' : 'Copy Link'}
               </button>
-              <button onClick={() => { handleWhatsApp(); setShowShareModal(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-[#E9E3DA] hover:border-[#25D366] transition-colors text-sm min-h-[48px]">
+              <button onClick={() => { handleWhatsApp(); setShowShareModal(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-[#EDE8E0] hover:border-[#25D366] transition-colors text-sm min-h-[48px]">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                 Share via WhatsApp
               </button>
               <button
                 onClick={() => { window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out this ${listing.make} ${listing.model} on YantraSetu`)}&url=${encodeURIComponent(window.location.href)}`, '_blank'); setShowShareModal(false); }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-[#E9E3DA] hover:border-blue-400 transition-colors text-sm min-h-[48px]"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-[#EDE8E0] hover:border-blue-400 transition-colors text-sm min-h-[48px]"
               >
                 <ExternalLink size={18} className="text-blue-500" /> Share on Twitter
               </button>
@@ -1078,7 +1020,7 @@ export default function ListingDetailPage() {
       {showReportModal && (
         <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4">
           <div className="bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full sm:max-w-lg p-5 sm:p-6 relative max-h-[85vh] overflow-y-auto">
-            <button onClick={() => setShowReportModal(false)} className="absolute top-4 right-4 p-2 hover:bg-[#E9E3DA] rounded-lg">
+            <button onClick={() => setShowReportModal(false)} className="absolute top-4 right-4 p-2 hover:bg-[#EDE8E0] rounded-lg">
               <X size={18} />
             </button>
             <div className="flex items-center gap-2 mb-5">
@@ -1109,7 +1051,7 @@ export default function ListingDetailPage() {
                   <select
                     value={reportForm.reason}
                     onChange={e => setReportForm(p => ({ ...p, reason: e.target.value }))}
-                    className="w-full px-3 py-3 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-300 min-h-[44px]"
+                    className="w-full px-3 py-3 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-300 min-h-[44px]"
                   >
                     <option value="">Select reason…</option>
                     {FRAUD_REASONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
@@ -1122,14 +1064,14 @@ export default function ListingDetailPage() {
                     placeholder="Describe the issue in detail…"
                     value={reportForm.description}
                     onChange={e => setReportForm(p => ({ ...p, description: e.target.value }))}
-                    className="w-full px-3 py-3 bg-white border border-[#E9E3DA] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-300 resize-none"
+                    className="w-full px-3 py-3 bg-white border border-[#EDE8E0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-300 resize-none"
                   />
                 </div>
                 <div className="mb-5">
                   <label className="block text-xs font-medium text-[#6F757C] mb-1.5">Evidence (optional)</label>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {reportForm.evidenceImages.map((img, i) => (
-                      <div key={i} className="relative w-16 h-16 rounded-lg border border-[#E9E3DA] overflow-hidden">
+                      <div key={i} className="relative w-16 h-16 rounded-lg border border-[#EDE8E0] overflow-hidden">
                         <img src={img} className="w-full h-full object-cover" />
                         <button
                           type="button"
@@ -1160,7 +1102,7 @@ export default function ListingDetailPage() {
                   }} />
                 </div>
                 <div className="flex gap-3">
-                  <button type="button" onClick={() => setShowReportModal(false)} className="flex-1 py-3 text-sm border border-[#E9E3DA] rounded-lg hover:bg-[#E9E3DA] transition-colors min-h-[44px]">
+                  <button type="button" onClick={() => setShowReportModal(false)} className="flex-1 py-3 text-sm border border-[#EDE8E0] rounded-lg hover:bg-[#EDE8E0] transition-colors min-h-[44px]">
                     Cancel
                   </button>
                   <button type="submit" disabled={reportSubmitting} className="flex-1 py-3 text-sm bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 min-h-[44px]">

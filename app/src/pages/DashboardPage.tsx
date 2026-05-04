@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { machineryApi, bookingsApi, chatsApi, mlApi, analyticsApi, type MachineryListing } from '../services/api';
+import { machineryApi, bookingsApi, chatsApi, analyticsApi, type MachineryListing } from '../services/api';
 import {
   Loader2, Package, Eye, MessageCircle, Calendar, Plus, ArrowRight,
-  TrendingUp, BarChart3, CheckCircle, Clock, Brain, Sparkles,
-  Zap, Target, ArrowUpRight, ArrowDownRight
+  TrendingUp, BarChart3, AlertCircle, HardHat, Wrench, Cog, Truck, ShoppingBag
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
@@ -16,6 +15,8 @@ interface DashboardStats {
   totalViews: number;
   totalBookings: number;
   pendingBookings: number;
+  confirmedBookings: number;
+  totalRevenue: number;
   totalChats: number;
 }
 
@@ -27,13 +28,8 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [listings, setListings] = useState<MachineryListing[]>([]);
   const [recentBookings, setRecentBookings] = useState<any[]>([]);
+  const [demandGaps, setDemandGaps] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // AI State
-  const [aiRevenueEstimate, setAiRevenueEstimate] = useState<number>(0);
-  const [aiDemandInsights, setAiDemandInsights] = useState<any[]>([]);
-  const [aiBestCategory, setAiBestCategory] = useState<string>('');
-  const [aiListingScores, setAiListingScores] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -55,6 +51,8 @@ export default function DashboardPage() {
 
         const totalViews = myListings.reduce((sum: number, l: any) => sum + (l.viewCount || 0), 0);
         const activeListings = myListings.filter((l: any) => l.status === 'approved').length;
+        const confirmedBookings = myBookings.filter((b: any) => b.status === 'confirmed' || b.status === 'completed');
+        const totalRevenue = confirmedBookings.reduce((s: number, b: any) => s + (Number(b.totalAmount) || 0), 0);
 
         setStats({
           totalListings: myListings.length,
@@ -63,40 +61,15 @@ export default function DashboardPage() {
           totalViews,
           totalBookings: myBookings.length,
           pendingBookings: myBookings.filter((b: any) => b.status === 'pending').length,
+          confirmedBookings: confirmedBookings.length,
+          totalRevenue,
           totalChats: myChats.length,
         });
 
-        // AI: Estimate monthly revenue based on rental bookings
-        const confirmedBookings = myBookings.filter((b: any) => b.status === 'confirmed');
-        const totalRevenue = confirmedBookings.reduce((s: number, b: any) => s + (Number(b.totalAmount) || 0), 0);
-        const avgMonthly = confirmedBookings.length > 0 ? Math.round(totalRevenue * 1.15) : Math.round(totalViews * 250);
-        setAiRevenueEstimate(avgMonthly);
-
-        // AI: Find best category to list
-        const categories = ['construction', 'mining', 'agriculture', 'industrial'];
-        const catCounts: Record<string, number> = {};
-        myListings.forEach((l: any) => { catCounts[l.category] = (catCounts[l.category] || 0) + (l.viewCount || 1); });
-        const topCat = Object.entries(catCounts).sort((a, b) => b[1] - a[1])[0];
-        setAiBestCategory(topCat ? topCat[0] : 'construction');
-
-        // AI: Generate listing visibility scores
-        const scores: Record<string, number> = {};
-        myListings.forEach((l: any) => {
-          let score = 20;
-          if (l.images?.length > 0) score += 25;
-          if (l.images?.length > 2) score += 10;
-          if (l.description?.length > 50) score += 15;
-          if (l.description?.length > 150) score += 10;
-          if (l.city) score += 10;
-          if (l.isVerified) score += 10;
-          scores[l.id] = Math.min(100, score);
-        });
-        setAiListingScores(scores);
-
-        // AI: Demand forecast
+        // Fetch real demand data from API
         try {
           const forecast = await analyticsApi.getDemandForecast();
-          if (forecast?.gaps) setAiDemandInsights(forecast.gaps);
+          if (forecast?.gaps) setDemandGaps(forecast.gaps);
         } catch {}
 
       } catch {}
@@ -111,23 +84,19 @@ export default function DashboardPage() {
 
   if (authLoading || loading) {
     return (
-      <PageShell breadcrumb="Dashboard"><div className="flex items-center justify-center py-32"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div></PageShell>
+      <PageShell breadcrumb="Dashboard">
+        <div className="flex flex-col items-center justify-center py-32 gap-3">
+          <Loader2 size={28} className="animate-spin text-[#FF6A00]" />
+          <p className="text-sm text-[#6F757C]">Loading dashboard...</p>
+        </div>
+      </PageShell>
     );
   }
-
-  const statCards = [
-    { label: 'Total Listings', value: stats?.totalListings || 0, icon: Package, color: 'bg-blue-50 text-blue-600' },
-    { label: 'Active', value: stats?.activeListings || 0, icon: CheckCircle, color: 'bg-green-50 text-green-600' },
-    { label: 'Pending', value: stats?.pendingListings || 0, icon: Clock, color: 'bg-yellow-50 text-yellow-600' },
-    { label: 'Total Views', value: stats?.totalViews || 0, icon: Eye, color: 'bg-purple-50 text-purple-600' },
-    { label: 'Bookings', value: stats?.totalBookings || 0, icon: Calendar, color: 'bg-orange-50 text-orange-600' },
-    { label: 'Conversations', value: stats?.totalChats || 0, icon: MessageCircle, color: 'bg-pink-50 text-pink-600' },
-  ];
 
   return (
     <PageShell breadcrumb="Dashboard" backTo="/" backLabel="Home" title={`Welcome, ${user?.firstName || 'Seller'}`}>
       {/* Quick Actions */}
-      <div className="flex flex-wrap gap-3 mb-8">
+      <div className="flex flex-wrap gap-3 mb-10">
         <button onClick={() => navigate('/sell')} className="btn-primary text-sm py-2.5 px-4 flex items-center gap-2">
           <Plus size={16} /> New Listing
         </button>
@@ -140,115 +109,113 @@ export default function DashboardPage() {
         <button onClick={() => navigate('/market-insights')} className="btn-secondary text-sm py-2.5 px-4 flex items-center gap-2">
           <TrendingUp size={16} /> Market Insights
         </button>
+        <button onClick={() => navigate('/services')} className="btn-secondary text-sm py-2.5 px-4 flex items-center gap-2">
+          <Wrench size={16} /> All Services
+        </button>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
-        {statCards.map(s => (
-          <div key={s.label} className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-4">
-            <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${s.color}`}>
-              <s.icon size={18} />
+      {/* Getting Started — shown when user has no listings */}
+      {stats && stats.totalListings === 0 && stats.totalBookings === 0 && (
+        <div className="bg-white rounded-xl border border-[#EDE8E0] p-6 mb-10">
+          <h2 className="font-bold text-base mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>Welcome to YantraSetu!</h2>
+          <p className="text-sm text-[#6F757C] mb-5">Here's how to get started on the platform:</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <button onClick={() => navigate('/browse')} className="flex items-start gap-3 p-4 bg-[#F9F7F4] rounded-xl border border-[#EDE8E0] hover:border-[#FF6A00] transition-all text-left group">
+              <div className="w-10 h-10 bg-[#FF6A00] rounded-lg flex items-center justify-center flex-shrink-0">
+                <ShoppingBag size={18} className="text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-[#101214] group-hover:text-[#FF6A00]">Browse Equipment</p>
+                <p className="text-xs text-[#6F757C] mt-0.5">Buy or rent verified machinery from our marketplace</p>
+              </div>
+            </button>
+            <button onClick={() => navigate('/sell')} className="flex items-start gap-3 p-4 bg-[#F9F7F4] rounded-xl border border-[#EDE8E0] hover:border-[#FF6A00] transition-all text-left group">
+              <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Plus size={18} className="text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-[#101214] group-hover:text-blue-600">List Your Machine</p>
+                <p className="text-xs text-[#6F757C] mt-0.5">Sell or rent out your idle equipment</p>
+              </div>
+            </button>
+            <button onClick={() => navigate('/services')} className="flex items-start gap-3 p-4 bg-[#F9F7F4] rounded-xl border border-[#EDE8E0] hover:border-[#FF6A00] transition-all text-left group">
+              <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Wrench size={18} className="text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-[#101214] group-hover:text-green-600">Explore Services</p>
+                <p className="text-xs text-[#6F757C] mt-0.5">Hire operators, find mechanics, get financing</p>
+              </div>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Stats Grid — clean, no gradients, data-first */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
+        {[
+          { label: 'Active Listings', value: stats?.activeListings || 0, sub: `${stats?.pendingListings || 0} pending`, icon: Package, accent: false },
+          { label: 'Total Views', value: stats?.totalViews || 0, sub: `across ${stats?.totalListings || 0} listings`, icon: Eye, accent: false },
+          { label: 'Bookings', value: stats?.totalBookings || 0, sub: `${stats?.confirmedBookings || 0} confirmed`, icon: Calendar, accent: false },
+          { label: 'Revenue Earned', value: formatPrice(stats?.totalRevenue || 0), sub: `${stats?.confirmedBookings || 0} completed`, icon: TrendingUp, accent: true },
+        ].map(s => (
+          <div key={s.label} className={`rounded-xl p-5 border ${s.accent ? 'bg-[#101214] text-white border-[#101214]' : 'bg-white border-[#EDE8E0]'}`}>
+            <div className="flex items-center justify-between mb-3">
+              <s.icon size={18} className={s.accent ? 'text-[#FF6A00]' : 'text-[#6F757C]'} />
             </div>
-            <p className="text-2xl font-bold" style={{ fontFamily: 'Sora, sans-serif' }}>{s.value.toLocaleString()}</p>
-            <p className="text-[11px] text-[#6F757C] mt-0.5" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{s.label}</p>
+            <p className={`text-2xl font-bold font-heading ${s.accent ? 'text-white' : 'text-[#101214]'}`}>
+              {typeof s.value === 'number' ? s.value.toLocaleString() : s.value}
+            </p>
+            <p className={`text-xs mt-1 ${s.accent ? 'text-white/60' : 'text-[#6F757C]'}`}>{s.label}</p>
+            <p className={`text-[11px] mt-0.5 ${s.accent ? 'text-white/40' : 'text-[#6F757C]/60'}`}>{s.sub}</p>
           </div>
         ))}
       </div>
 
-      {/* ═══ AI Intelligence Panel ═══ */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        {/* AI Revenue Forecast */}
-        <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border border-purple-100 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <Brain size={16} className="text-purple-500" />
-            <span className="text-[10px] font-bold text-purple-600 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-              AI Revenue Forecast
-            </span>
+      {/* Pending Actions Alert */}
+      {(stats?.pendingBookings || 0) > 0 && (
+        <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl mb-8">
+          <AlertCircle size={18} className="text-amber-600 shrink-0" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-[#101214]">
+              {stats?.pendingBookings} booking{(stats?.pendingBookings || 0) > 1 ? 's' : ''} awaiting your response
+            </p>
+            <p className="text-xs text-[#6F757C]">Quick responses improve your booking conversion rate.</p>
           </div>
-          <p className="text-2xl font-bold text-[#101214] mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>
-            {formatPrice(aiRevenueEstimate)}
-          </p>
-          <p className="text-xs text-[#6F757C]">Estimated next 30-day earnings</p>
-          <div className="flex items-center gap-1.5 mt-3">
-            <ArrowUpRight size={14} className="text-green-500" />
-            <span className="text-xs font-semibold text-green-600">+12% vs last month</span>
-          </div>
-        </div>
-
-        {/* AI Best Time to List */}
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles size={16} className="text-green-500" />
-            <span className="text-[10px] font-bold text-green-600 uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-              AI Market Opportunity
-            </span>
-          </div>
-          <p className="text-sm font-bold text-[#101214] mb-1 capitalize" style={{ fontFamily: 'Sora, sans-serif' }}>
-            {aiBestCategory} equipment is hot 🔥
-          </p>
-          <p className="text-xs text-[#6F757C]">High demand detected in your top category</p>
-          <button onClick={() => navigate('/sell')} className="mt-3 text-xs font-semibold text-green-600 flex items-center gap-1 hover:underline">
-            List now to capture demand <ArrowRight size={12} />
+          <button onClick={() => navigate('/bookings')} className="text-xs font-semibold text-amber-700 hover:underline shrink-0">
+            Review now
           </button>
         </div>
+      )}
 
-        {/* AI Listing Health */}
-        <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl border border-orange-100 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <Target size={16} className="text-[#FF6A00]" />
-            <span className="text-[10px] font-bold text-[#FF6A00] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-              AI Listing Health
-            </span>
-          </div>
-          {(() => {
-            const scores = Object.values(aiListingScores);
-            const avg = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
-            return (
-              <>
-                <div className="flex items-end gap-2 mb-1">
-                  <p className="text-2xl font-bold text-[#101214]" style={{ fontFamily: 'Sora, sans-serif' }}>{avg}</p>
-                  <p className="text-sm text-[#6F757C] mb-0.5">/100 avg</p>
-                </div>
-                <div className="w-full h-2 bg-white rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all bg-gradient-to-r from-[#FF6A00] to-green-500" style={{ width: `${avg}%` }} />
-                </div>
-                {avg < 60 && <p className="text-xs text-[#FF6A00] mt-2">Add photos & descriptions to boost visibility</p>}
-                {avg >= 60 && avg < 80 && <p className="text-xs text-green-600 mt-2">Good! Add more details to reach 80+</p>}
-                {avg >= 80 && <p className="text-xs text-green-600 mt-2">Excellent listing quality! 🎉</p>}
-              </>
-            );
-          })()}
-        </div>
-      </div>
-
-      {/* ═══ AI Demand Insights ═══ */}
-      {aiDemandInsights.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] mb-8 p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Zap size={16} className="text-purple-500" />
-            <h2 className="font-bold text-sm flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
-              AI Supply-Demand Intelligence
+      {/* Supply-Demand Intelligence — REAL data from API */}
+      {demandGaps.length > 0 && (
+        <div className="bg-white rounded-xl border border-[#EDE8E0] mb-8">
+          <div className="flex items-center justify-between p-5 border-b border-[#EDE8E0]">
+            <h2 className="font-bold text-sm font-heading flex items-center gap-2">
+              <BarChart3 size={16} className="text-[#6F757C]" /> Supply & Demand
             </h2>
+            <span className="text-[10px] text-[#6F757C] font-mono uppercase">Live market data</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {aiDemandInsights.map((gap: any, i: number) => (
-              <div key={i} className={`p-4 rounded-lg border ${
-                gap.status === 'high_demand' ? 'bg-green-50 border-green-200' :
-                gap.status === 'balanced' ? 'bg-blue-50 border-blue-100' :
-                gap.status === 'oversupply' ? 'bg-yellow-50 border-yellow-100' :
-                'bg-gray-50 border-gray-200'
-              }`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#EDE8E0]">
+            {demandGaps.map((gap: any, i: number) => (
+              <div key={i} className="bg-white p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-bold capitalize">{gap.category}</span>
-                  {gap.status === 'high_demand' && <span className="text-[10px] font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full">HOT</span>}
+                  <span className="text-sm font-semibold capitalize">{gap.category}</span>
+                  {gap.status === 'high_demand' && (
+                    <span className="text-[10px] font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded font-mono">HIGH</span>
+                  )}
+                  {gap.status === 'oversupply' && (
+                    <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded font-mono">EXCESS</span>
+                  )}
                 </div>
-                <div className="flex items-center gap-2 text-xs text-[#6F757C]">
-                  <span>{gap.activeListings} listings</span>
-                  <span>·</span>
-                  <span>{gap.recentBookings} bookings</span>
+                <div className="flex items-center gap-3 text-xs text-[#6F757C]">
+                  <span>{gap.activeListings} listed</span>
+                  <span className="w-px h-3 bg-[#EDE8E0]" />
+                  <span>{gap.recentBookings} booked</span>
                 </div>
                 {gap.recommendation && (
-                  <p className="text-[10px] text-[#6F757C] mt-2 italic">{gap.recommendation}</p>
+                  <p className="text-[10px] text-[#6F757C] mt-2 leading-relaxed">{gap.recommendation}</p>
                 )}
               </div>
             ))}
@@ -256,75 +223,64 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Listing Performance Table with AI Scores */}
-      <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] mb-8">
-        <div className="flex items-center justify-between p-5 border-b border-[#E9E3DA]">
-          <h2 className="font-bold text-sm flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
-            <BarChart3 size={16} className="text-[#FF6A00]" /> Listing Performance
+      {/* Listing Performance Table */}
+      <div className="bg-white rounded-xl border border-[#EDE8E0] mb-8">
+        <div className="flex items-center justify-between p-5 border-b border-[#EDE8E0]">
+          <h2 className="font-bold text-sm font-heading flex items-center gap-2">
+            <Package size={16} className="text-[#6F757C]" /> Your Listings
           </h2>
           <Link to="/my-listings" className="text-xs text-[#FF6A00] hover:underline flex items-center gap-1">
             View all <ArrowRight size={12} />
           </Link>
         </div>
         {listings.length === 0 ? (
-          <div className="p-8 text-center text-sm text-[#6F757C]">
-            No listings yet. <Link to="/sell" className="text-[#FF6A00] hover:underline">Create your first listing</Link>
+          <div className="p-10 text-center">
+            <Package size={32} className="mx-auto text-[#6F757C] opacity-30 mb-3" />
+            <p className="text-sm text-[#6F757C] mb-4">You haven't listed any equipment yet.</p>
+            <Link to="/sell" className="text-sm text-[#FF6A00] font-semibold hover:underline">
+              Create your first listing →
+            </Link>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[#E9E3DA]">
-                  <th className="text-left px-5 py-3 text-[11px] text-[#6F757C] font-medium uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Listing</th>
-                  <th className="text-center px-3 py-3 text-[11px] text-[#6F757C] font-medium uppercase tracking-wider hidden sm:table-cell" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Status</th>
-                  <th className="text-center px-3 py-3 text-[11px] text-[#6F757C] font-medium uppercase tracking-wider hidden sm:table-cell" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>AI Score</th>
-                  <th className="text-right px-3 py-3 text-[11px] text-[#6F757C] font-medium uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Views</th>
-                  <th className="text-right px-5 py-3 text-[11px] text-[#6F757C] font-medium uppercase tracking-wider hidden sm:table-cell" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Price</th>
+                <tr className="border-b border-[#EDE8E0]">
+                  <th className="text-left px-5 py-3 text-[11px] text-[#6F757C] font-medium uppercase tracking-wider font-mono">Listing</th>
+                  <th className="text-center px-3 py-3 text-[11px] text-[#6F757C] font-medium uppercase tracking-wider font-mono hidden sm:table-cell">Status</th>
+                  <th className="text-right px-3 py-3 text-[11px] text-[#6F757C] font-medium uppercase tracking-wider font-mono">Views</th>
+                  <th className="text-right px-5 py-3 text-[11px] text-[#6F757C] font-medium uppercase tracking-wider font-mono hidden sm:table-cell">Price</th>
                 </tr>
               </thead>
               <tbody>
-                {listings.map(l => {
-                  const score = aiListingScores[l.id] || 0;
-                  return (
-                    <tr key={l.id} className="border-b border-[#E9E3DA]/50 hover:bg-[#E9E3DA]/10 transition-colors">
-                      <td className="px-5 py-3">
-                        <Link to={`/listing/${l.id}`} className="flex items-center gap-3 hover:text-[#FF6A00]">
-                          <div className="w-10 h-10 rounded-lg bg-[#E9E3DA] overflow-hidden flex-shrink-0">
-                            {l.images?.[0] ? <img src={l.images[0]} className="w-full h-full object-cover" alt="" /> : null}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-medium text-sm truncate">{l.make} {l.model}</p>
-                            <p className="text-[11px] text-[#6F757C]">{l.listingType === 'rent' ? 'Rent' : 'Sale'}</p>
-                          </div>
-                        </Link>
-                      </td>
-                      <td className="text-center px-3 py-3 hidden sm:table-cell">
-                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${
-                          l.status === 'approved' ? 'bg-green-100 text-green-700'
-                          : l.status === 'pending' ? 'bg-yellow-100 text-yellow-700'
-                          : 'bg-red-100 text-red-700'
-                        }`} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                          {l.status?.toUpperCase()}
-                        </span>
-                      </td>
-                      <td className="text-center px-3 py-3 hidden sm:table-cell">
-                        <div className="inline-flex items-center gap-1.5">
-                          <div className="w-8 h-1.5 bg-[#E9E3DA] rounded-full overflow-hidden">
-                            <div className={`h-full rounded-full ${score >= 70 ? 'bg-green-500' : score >= 40 ? 'bg-yellow-500' : 'bg-red-400'}`}
-                              style={{ width: `${score}%` }} />
-                          </div>
-                          <span className={`text-[10px] font-bold ${score >= 70 ? 'text-green-600' : score >= 40 ? 'text-yellow-600' : 'text-red-500'}`}>
-                            {score}
-                          </span>
+                {listings.map(l => (
+                  <tr key={l.id} className="border-b border-[#EDE8E0]/50 hover:bg-[#F9F7F4] transition-colors">
+                    <td className="px-5 py-3">
+                      <Link to={`/listing/${l.id}`} className="flex items-center gap-3 hover:text-[#FF6A00]">
+                        <div className="w-10 h-10 rounded-lg bg-[#EDE8E0] overflow-hidden flex-shrink-0">
+                          {l.images?.[0] ? <img src={l.images[0]} className="w-full h-full object-cover" alt="" /> : null}
                         </div>
-                      </td>
-                      <td className="text-right px-3 py-3">
-                        <span className="flex items-center justify-end gap-1 text-[#6F757C]"><Eye size={12} /> {l.viewCount}</span>
-                      </td>
-                      <td className="text-right px-5 py-3 font-bold text-[#FF6A00] hidden sm:table-cell">{formatPrice(l.price)}</td>
-                    </tr>
-                  );
-                })}
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm truncate">{l.make} {l.model}</p>
+                          <p className="text-[11px] text-[#6F757C]">{l.listingType === 'rent' ? 'Rental' : 'Sale'}</p>
+                        </div>
+                      </Link>
+                    </td>
+                    <td className="text-center px-3 py-3 hidden sm:table-cell">
+                      <span className={`px-2 py-0.5 text-[10px] font-semibold rounded font-mono ${
+                        l.status === 'approved' ? 'bg-green-50 text-green-700'
+                        : l.status === 'pending' ? 'bg-amber-50 text-amber-700'
+                        : 'bg-red-50 text-red-700'
+                      }`}>
+                        {l.status?.toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="text-right px-3 py-3">
+                      <span className="flex items-center justify-end gap-1 text-[#6F757C]"><Eye size={12} /> {l.viewCount}</span>
+                    </td>
+                    <td className="text-right px-5 py-3 font-bold text-[#101214] hidden sm:table-cell">{formatPrice(l.price)}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -333,29 +289,30 @@ export default function DashboardPage() {
 
       {/* Recent Bookings */}
       {recentBookings.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA]">
-          <div className="flex items-center justify-between p-5 border-b border-[#E9E3DA]">
-            <h2 className="font-bold text-sm flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
-              <TrendingUp size={16} className="text-[#FF6A00]" /> Recent Bookings
+        <div className="bg-white rounded-xl border border-[#EDE8E0]">
+          <div className="flex items-center justify-between p-5 border-b border-[#EDE8E0]">
+            <h2 className="font-bold text-sm font-heading flex items-center gap-2">
+              <Calendar size={16} className="text-[#6F757C]" /> Recent Bookings
             </h2>
             <Link to="/bookings" className="text-xs text-[#FF6A00] hover:underline flex items-center gap-1">
               View all <ArrowRight size={12} />
             </Link>
           </div>
-          <div className="divide-y divide-[#E9E3DA]/50">
+          <div className="divide-y divide-[#EDE8E0]/50">
             {recentBookings.map((b: any) => (
-              <div key={b.id} className="flex items-center justify-between px-5 py-3">
+              <div key={b.id} className="flex items-center justify-between px-5 py-3.5">
                 <div>
                   <p className="text-sm font-medium">{b.listing?.make} {b.listing?.model}</p>
                   <p className="text-xs text-[#6F757C]">{b.renter?.firstName} {b.renter?.lastName} · {b.duration} days</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-bold text-[#FF6A00]">{formatPrice(b.totalAmount)}</p>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                    b.status === 'confirmed' ? 'bg-green-100 text-green-700'
-                    : b.status === 'pending' ? 'bg-yellow-100 text-yellow-700'
-                    : 'bg-gray-100 text-gray-600'
-                  }`} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                  <p className="text-sm font-bold text-[#101214]">{formatPrice(b.totalAmount)}</p>
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded font-mono ${
+                    b.status === 'confirmed' ? 'bg-green-50 text-green-700'
+                    : b.status === 'pending' ? 'bg-amber-50 text-amber-700'
+                    : b.status === 'completed' ? 'bg-blue-50 text-blue-700'
+                    : 'bg-gray-50 text-gray-600'
+                  }`}>
                     {b.status.toUpperCase()}
                   </span>
                 </div>

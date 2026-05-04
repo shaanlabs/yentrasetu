@@ -546,3 +546,38 @@ export const analyticsApi = {
   getCampaignAnalytics: (days = 30) =>
     request<{ funnel: any; bySource: any[]; byCampaign: any[]; byDevice: any[]; conversionRate: number }>(`/analytics/campaigns?days=${days}`),
 };
+
+// ─── Fleet Optimizer API ───────────────────────────────────
+export const fleetApi = {
+  optimize: (data: {
+    machineTypes: string[];
+    days: number;
+    city?: string;
+    state?: string;
+    segment?: 'individual' | 'contractor' | 'enterprise' | 'government';
+    startDate?: string;
+    endDate?: string;
+  }) => request<any>('/fleet/optimize', { method: 'POST', body: JSON.stringify(data) }),
+
+  getPackages: (city?: string, state?: string) => {
+    const p = new URLSearchParams();
+    if (city) p.set('city', city);
+    if (state) p.set('state', state);
+    return request<{ packages: any[] }>(`/fleet/packages${p.toString() ? `?${p}` : ''}`);
+  },
+
+  getSegments: () => request<{ segments: any; machineTypes: string[] }>('/fleet/segments'),
+
+  getOwnerFleet: (ownerId: string) => request<{ machines: any[] }>(`/fleet/owner/${ownerId}`),
+
+  bookProject: (data: {
+    projectName: string;
+    projectLocation: string;
+    machines: { listingId: string }[];
+    startDate: string;
+    endDate: string;
+    segment?: string;
+  }) => request<{ message: string; projectId: string; bookings: any[]; totalCost: number }>(
+    '/fleet/book-project', { method: 'POST', body: JSON.stringify(data) }
+  ),
+};

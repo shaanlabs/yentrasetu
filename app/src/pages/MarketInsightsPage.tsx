@@ -77,7 +77,7 @@ export default function MarketInsightsPage() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="px-4 py-2.5 bg-white border border-[#E9E3DA] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none shadow-sm min-h-[44px]"
+            className="px-4 py-2.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none shadow-sm min-h-[44px]"
             style={{ fontFamily: 'Inter, sans-serif' }}
           >
             <option value="">All Categories</option>
@@ -95,7 +95,7 @@ export default function MarketInsightsPage() {
           <div className="space-y-6">
             {/* Price Trends */}
             {trends?.priceTrends && (
-              <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6">
+              <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6">
                 <h2 className="flex items-center gap-2 mb-4"
                   style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1rem', color: '#101214' }}>
                   <IndianRupee size={18} className="text-[#FF6A00]" /> Price Trends
@@ -103,7 +103,7 @@ export default function MarketInsightsPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {Array.isArray(trends.priceTrends) && trends.priceTrends.length > 0 ? (
                     trends.priceTrends.slice(0, 6).map((item: any, i: number) => (
-                      <div key={i} className="p-4 bg-[#F9F7F4] rounded-lg border border-[#E9E3DA]">
+                      <div key={i} className="p-4 bg-[#F9F7F4] rounded-lg border border-[#EDE8E0]">
                         <p className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
                           {item.category || item.month || `Period ${i + 1}`}
                         </p>
@@ -132,7 +132,7 @@ export default function MarketInsightsPage() {
 
             {/* Demand by Category */}
             {trends?.demand && (
-              <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6">
+              <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6">
                 <h2 className="flex items-center gap-2 mb-4"
                   style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1rem', color: '#101214' }}>
                   <BarChart3 size={18} className="text-[#FF6A00]" /> Demand by Category
@@ -148,7 +148,7 @@ export default function MarketInsightsPage() {
                             <span className="font-medium text-[#101214] capitalize">{item.category}</span>
                             <span className="text-[#6F757C]">{item.count || item.demand || 0} listings</span>
                           </div>
-                          <div className="h-2 bg-[#E9E3DA] rounded-full overflow-hidden">
+                          <div className="h-2 bg-[#EDE8E0] rounded-full overflow-hidden">
                             <div className="h-full rounded-full bg-gradient-to-r from-[#FF6A00] to-[#FF8C38] transition-all duration-500"
                               style={{ width: `${pct}%` }} />
                           </div>
@@ -164,7 +164,7 @@ export default function MarketInsightsPage() {
 
             {/* Supply-Demand Gaps */}
             {forecast?.gaps && Array.isArray(forecast.gaps) && forecast.gaps.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6">
+              <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6">
                 <h2 className="flex items-center gap-2 mb-4"
                   style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1rem', color: '#101214' }}>
                   <Layers size={18} className="text-[#FF6A00]" /> Supply-Demand Gaps
@@ -189,14 +189,14 @@ export default function MarketInsightsPage() {
 
             {/* Seasonal Patterns */}
             {forecast?.seasonal && Array.isArray(forecast.seasonal) && forecast.seasonal.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-5 sm:p-6">
+              <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-5 sm:p-6">
                 <h2 className="flex items-center gap-2 mb-4"
                   style={{ fontFamily: 'Sora, sans-serif', fontWeight: 600, fontSize: '1rem', color: '#101214' }}>
                   <Calendar size={18} className="text-[#FF6A00]" /> Seasonal Patterns
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {forecast.seasonal.map((item: any, i: number) => (
-                    <div key={i} className="p-3 bg-[#F9F7F4] rounded-lg border border-[#E9E3DA] text-center">
+                    <div key={i} className="p-3 bg-[#F9F7F4] rounded-lg border border-[#EDE8E0] text-center">
                       <p className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{item.month || item.season}</p>
                       <p className="text-lg font-bold text-[#101214] mt-1">{item.count || item.listings || 0}</p>
                       <p className="text-xs text-[#6F757C]">listings</p>
@@ -208,8 +208,8 @@ export default function MarketInsightsPage() {
 
             {/* Empty state */}
             {!trends?.priceTrends && !trends?.demand && !forecast?.gaps && (
-              <div className="bg-white rounded-xl shadow-sm border border-[#E9E3DA] p-12 text-center">
-                <BarChart3 size={48} className="text-[#E9E3DA] mx-auto mb-4" />
+              <div className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-12 text-center">
+                <BarChart3 size={48} className="text-[#EDE8E0] mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-[#101214] mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>
                   Not enough data yet
                 </h3>
