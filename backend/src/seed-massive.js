@@ -312,7 +312,7 @@ async function seedMachinerySale(users) {
   const categories = Object.keys(MAKES_MODELS);
   let count = 0;
 
-  for (let i = 0; i < 55; i++) {
+  for (let i = 0; i < 150; i++) {
     const cat = categories[i % categories.length];
     const makeObj = pick(MAKES_MODELS[cat]);
     const model = pick(makeObj.models);
@@ -365,7 +365,7 @@ async function seedMachineryRent(users) {
   const categories = Object.keys(MAKES_MODELS);
   let count = 0;
 
-  for (let i = 0; i < 55; i++) {
+  for (let i = 0; i < 150; i++) {
     const cat = categories[i % categories.length];
     const makeObj = pick(MAKES_MODELS[cat]);
     const model = pick(makeObj.models);

@@ -320,6 +320,12 @@ export const machineryApi = {
   deleteListing: (id: string) =>
     request<{ message: string }>(`/machinery/${id}`, { method: 'DELETE' }),
 
+  submitSaleEnquiry: (id: string, data: { name: string; phone: string; city: string; notes?: string }) =>
+    request<{ message: string }>(`/machinery/${id}/enquiry`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
   getMyListings: (page = 1, limit = 20, status?: string) => {
     const params = new URLSearchParams({ page: String(page), limit: String(limit) });
     if (status) params.set('status', status);
@@ -328,6 +334,16 @@ export const machineryApi = {
 
   getCategories: () =>
     request<CategoriesResponse>('/machinery/categories', { skipAuth: true }),
+
+  searchSuggestions: (q: string) =>
+    request<{
+      suggestions: {
+        makes: string[];
+        models: { model: string; make: string }[];
+        equipment: { name: string; category: string }[];
+        cities: string[];
+      };
+    }>(`/machinery/search-suggestions?q=${encodeURIComponent(q)}`, { skipAuth: true }),
 
   markAsSold: (id: string, status: 'sold' | 'rented') =>
     request<{ message: string; listing: MachineryListing }>(`/machinery/${id}/mark-sold`, {
@@ -524,6 +540,9 @@ export const mlApi = {
 
 // ─── Analytics / Marketing API ─────────────────────────
 export const analyticsApi = {
+  getPublicStats: () =>
+    request<{ totalListings: number; totalUsers: number; totalValue: number; activeStates: number }>('/analytics/public-stats', { skipAuth: true }),
+
   getMarketTrends: (category?: string, months = 6) => {
     const p = new URLSearchParams();
     if (category) p.set('category', category);

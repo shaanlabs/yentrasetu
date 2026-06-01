@@ -6,14 +6,15 @@ interface SEOProps {
   ogImage?: string;
   canonical?: string;
   noIndex?: boolean;
+  schema?: Record<string, any>;
 }
 
 /**
  * Hook: Dynamic SEO Meta Tags.
- * Updates page title, meta description, OG tags, and canonical URL
+ * Updates page title, meta description, OG tags, canonical URL, and JSON-LD schema
  * when the component mounts. Reverts on unmount.
  */
-export function useSEO({ title, description, ogImage, canonical, noIndex }: SEOProps) {
+export function useSEO({ title, description, ogImage, canonical, noIndex, schema }: SEOProps) {
   useEffect(() => {
     const prevTitle = document.title;
 
@@ -66,8 +67,20 @@ export function useSEO({ title, description, ogImage, canonical, noIndex }: SEOP
       setMeta('robots', 'noindex, nofollow');
     }
 
+    // JSON-LD Schema
+    let scriptTag: HTMLScriptElement | null = null;
+    if (schema) {
+      scriptTag = document.createElement('script');
+      scriptTag.type = 'application/ld+json';
+      scriptTag.text = JSON.stringify(schema);
+      document.head.appendChild(scriptTag);
+    }
+
     return () => {
       document.title = prevTitle;
+      if (scriptTag) {
+        document.head.removeChild(scriptTag);
+      }
     };
-  }, [title, description, ogImage, canonical, noIndex]);
+  }, [title, description, ogImage, canonical, noIndex, schema]);
 }

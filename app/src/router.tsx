@@ -10,7 +10,8 @@ const VerifyOtpPage = lazy(() => import('./pages/VerifyOtpPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const ChangePasswordPage = lazy(() => import('./pages/ChangePasswordPage'));
 const BrowsePage = lazy(() => import('./pages/BrowsePage'));
-const ListingDetailPage = lazy(() => import('./pages/ListingDetailPage'));
+const SaleDetailPage = lazy(() => import('./pages/SaleDetailPage'));
+const RentDetailPage = lazy(() => import('./pages/RentDetailPage'));
 const CreateListingPage = lazy(() => import('./pages/CreateListingPage'));
 const MyListingsPage = lazy(() => import('./pages/MyListingsPage'));
 const PartsPage = lazy(() => import('./pages/PartsPage'));
@@ -35,6 +36,7 @@ const WhyYantraSetuPage = lazy(() => import('./pages/WhyYantraSetuPage'));
 const FleetOptimizerPage = lazy(() => import('./pages/FleetOptimizerPage'));
 const ServicesPage = lazy(() => import('./pages/ServicesPage'));
 const JobBoardPage = lazy(() => import('./pages/JobBoardPage'));
+const UpgradeAccountPage = lazy(() => import('./pages/UpgradeAccountPage'));
 
 // ─── Loading fallback ──────────────────────────────────────────
 function PageLoader() {
@@ -80,7 +82,8 @@ export const router = createBrowserRouter([
 
   // Machinery
   { path: '/browse', element: <SL><BrowsePage /></SL> },
-  { path: '/listing/:id', element: <SL><ListingDetailPage /></SL> },
+  { path: '/sale/:id', element: <SL><SaleDetailPage /></SL> },
+  { path: '/rent/:id', element: <SL><RentDetailPage /></SL> },
   { path: '/sell', element: <SL><CreateListingPage /></SL> },
   { path: '/my-listings', element: <SL><MyListingsPage /></SL> },
 
@@ -102,6 +105,7 @@ export const router = createBrowserRouter([
   { path: '/saved', element: <SL><SavedListingsPage /></SL> },
   { path: '/dashboard', element: <SL><DashboardPage /></SL> },
   { path: '/market-insights', element: <SL><MarketInsightsPage /></SL> },
+  { path: '/upgrade-account', element: <SL><UpgradeAccountPage /></SL> },
 
   // Info pages
   { path: '/about', element: <SL><AboutPage /></SL> },

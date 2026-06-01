@@ -239,3 +239,30 @@ exports.getReferralLeaderboard = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// ─── Public Stats ────────────────────────────────────
+exports.getPublicStats = async (req, res) => {
+  try {
+    const totalListings = await MachineryListing.count();
+    const totalUsers = await User.count();
+    
+    // Total value of listings (estimated traded value)
+    const totalValue = await MachineryListing.sum('price') || 0;
+    
+    // Active states (unique states across all listings)
+    const states = await MachineryListing.findAll({
+      attributes: [[fn('DISTINCT', col('state')), 'state']],
+      where: { state: { [Op.not]: null } }
+    });
+    const activeStates = states.length;
+
+    res.json({
+      totalListings,
+      totalUsers,
+      totalValue,
+      activeStates
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

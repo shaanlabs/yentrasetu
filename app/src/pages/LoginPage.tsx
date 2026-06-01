@@ -1,7 +1,16 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
-import { ArrowRight, Phone, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { ArrowRight, Phone, Lock, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
+import Navbar from '../components/Navbar';
+
+// Shadcn UI
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Alert, AlertDescription } from '../components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -21,6 +30,14 @@ export default function LoginPage() {
       setError('Phone and password are required.');
       return;
     }
+    
+    // Phone validation (exactly 10 digits)
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      setError('Please enter a valid 10-digit phone number.');
+      return;
+    }
+
     setLoading(true);
     try {
       await login({ phone, password });
@@ -39,6 +56,13 @@ export default function LoginPage() {
       setError('Phone number is required.');
       return;
     }
+
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      setError('Please enter a valid 10-digit phone number.');
+      return;
+    }
+
     setLoading(true);
     try {
       const result = await sendOtp(phone);
@@ -51,161 +75,183 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#EDE8E0] flex">
-      {/* Left panel — image (desktop only) */}
-      <div className="hidden lg:block lg:w-[50vw] relative">
-        <img
-          src="/images/hero_excavator.jpg"
-          alt="Heavy machinery"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#101214]/60 to-transparent" />
-        <div className="absolute bottom-12 left-12 text-white max-w-md">
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '2rem', lineHeight: 1.1 }}>
-            India's Heavy Equipment Marketplace.
-          </h2>
-          <p className="text-white/70 mt-3 text-sm">
-            Buy, sell, and rent verified machinery — inspected, documented, and ready to work.
-          </p>
-        </div>
-      </div>
-
-      {/* Right panel — form */}
-      <div className="flex-1 flex flex-col justify-center items-center px-5 sm:px-6 py-16 sm:py-12">
-        <div className="w-full max-w-[420px]">
-          {/* Logo */}
-          <Link to="/" className="block mb-8 sm:mb-10">
-            <span style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.5rem', color: '#101214' }}>
-              YantraSetu
-            </span>
-          </Link>
-
-          <h1
-            className="text-2xl sm:text-[1.75rem] mb-2"
-            style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, color: '#101214' }}
-          >
-            Welcome back
-          </h1>
-          <p className="text-[#6F757C] text-sm mb-8">
-            Sign in to your account to continue.
-          </p>
-
-          {/* Mode toggle */}
-          <div className="flex bg-white rounded-lg p-1 mb-8 shadow-sm">
-            <button
-              type="button"
-              onClick={() => { setMode('password'); setError(''); }}
-              className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all ${
-                mode === 'password'
-                  ? 'bg-[#101214] text-white shadow-sm'
-                  : 'text-[#6F757C] hover:text-[#101214]'
-              }`}
-              style={{ fontFamily: 'Sora, sans-serif' }}
-            >
-              Password
-            </button>
-            <button
-              type="button"
-              onClick={() => { setMode('otp'); setError(''); }}
-              className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all ${
-                mode === 'otp'
-                  ? 'bg-[#101214] text-white shadow-sm'
-                  : 'text-[#6F757C] hover:text-[#101214]'
-              }`}
-              style={{ fontFamily: 'Sora, sans-serif' }}
-            >
-              OTP
-            </button>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-[#F5EFEB] flex">
+        {/* Left panel — image (desktop only) */}
+        <div className="hidden lg:block lg:w-[50vw] relative">
+            <img
+              src="/images/hero_excavator.jpg"
+              alt="Heavy machinery"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#101214]/80 to-transparent" />
+            <div className="absolute bottom-16 left-16 text-white max-w-lg">
+              <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '2.5rem', lineHeight: 1.1 }}
+              >
+                India's Heavy Equipment Marketplace.
+              </motion.h2>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+                className="text-white/70 mt-4 text-base"
+                style={{ fontFamily: 'DM Sans, sans-serif' }}
+              >
+                Buy, sell, and rent verified machinery — inspected, documented, and ready to work.
+              </motion.p>
+            </div>
           </div>
 
-          {/* Error */}
-          {error && (
-            <div className="mb-6 p-3.5 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-              {error}
-            </div>
-          )}
+          {/* Right panel — form */}
+          <div className="flex-1 flex flex-col justify-center items-center px-5 sm:px-6 py-16 sm:py-12 bg-white relative">
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-[0.03]"
+            style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }}
+          />
 
-          <form onSubmit={mode === 'password' ? handlePasswordLogin : handleSendOtp}>
-            {/* Phone */}
-            <div className="mb-5">
-              <label
-                className="block text-xs font-medium text-[#6F757C] mb-1.5 uppercase tracking-wider"
-                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-              >
-                Phone Number
-              </label>
-              <div className="relative">
-                <Phone size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F757C]" />
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Enter phone number"
-                  className="w-full pl-11 pr-4 py-3.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm min-h-[48px]"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
-                />
-              </div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="w-full max-w-[420px] relative z-10"
+          >
+            {/* Logo */}
+            <div className="text-center mb-8">
+              <Link to="/" className="inline-block">
+                <span style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.75rem', color: '#FF6A00' }}>
+                  YantraSetu
+                </span>
+              </Link>
             </div>
 
-            {/* Password field */}
-            {mode === 'password' && (
-              <div className="mb-5">
-                <label
-                  className="block text-xs font-medium text-[#6F757C] mb-1.5 uppercase tracking-wider"
-                  style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                >
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F757C]" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter password"
-                    className="w-full pl-11 pr-12 py-3.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm min-h-[48px]"
-                    style={{ fontFamily: 'Inter, sans-serif' }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6F757C] hover:text-[#101214] transition-colors p-1"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
-            )}
+            <Card className="border-none shadow-2xl shadow-black/5 bg-white">
+              <CardHeader className="space-y-3 pb-6">
+                <CardTitle className="text-2xl text-center" style={{ fontFamily: 'Sora, sans-serif' }}>
+                  Welcome back
+                </CardTitle>
+                <CardDescription className="text-center" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                  Sign in to your account to continue.
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent>
+                <Tabs value={mode} onValueChange={(v) => { setMode(v as any); setError(''); }} className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-6">
+                    <TabsTrigger value="password" style={{ fontFamily: 'Sora, sans-serif' }}>Password</TabsTrigger>
+                    <TabsTrigger value="otp" style={{ fontFamily: 'Sora, sans-serif' }}>OTP</TabsTrigger>
+                  </TabsList>
 
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <Loader2 size={18} className="animate-spin" />
-              ) : (
-                <>
-                  {mode === 'password' ? 'Sign In' : 'Send OTP'}
-                  <ArrowRight size={16} />
-                </>
-              )}
-            </button>
-          </form>
+                  {error && (
+                    <Alert variant="destructive" className="mb-6">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription style={{ fontFamily: 'DM Sans, sans-serif' }}>{error}</AlertDescription>
+                    </Alert>
+                  )}
 
-          <p className="text-center text-sm text-[#6F757C] mt-8">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-[#FF6A00] font-medium hover:underline">
-              Create account
-            </Link>
-          </p>
+                  <TabsContent value="password">
+                    <form onSubmit={handlePasswordLogin} className="space-y-5">
+                      <div className="space-y-2">
+                        <label className="text-xs font-semibold text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                          Phone Number
+                        </label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-3 h-4 w-4 text-[#6F757C]" />
+                          <Input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            placeholder="Enter phone number"
+                            className="pl-9 h-11 focus-visible:ring-[#FF6A00]"
+                          />
+                        </div>
+                      </div>
 
-          <Link to="/" className="block text-center text-sm text-[#6F757C] mt-4 hover:text-[#101214] transition-colors">
-            ← Back to home
-          </Link>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-semibold text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                            Password
+                          </label>
+                          <Link to="/forgot-password" className="text-xs text-[#FF6A00] hover:underline" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                            Forgot password?
+                          </Link>
+                        </div>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-[#6F757C]" />
+                          <Input
+                            type={showPassword ? 'text' : 'password'}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter password"
+                            className="pl-9 pr-9 h-11 focus-visible:ring-[#FF6A00]"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-3 text-[#6F757C] hover:text-[#101214]"
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
+                      </div>
+
+                      <Button type="submit" disabled={loading} className="w-full h-11 bg-[#101214] hover:bg-[#202428] text-white">
+                        {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : (
+                          <>
+                            Sign In <ArrowRight className="ml-2 h-4 w-4" />
+                          </>
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+
+                  <TabsContent value="otp">
+                    <form onSubmit={handleSendOtp} className="space-y-5">
+                      <div className="space-y-2">
+                        <label className="text-xs font-semibold text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                          Phone Number
+                        </label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-3 h-4 w-4 text-[#6F757C]" />
+                          <Input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            placeholder="Enter phone number"
+                            className="pl-9 h-11 focus-visible:ring-[#FF6A00]"
+                          />
+                        </div>
+                      </div>
+
+                      <Button type="submit" disabled={loading} className="w-full h-11 bg-[#FF6A00] hover:bg-[#e55f00] text-white">
+                        {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : (
+                          <>
+                            Send OTP <ArrowRight className="ml-2 h-4 w-4" />
+                          </>
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+              <CardFooter className="flex flex-col gap-4 border-t border-[#EDE8E0] pt-6 mt-2">
+                <p className="text-center text-sm text-[#6F757C]" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                  Don't have an account?{' '}
+                  <Link to="/register" className="text-[#FF6A00] font-semibold hover:underline">
+                    Create account
+                  </Link>
+                </p>
+                <Link to="/" className="text-center text-xs text-[#6F757C] hover:text-[#101214] transition-colors" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                  ← Back to home
+                </Link>
+              </CardFooter>
+            </Card>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

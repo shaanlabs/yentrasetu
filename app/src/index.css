@@ -1,23 +1,40 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg-primary: #EDE8E0;
-  --bg-secondary: #101214;
-  --accent: #FF6A00;
-  --accent-hover: #E85D00;
-  --accent-glow: rgba(255, 106, 0, 0.15);
-  --text-primary: #101214;
-  --text-secondary: #6F757C;
+  /* ── Competition Prompt Tokens ──────────────────────── */
+  --color-stone: #E9E3DA;
+  --color-ink: #101214;
+  --color-orange: #FF6A00;
+  --color-orange-dim: #CC5500;
+  --color-orange-glow: rgba(255, 106, 0, 0.15);
+  --color-surface: #F5F0EB;
+  --color-border: #D4CCC3;
+  --color-muted: #6B6560;
+  --color-success: #1A7F4B;
+  --color-warning: #D97706;
+  --color-error: #DC2626;
+  --color-info: #2563EB;
+
+  /* ── Legacy aliases (keeps existing pages working) ─── */
+  --bg-primary: var(--color-stone);
+  --bg-secondary: var(--color-ink);
+  --accent: var(--color-orange);
+  --accent-hover: var(--color-orange-dim);
+  --accent-glow: var(--color-orange-glow);
+  --text-primary: var(--color-ink);
+  --text-secondary: var(--color-muted);
   --border-light: rgba(16, 18, 20, 0.08);
   --border-subtle: rgba(16, 18, 20, 0.04);
   --card-bg: #FFFFFF;
   --card-bg-elevated: rgba(255, 255, 255, 0.85);
   --surface-warm: #F7F4F0;
   --surface-cool: #F2F0EE;
+
+  /* ── Layout tokens ────────────────────────────────── */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
@@ -30,6 +47,31 @@
   --shadow-xl: 0 20px 60px rgba(16, 18, 20, 0.16);
   --mobile-bottom-nav-h: 64px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* ── Shadcn variable bridge ────────────────────────────
+     Maps brand tokens → shadcn HSL vars so every shadcn component
+     (Button, Card, Input, Badge, etc.) renders in our brand palette.
+  */
+  --background: 38 21% 87%;      /* #E9E3DA — warm stone */
+  --foreground: 220 11% 8%;      /* #101214 — ink */
+  --card: 0 0% 100%;             /* white cards */
+  --card-foreground: 220 11% 8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 11% 8%;
+  --primary: 24 100% 50%;        /* #FF6A00 — orange */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 35 18% 90%;       /* warm stone lighter */
+  --secondary-foreground: 220 11% 8%;
+  --muted: 35 14% 92%;
+  --muted-foreground: 220 5% 42%;
+  --accent: 24 100% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 35 18% 83%;          /* #D4CCC3 — warm border */
+  --input: 35 18% 83%;
+  --ring: 24 100% 50%;           /* orange focus ring */
+  --radius: 0.5rem;
 }
 
 * {
@@ -45,13 +87,14 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   background: linear-gradient(180deg, #EDE8E0 0%, #E7E2D9 40%, #E4DFD6 100%);
   background-attachment: fixed;
   color: var(--text-primary);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1, 'liga' 1;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -60,9 +103,13 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.1;
 }
 
-/* ─── Font utility classes (use these instead of inline styles) ── */
+/* ─── Font utility classes ─────────────────────────────────── */
 .font-heading {
   font-family: 'Sora', sans-serif;
+}
+
+.font-body {
+  font-family: 'DM Sans', sans-serif;
 }
 
 .font-mono {
@@ -80,6 +127,11 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
   font-size: 11px;
   font-weight: 500;
+}
+
+/* ─── Page transition (used by Framer Motion in PageShell) ──── */
+.page-transition {
+  will-change: opacity, transform;
 }
 
 /* ─── Loading skeleton ──────────────────────────────────────── */
@@ -109,13 +161,6 @@ h1, h2, h3, h4, h5, h6 {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
-/* ─── Pinned section base ───────────────────────────────────── */
-.pinned-section {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
 
 /* ─── Button system ─────────────────────────────────────────── */
 .btn-primary {
@@ -226,7 +271,7 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
 }
 
-/* ─── Navigation ────────────────────────────────────────────── */
+/* ─── Navigation — Mistral-inspired ────────────────────────── */
 .nav-fixed {
   position: fixed;
   top: 0;
@@ -237,13 +282,46 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* On hero: transparent, light text */
+.nav-fixed.on-dark {
+  color: white;
+}
+.nav-fixed.on-dark .nav-logo,
+.nav-fixed.on-dark .nav-links a,
+.nav-fixed.on-dark .nav-actions button {
+  color: rgba(255,255,255,0.9);
+}
+.nav-fixed.on-dark .nav-links a:hover,
+.nav-fixed.on-dark .nav-actions button:hover {
+  color: var(--color-orange);
+}
+
+/* Scrolled: solid dark like Mistral */
 .nav-fixed.scrolled {
-  background-color: rgba(237, 232, 224, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 20px rgba(16, 18, 20, 0.08);
+  background-color: rgba(16, 18, 20, 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.nav-fixed.scrolled .nav-logo {
+  color: white;
+}
+.nav-fixed.scrolled .nav-links a {
+  color: rgba(255,255,255,0.7);
+}
+.nav-fixed.scrolled .nav-links a:hover {
+  color: var(--color-orange);
+}
+.nav-fixed.scrolled .nav-actions button {
+  color: rgba(255,255,255,0.7);
+}
+.nav-fixed.scrolled .nav-actions button:hover {
+  color: var(--color-orange);
 }
 
 .nav-logo {
@@ -251,6 +329,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
   font-size: 22px;
   color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
 .nav-links {
@@ -309,17 +388,76 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
 }
 
-/* ─── Price badge ───────────────────────────────────────────── */
+/* ─── Price badge — IBM Plex Mono per prompt ───────────────── */
 .price-badge {
   background-color: var(--accent);
   color: white;
   padding: 10px 18px;
-  font-family: 'Sora', sans-serif;
-  font-weight: 700;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
   font-size: 15px;
   border-radius: var(--radius-sm);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  letter-spacing: -0.02em;
 }
+
+/* ─── Market Pulse Ticker ──────────────────────────────────── */
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.market-ticker {
+  overflow: hidden;
+  white-space: nowrap;
+  background: var(--color-ink);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.market-ticker-inner {
+  display: inline-flex;
+  animation: ticker-scroll 30s linear infinite;
+}
+
+.market-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 24px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.05em;
+}
+
+.market-ticker-item .value {
+  color: var(--color-orange);
+  font-weight: 600;
+}
+
+.market-ticker-item .sep {
+  color: rgba(255,255,255,0.15);
+  margin: 0 8px;
+}
+
+/* ─── Trust badge tiers ────────────────────────────────────── */
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.trust-badge.verified { background: rgba(26,127,75,0.1); color: var(--color-success); }
+.trust-badge.gst { background: rgba(37,99,235,0.1); color: var(--color-info); }
+.trust-badge.admin { background: rgba(139,92,246,0.1); color: #8b5cf6; }
+.trust-badge.premium { background: rgba(255,106,0,0.1); color: var(--color-orange); }
 
 /* ─── Grid lines ────────────────────────────────────────────── */
 .grid-lines {

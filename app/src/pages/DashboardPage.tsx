@@ -1,12 +1,27 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { machineryApi, bookingsApi, chatsApi, analyticsApi, type MachineryListing } from '../services/api';
 import {
   Loader2, Package, Eye, MessageCircle, Calendar, Plus, ArrowRight,
-  TrendingUp, BarChart3, AlertCircle, HardHat, Wrench, Cog, Truck, ShoppingBag
+  TrendingUp, BarChart3, AlertCircle, Wrench, ShoppingBag
 } from 'lucide-react';
 import PageShell from '../components/PageShell';
+
+// Shadcn UI
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../components/ui/table";
 
 interface DashboardStats {
   totalListings: number;
@@ -20,10 +35,26 @@ interface DashboardStats {
   totalChats: number;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } }
+};
+
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();
-  useEffect(() => { if (!authLoading && !isAuthenticated) navigate('/login'); }, [authLoading, isAuthenticated, navigate]);
+  
+  useEffect(() => { 
+    if (!authLoading && !isAuthenticated) navigate('/login'); 
+  }, [authLoading, isAuthenticated, navigate]);
 
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [listings, setListings] = useState<MachineryListing[]>([]);
@@ -87,7 +118,7 @@ export default function DashboardPage() {
       <PageShell breadcrumb="Dashboard">
         <div className="flex flex-col items-center justify-center py-32 gap-3">
           <Loader2 size={28} className="animate-spin text-[#FF6A00]" />
-          <p className="text-sm text-[#6F757C]">Loading dashboard...</p>
+          <p className="text-sm text-[#6F757C]" style={{ fontFamily: 'DM Sans, sans-serif' }}>Loading dashboard...</p>
         </div>
       </PageShell>
     );
@@ -95,231 +126,266 @@ export default function DashboardPage() {
 
   return (
     <PageShell breadcrumb="Dashboard" backTo="/" backLabel="Home" title={`Welcome, ${user?.firstName || 'Seller'}`}>
+      
       {/* Quick Actions */}
       <div className="flex flex-wrap gap-3 mb-10">
-        <button onClick={() => navigate('/sell')} className="btn-primary text-sm py-2.5 px-4 flex items-center gap-2">
-          <Plus size={16} /> New Listing
-        </button>
-        <button onClick={() => navigate('/bookings')} className="btn-secondary text-sm py-2.5 px-4 flex items-center gap-2">
-          <Calendar size={16} /> Bookings {stats?.pendingBookings ? `(${stats.pendingBookings})` : ''}
-        </button>
-        <button onClick={() => navigate('/chats')} className="btn-secondary text-sm py-2.5 px-4 flex items-center gap-2">
-          <MessageCircle size={16} /> Messages
-        </button>
-        <button onClick={() => navigate('/market-insights')} className="btn-secondary text-sm py-2.5 px-4 flex items-center gap-2">
-          <TrendingUp size={16} /> Market Insights
-        </button>
-        <button onClick={() => navigate('/services')} className="btn-secondary text-sm py-2.5 px-4 flex items-center gap-2">
-          <Wrench size={16} /> All Services
-        </button>
+        <Button onClick={() => navigate('/sell')} className="bg-[#FF6A00] hover:bg-[#e55f00] text-white">
+          <Plus className="mr-2 h-4 w-4" /> New Listing
+        </Button>
+        <Button onClick={() => navigate('/bookings')} variant="outline" className="border-[#EDE8E0] bg-white">
+          <Calendar className="mr-2 h-4 w-4" /> Bookings {stats?.pendingBookings ? `(${stats.pendingBookings})` : ''}
+        </Button>
+        <Button onClick={() => navigate('/chats')} variant="outline" className="border-[#EDE8E0] bg-white">
+          <MessageCircle className="mr-2 h-4 w-4" /> Messages
+        </Button>
+        <Button onClick={() => navigate('/market-insights')} variant="outline" className="border-[#EDE8E0] bg-white">
+          <TrendingUp className="mr-2 h-4 w-4" /> Market Insights
+        </Button>
+        <Button onClick={() => navigate('/services')} variant="outline" className="border-[#EDE8E0] bg-white">
+          <Wrench className="mr-2 h-4 w-4" /> All Services
+        </Button>
       </div>
+
+      {/* Pending Actions Alert */}
+      {(stats?.pendingBookings || 0) > 0 && (
+        <Alert className="mb-8 border-amber-200 bg-amber-50">
+          <AlertCircle className="h-4 w-4 text-amber-600" />
+          <AlertTitle className="text-amber-800" style={{ fontFamily: 'Sora, sans-serif' }}>Action Required</AlertTitle>
+          <AlertDescription className="text-amber-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+            <span>
+              You have {stats?.pendingBookings} booking{(stats?.pendingBookings || 0) > 1 ? 's' : ''} awaiting your response. 
+              Quick responses improve your booking conversion rate.
+            </span>
+            <Button size="sm" variant="outline" onClick={() => navigate('/bookings')} className="border-amber-300 bg-white text-amber-700 hover:bg-amber-100 shrink-0">
+              Review now
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Getting Started — shown when user has no listings */}
       {stats && stats.totalListings === 0 && stats.totalBookings === 0 && (
-        <div className="bg-white rounded-xl border border-[#EDE8E0] p-6 mb-10">
-          <h2 className="font-bold text-base mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>Welcome to YantraSetu!</h2>
-          <p className="text-sm text-[#6F757C] mb-5">Here's how to get started on the platform:</p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <button onClick={() => navigate('/browse')} className="flex items-start gap-3 p-4 bg-[#F9F7F4] rounded-xl border border-[#EDE8E0] hover:border-[#FF6A00] transition-all text-left group">
-              <div className="w-10 h-10 bg-[#FF6A00] rounded-lg flex items-center justify-center flex-shrink-0">
-                <ShoppingBag size={18} className="text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-[#101214] group-hover:text-[#FF6A00]">Browse Equipment</p>
-                <p className="text-xs text-[#6F757C] mt-0.5">Buy or rent verified machinery from our marketplace</p>
-              </div>
-            </button>
-            <button onClick={() => navigate('/sell')} className="flex items-start gap-3 p-4 bg-[#F9F7F4] rounded-xl border border-[#EDE8E0] hover:border-[#FF6A00] transition-all text-left group">
-              <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Plus size={18} className="text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-[#101214] group-hover:text-blue-600">List Your Machine</p>
-                <p className="text-xs text-[#6F757C] mt-0.5">Sell or rent out your idle equipment</p>
-              </div>
-            </button>
-            <button onClick={() => navigate('/services')} className="flex items-start gap-3 p-4 bg-[#F9F7F4] rounded-xl border border-[#EDE8E0] hover:border-[#FF6A00] transition-all text-left group">
-              <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Wrench size={18} className="text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-[#101214] group-hover:text-green-600">Explore Services</p>
-                <p className="text-xs text-[#6F757C] mt-0.5">Hire operators, find mechanics, get financing</p>
-              </div>
-            </button>
-          </div>
-        </div>
+        <Card className="mb-10 border-[#EDE8E0] shadow-sm">
+          <CardHeader>
+            <CardTitle style={{ fontFamily: 'Sora, sans-serif' }}>Welcome to YantraSetu!</CardTitle>
+            <CardDescription style={{ fontFamily: 'DM Sans, sans-serif' }}>Here's how to get started on the platform:</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <motion.button whileHover={{ y: -4 }} onClick={() => navigate('/browse')} className="flex items-start gap-3 p-4 bg-[#F5EFEB] rounded-xl border border-[#EDE8E0] hover:border-[#FF6A00] transition-colors text-left group">
+                <div className="w-10 h-10 bg-[#FF6A00] rounded-lg flex items-center justify-center flex-shrink-0">
+                  <ShoppingBag size={18} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-[#101214] group-hover:text-[#FF6A00]" style={{ fontFamily: 'Sora, sans-serif' }}>Browse Equipment</p>
+                  <p className="text-xs text-[#6F757C] mt-1" style={{ fontFamily: 'DM Sans, sans-serif' }}>Buy or rent verified machinery from our marketplace</p>
+                </div>
+              </motion.button>
+              
+              <motion.button whileHover={{ y: -4 }} onClick={() => navigate('/sell')} className="flex items-start gap-3 p-4 bg-[#F5EFEB] rounded-xl border border-[#EDE8E0] hover:border-blue-500 transition-colors text-left group">
+                <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Plus size={18} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-[#101214] group-hover:text-blue-600" style={{ fontFamily: 'Sora, sans-serif' }}>List Your Machine</p>
+                  <p className="text-xs text-[#6F757C] mt-1" style={{ fontFamily: 'DM Sans, sans-serif' }}>Sell or rent out your idle equipment</p>
+                </div>
+              </motion.button>
+              
+              <motion.button whileHover={{ y: -4 }} onClick={() => navigate('/services')} className="flex items-start gap-3 p-4 bg-[#F5EFEB] rounded-xl border border-[#EDE8E0] hover:border-green-500 transition-colors text-left group">
+                <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Wrench size={18} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-[#101214] group-hover:text-green-600" style={{ fontFamily: 'Sora, sans-serif' }}>Explore Services</p>
+                  <p className="text-xs text-[#6F757C] mt-1" style={{ fontFamily: 'DM Sans, sans-serif' }}>Hire operators, find mechanics, get financing</p>
+                </div>
+              </motion.button>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Stats Grid — clean, no gradients, data-first */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-10"
+      >
         {[
           { label: 'Active Listings', value: stats?.activeListings || 0, sub: `${stats?.pendingListings || 0} pending`, icon: Package, accent: false },
           { label: 'Total Views', value: stats?.totalViews || 0, sub: `across ${stats?.totalListings || 0} listings`, icon: Eye, accent: false },
           { label: 'Bookings', value: stats?.totalBookings || 0, sub: `${stats?.confirmedBookings || 0} confirmed`, icon: Calendar, accent: false },
           { label: 'Revenue Earned', value: formatPrice(stats?.totalRevenue || 0), sub: `${stats?.confirmedBookings || 0} completed`, icon: TrendingUp, accent: true },
-        ].map(s => (
-          <div key={s.label} className={`rounded-xl p-5 border ${s.accent ? 'bg-[#101214] text-white border-[#101214]' : 'bg-white border-[#EDE8E0]'}`}>
-            <div className="flex items-center justify-between mb-3">
-              <s.icon size={18} className={s.accent ? 'text-[#FF6A00]' : 'text-[#6F757C]'} />
-            </div>
-            <p className={`text-2xl font-bold font-heading ${s.accent ? 'text-white' : 'text-[#101214]'}`}>
-              {typeof s.value === 'number' ? s.value.toLocaleString() : s.value}
-            </p>
-            <p className={`text-xs mt-1 ${s.accent ? 'text-white/60' : 'text-[#6F757C]'}`}>{s.label}</p>
-            <p className={`text-[11px] mt-0.5 ${s.accent ? 'text-white/40' : 'text-[#6F757C]/60'}`}>{s.sub}</p>
-          </div>
+        ].map((s) => (
+          <motion.div key={s.label} variants={itemVariants}>
+            <Card className={`h-full border-none shadow-sm ${s.accent ? 'bg-[#101214] text-white' : 'bg-white border-[#EDE8E0] border'}`}>
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <s.icon size={18} className={s.accent ? 'text-[#FF6A00]' : 'text-[#6F757C]'} />
+                </div>
+                <p className={`text-2xl font-bold ${s.accent ? 'text-white' : 'text-[#101214]'}`} style={{ fontFamily: 'Sora, sans-serif' }}>
+                  {typeof s.value === 'number' ? s.value.toLocaleString() : s.value}
+                </p>
+                <p className={`text-xs mt-1 font-semibold tracking-wide uppercase ${s.accent ? 'text-white/60' : 'text-[#6F757C]'}`} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                  {s.label}
+                </p>
+                <p className={`text-[11px] mt-1 ${s.accent ? 'text-white/40' : 'text-[#6F757C]/70'}`} style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                  {s.sub}
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
-      </div>
-
-      {/* Pending Actions Alert */}
-      {(stats?.pendingBookings || 0) > 0 && (
-        <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl mb-8">
-          <AlertCircle size={18} className="text-amber-600 shrink-0" />
-          <div className="flex-1">
-            <p className="text-sm font-medium text-[#101214]">
-              {stats?.pendingBookings} booking{(stats?.pendingBookings || 0) > 1 ? 's' : ''} awaiting your response
-            </p>
-            <p className="text-xs text-[#6F757C]">Quick responses improve your booking conversion rate.</p>
-          </div>
-          <button onClick={() => navigate('/bookings')} className="text-xs font-semibold text-amber-700 hover:underline shrink-0">
-            Review now
-          </button>
-        </div>
-      )}
+      </motion.div>
 
       {/* Supply-Demand Intelligence — REAL data from API */}
       {demandGaps.length > 0 && (
-        <div className="bg-white rounded-xl border border-[#EDE8E0] mb-8">
-          <div className="flex items-center justify-between p-5 border-b border-[#EDE8E0]">
-            <h2 className="font-bold text-sm font-heading flex items-center gap-2">
+        <Card className="mb-10 border-[#EDE8E0] shadow-sm overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between border-b border-[#EDE8E0] bg-white py-4 px-5">
+            <CardTitle className="text-sm font-bold flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
               <BarChart3 size={16} className="text-[#6F757C]" /> Supply & Demand
-            </h2>
-            <span className="text-[10px] text-[#6F757C] font-mono uppercase">Live market data</span>
-          </div>
+            </CardTitle>
+            <Badge variant="outline" className="font-mono text-[10px] uppercase text-[#6F757C] border-[#EDE8E0]">
+              Live market data
+            </Badge>
+          </CardHeader>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#EDE8E0]">
             {demandGaps.map((gap: any, i: number) => (
-              <div key={i} className="bg-white p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold capitalize">{gap.category}</span>
+              <div key={i} className="bg-white p-5 hover:bg-[#F9F7F4] transition-colors">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-semibold capitalize" style={{ fontFamily: 'Sora, sans-serif' }}>{gap.category}</span>
                   {gap.status === 'high_demand' && (
-                    <span className="text-[10px] font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded font-mono">HIGH</span>
+                    <Badge variant="default" className="bg-green-100 text-green-700 hover:bg-green-100 text-[10px] uppercase font-mono px-1.5 py-0">HIGH</Badge>
                   )}
                   {gap.status === 'oversupply' && (
-                    <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded font-mono">EXCESS</span>
+                    <Badge variant="default" className="bg-amber-100 text-amber-700 hover:bg-amber-100 text-[10px] uppercase font-mono px-1.5 py-0">EXCESS</Badge>
                   )}
                 </div>
-                <div className="flex items-center gap-3 text-xs text-[#6F757C]">
+                <div className="flex items-center gap-3 text-xs text-[#6F757C] font-medium" style={{ fontFamily: 'DM Sans, sans-serif' }}>
                   <span>{gap.activeListings} listed</span>
                   <span className="w-px h-3 bg-[#EDE8E0]" />
                   <span>{gap.recentBookings} booked</span>
                 </div>
                 {gap.recommendation && (
-                  <p className="text-[10px] text-[#6F757C] mt-2 leading-relaxed">{gap.recommendation}</p>
+                  <p className="text-[11px] text-[#6F757C] mt-3 leading-relaxed" style={{ fontFamily: 'DM Sans, sans-serif' }}>{gap.recommendation}</p>
                 )}
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       )}
 
       {/* Listing Performance Table */}
-      <div className="bg-white rounded-xl border border-[#EDE8E0] mb-8">
-        <div className="flex items-center justify-between p-5 border-b border-[#EDE8E0]">
-          <h2 className="font-bold text-sm font-heading flex items-center gap-2">
+      <Card className="mb-10 border-[#EDE8E0] shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between border-b border-[#EDE8E0] py-4 px-5">
+          <CardTitle className="text-sm font-bold flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
             <Package size={16} className="text-[#6F757C]" /> Your Listings
-          </h2>
-          <Link to="/my-listings" className="text-xs text-[#FF6A00] hover:underline flex items-center gap-1">
+          </CardTitle>
+          <Link to="/my-listings" className="text-xs font-semibold text-[#FF6A00] hover:underline flex items-center gap-1" style={{ fontFamily: 'DM Sans, sans-serif' }}>
             View all <ArrowRight size={12} />
           </Link>
-        </div>
-        {listings.length === 0 ? (
-          <div className="p-10 text-center">
-            <Package size={32} className="mx-auto text-[#6F757C] opacity-30 mb-3" />
-            <p className="text-sm text-[#6F757C] mb-4">You haven't listed any equipment yet.</p>
-            <Link to="/sell" className="text-sm text-[#FF6A00] font-semibold hover:underline">
-              Create your first listing →
-            </Link>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[#EDE8E0]">
-                  <th className="text-left px-5 py-3 text-[11px] text-[#6F757C] font-medium uppercase tracking-wider font-mono">Listing</th>
-                  <th className="text-center px-3 py-3 text-[11px] text-[#6F757C] font-medium uppercase tracking-wider font-mono hidden sm:table-cell">Status</th>
-                  <th className="text-right px-3 py-3 text-[11px] text-[#6F757C] font-medium uppercase tracking-wider font-mono">Views</th>
-                  <th className="text-right px-5 py-3 text-[11px] text-[#6F757C] font-medium uppercase tracking-wider font-mono hidden sm:table-cell">Price</th>
-                </tr>
-              </thead>
-              <tbody>
+        </CardHeader>
+        <CardContent className="p-0">
+          {listings.length === 0 ? (
+            <div className="p-10 text-center">
+              <Package size={32} className="mx-auto text-[#6F757C] opacity-30 mb-3" />
+              <p className="text-sm text-[#6F757C] mb-4" style={{ fontFamily: 'DM Sans, sans-serif' }}>You haven't listed any equipment yet.</p>
+              <Button onClick={() => navigate('/sell')} variant="link" className="text-[#FF6A00]">
+                Create your first listing <ArrowRight className="ml-1 h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow className="border-[#EDE8E0] hover:bg-transparent">
+                  <TableHead className="font-mono text-[10px] uppercase tracking-wider text-[#6F757C]">Listing</TableHead>
+                  <TableHead className="font-mono text-[10px] uppercase tracking-wider text-[#6F757C] text-center hidden sm:table-cell">Status</TableHead>
+                  <TableHead className="font-mono text-[10px] uppercase tracking-wider text-[#6F757C] text-right">Views</TableHead>
+                  <TableHead className="font-mono text-[10px] uppercase tracking-wider text-[#6F757C] text-right hidden sm:table-cell">Price</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {listings.map(l => (
-                  <tr key={l.id} className="border-b border-[#EDE8E0]/50 hover:bg-[#F9F7F4] transition-colors">
-                    <td className="px-5 py-3">
-                      <Link to={`/listing/${l.id}`} className="flex items-center gap-3 hover:text-[#FF6A00]">
+                  <TableRow key={l.id} className="border-[#EDE8E0]/50 hover:bg-[#F9F7F4]">
+                    <TableCell>
+                      <Link to={`/listing/${l.id}`} className="flex items-center gap-3 hover:text-[#FF6A00] transition-colors">
                         <div className="w-10 h-10 rounded-lg bg-[#EDE8E0] overflow-hidden flex-shrink-0">
                           {l.images?.[0] ? <img src={l.images[0]} className="w-full h-full object-cover" alt="" /> : null}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium text-sm truncate">{l.make} {l.model}</p>
-                          <p className="text-[11px] text-[#6F757C]">{l.listingType === 'rent' ? 'Rental' : 'Sale'}</p>
+                          <p className="font-semibold text-sm truncate" style={{ fontFamily: 'Sora, sans-serif' }}>{l.make} {l.model}</p>
+                          <p className="text-xs text-[#6F757C]" style={{ fontFamily: 'DM Sans, sans-serif' }}>{l.listingType === 'rent' ? 'Rental' : 'Sale'}</p>
                         </div>
                       </Link>
-                    </td>
-                    <td className="text-center px-3 py-3 hidden sm:table-cell">
-                      <span className={`px-2 py-0.5 text-[10px] font-semibold rounded font-mono ${
+                    </TableCell>
+                    <TableCell className="text-center hidden sm:table-cell">
+                      <Badge variant="outline" className={`font-mono text-[10px] uppercase border-transparent ${
                         l.status === 'approved' ? 'bg-green-50 text-green-700'
                         : l.status === 'pending' ? 'bg-amber-50 text-amber-700'
                         : 'bg-red-50 text-red-700'
                       }`}>
-                        {l.status?.toUpperCase()}
+                        {l.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right text-[#6F757C]">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                        {l.viewCount} <Eye size={12} /> 
                       </span>
-                    </td>
-                    <td className="text-right px-3 py-3">
-                      <span className="flex items-center justify-end gap-1 text-[#6F757C]"><Eye size={12} /> {l.viewCount}</span>
-                    </td>
-                    <td className="text-right px-5 py-3 font-bold text-[#101214] hidden sm:table-cell">{formatPrice(l.price)}</td>
-                  </tr>
+                    </TableCell>
+                    <TableCell className="text-right font-bold text-[#101214] hidden sm:table-cell" style={{ fontFamily: 'Sora, sans-serif' }}>
+                      {formatPrice(l.price)}
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Recent Bookings */}
       {recentBookings.length > 0 && (
-        <div className="bg-white rounded-xl border border-[#EDE8E0]">
-          <div className="flex items-center justify-between p-5 border-b border-[#EDE8E0]">
-            <h2 className="font-bold text-sm font-heading flex items-center gap-2">
+        <Card className="mb-10 border-[#EDE8E0] shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between border-b border-[#EDE8E0] py-4 px-5">
+            <CardTitle className="text-sm font-bold flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif' }}>
               <Calendar size={16} className="text-[#6F757C]" /> Recent Bookings
-            </h2>
-            <Link to="/bookings" className="text-xs text-[#FF6A00] hover:underline flex items-center gap-1">
+            </CardTitle>
+            <Link to="/bookings" className="text-xs font-semibold text-[#FF6A00] hover:underline flex items-center gap-1" style={{ fontFamily: 'DM Sans, sans-serif' }}>
               View all <ArrowRight size={12} />
             </Link>
-          </div>
-          <div className="divide-y divide-[#EDE8E0]/50">
-            {recentBookings.map((b: any) => (
-              <div key={b.id} className="flex items-center justify-between px-5 py-3.5">
-                <div>
-                  <p className="text-sm font-medium">{b.listing?.make} {b.listing?.model}</p>
-                  <p className="text-xs text-[#6F757C]">{b.renter?.firstName} {b.renter?.lastName} · {b.duration} days</p>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y divide-[#EDE8E0]/50">
+              {recentBookings.map((b: any) => (
+                <div key={b.id} className="flex items-center justify-between px-5 py-4 hover:bg-[#F9F7F4] transition-colors">
+                  <div>
+                    <p className="text-sm font-semibold text-[#101214]" style={{ fontFamily: 'Sora, sans-serif' }}>
+                      {b.listing?.make} {b.listing?.model}
+                    </p>
+                    <p className="text-xs text-[#6F757C] mt-1" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                      {b.renter?.firstName} {b.renter?.lastName} · {b.duration} days
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-[#101214] mb-1" style={{ fontFamily: 'Sora, sans-serif' }}>
+                      {formatPrice(b.totalAmount)}
+                    </p>
+                    <Badge variant="outline" className={`font-mono text-[9px] uppercase border-transparent ${
+                      b.status === 'confirmed' ? 'bg-green-50 text-green-700'
+                      : b.status === 'pending' ? 'bg-amber-50 text-amber-700'
+                      : b.status === 'completed' ? 'bg-blue-50 text-blue-700'
+                      : 'bg-gray-50 text-gray-600'
+                    }`}>
+                      {b.status}
+                    </Badge>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-[#101214]">{formatPrice(b.totalAmount)}</p>
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded font-mono ${
-                    b.status === 'confirmed' ? 'bg-green-50 text-green-700'
-                    : b.status === 'pending' ? 'bg-amber-50 text-amber-700'
-                    : b.status === 'completed' ? 'bg-blue-50 text-blue-700'
-                    : 'bg-gray-50 text-gray-600'
-                  }`}>
-                    {b.status.toUpperCase()}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
     </PageShell>
   );

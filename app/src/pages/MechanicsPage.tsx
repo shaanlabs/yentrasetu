@@ -128,7 +128,13 @@ export default function MechanicsPage() {
   };
 
   return (
-    <PageShell breadcrumb="Mechanics" backTo="/services" backLabel="Services">
+    <PageShell 
+      breadcrumb="Mechanics" 
+      backTo="/services" 
+      backLabel="Services"
+      seoTitle="Find Heavy Equipment Mechanics & Repair Services | YantraSetu"
+      seoDescription="Connect with expert mechanics for heavy equipment repair and maintenance. Filter by location and specialization on YantraSetu."
+    >
       {/* Title + button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
         <div>

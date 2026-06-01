@@ -1,160 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════
-   App.css — Homepage-specific styles + animations
+   App.css — Homepage + shared utilities
    ═══════════════════════════════════════════════════════════════ */
 
 /* Smooth scroll */
 html {
   scroll-behavior: smooth;
-}
-
-/* Pinned sections GPU compositing */
-.pinned-section {
-  will-change: transform;
-}
-
-/* ─── Animation performance ─────────────────────────────────── */
-.hero-image,
-.hero-content,
-.cat-tile-top-left,
-.cat-tile-top-right,
-.cat-tile-bottom-center,
-.cat-text-tile,
-.hiw-image,
-.hiw-card,
-.featured-panel,
-.vp-image,
-.vp-card,
-.safety-image,
-.safety-item,
-.fin-image,
-.fin-panel,
-.fin-content {
-  will-change: transform, opacity;
-}
-
-/* ─── Card hover ────────────────────────────────────────────── */
-.value-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.value-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 40px rgba(16, 18, 20, 0.12);
-}
-
-/* ─── Financing CTA pulse ───────────────────────────────────── */
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
-
-.fin-cta {
-  animation: pulse 3s ease-in-out infinite;
-}
-
-/* ─── Step card border pulse ────────────────────────────────── */
-@keyframes borderPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
-.hiw-card {
-  position: relative;
-}
-
-.hiw-card::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background-color: #FF6A00;
-  animation: borderPulse 3s ease-in-out infinite;
-}
-
-/* ─── Image parallax ────────────────────────────────────────── */
-.image-parallax {
-  overflow: hidden;
-}
-
-.image-parallax img {
-  will-change: transform;
-}
-
-/* ─── Nav transitions ───────────────────────────────────────── */
-.nav-fixed {
-  transition: background-color 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* ─── Link hover underline ──────────────────────────────────── */
-.link-arrow {
-  position: relative;
-}
-
-.link-arrow::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 1.5px;
-  background-color: currentColor;
-  transition: width 0.3s ease;
-}
-
-.link-arrow:hover::after {
-  width: 100%;
-}
-
-.dark-section .link-arrow::after {
-  background-color: white;
-}
-
-/* ─── Testimonial quote ─────────────────────────────────────── */
-.quote-mark {
-  line-height: 0.8;
-}
-
-/* ─── Grid lines ────────────────────────────────────────────── */
-.grid-lines {
-  position: relative;
-}
-
-.grid-lines::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 2px solid rgba(16, 18, 20, 0.08);
-  pointer-events: none;
-}
-
-/* ─── Desktop pinned section z-stacking ─────────────────────── */
-@media (min-width: 769px) {
-  .pinned-section:nth-child(1) { z-index: 10; }
-  .pinned-section:nth-child(2) { z-index: 20; }
-  .pinned-section:nth-child(3) { z-index: 30; }
-  .pinned-section:nth-child(4) { z-index: 40; }
-  .pinned-section:nth-child(5) { z-index: 50; }
-  .pinned-section:nth-child(6) { z-index: 60; }
-  .pinned-section:nth-child(7) { z-index: 70; }
-  .pinned-section:nth-child(8) { z-index: 80; }
-}
-
-/* ─── Image loading ─────────────────────────────────────────── */
-img {
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
-img[loading] {
-  opacity: 0;
-}
-
-/* ─── Mobile menu animation ─────────────────────────────────── */
-@keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
 }
 
 /* ─── Mobile bottom navigation bar ──────────────────────────── */
@@ -180,35 +30,34 @@ img[loading] {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 10px;
   font-weight: 500;
   color: #6F757C;
-  text-decoration: none;
   padding: 6px 12px;
   border-radius: 8px;
   transition: color 0.2s ease;
   min-width: 56px;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
-.mobile-bottom-nav .nav-item.active {
-  color: #FF6A00;
-}
-
-.mobile-bottom-nav .nav-item:hover {
-  color: #FF6A00;
-}
+.mobile-bottom-nav .nav-item.active { color: #FF6A00; }
+.mobile-bottom-nav .nav-item:hover  { color: #FF6A00; }
 
 .mobile-bottom-nav .nav-item-post {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  text-decoration: none;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 10px;
   font-weight: 600;
   color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .mobile-bottom-nav .nav-item-post .post-circle {
@@ -228,7 +77,14 @@ img[loading] {
   transform: translateY(-10px) scale(0.95);
 }
 
-/* ─── Section visual separators ─────────────────────────────── */
+/* ─── Bottom nav page spacing ───────────────────────────────── */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: calc(var(--mobile-bottom-nav-h, 64px) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ─── Section visual separator ──────────────────────────────── */
 .section-divider {
   width: 60px;
   height: 3px;
@@ -237,168 +93,23 @@ img[loading] {
   margin-bottom: 1.5rem;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   MOBILE LAYOUT: HOMEPAGE SECTIONS
-   ═══════════════════════════════════════════════════════════════ */
-
-@media (max-width: 768px) {
-  /* Hero */
-  .hero-image {
-    position: relative !important;
-    width: 100% !important;
-    height: 45vh !important;
-    min-height: 280px !important;
-  }
-
-  .hero-content {
-    position: relative !important;
-    width: 100% !important;
-    height: auto !important;
-    padding: 32px 20px 40px !important;
-  }
-
-  .hero-headline {
-    margin-bottom: 12px !important;
-  }
-
-  /* ALL pinned sections → natural flow */
-  .pinned-section {
-    position: relative !important;
-    height: auto !important;
-    min-height: 0 !important;
-    width: 100% !important;
-    overflow: visible !important;
-    padding: 0 !important;
-  }
-
-  /* Force ALL children of pinned sections into relative flow */
-  .pinned-section > * {
-    position: relative !important;
-    width: 100% !important;
-    inset: auto !important;
-  }
-
-  .pinned-section > div.absolute.inset-0,
-  .pinned-section > div[class*="absolute inset-0"],
-  .pinned-section > div[class*="absolute"] {
-    position: relative !important;
-    display: flex !important;
-    flex-direction: column !important;
-    height: auto !important;
-    inset: auto !important;
-    width: 100% !important;
-  }
-
-  /* GSAP pin-spacer cleanup */
-  .pin-spacer {
-    display: block !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-  }
-
-  /* Category mosaic grid — force single column on mobile */
-  .pinned-section > div[class*="grid"] {
-    display: flex !important;
-    flex-direction: column !important;
-    position: relative !important;
-    height: auto !important;
-    inset: auto !important;
-  }
-
-  /* Category tiles */
-  .cat-tile-top-left,
-  .cat-tile-top-right,
-  .cat-tile-bottom-center {
-    height: 35vh !important;
-    min-height: 220px !important;
-    position: relative !important;
-  }
-
-  .cat-text-tile {
-    height: auto !important;
-    padding: 28px 20px !important;
-    position: relative !important;
-  }
-
-  /* Featured panels */
-  .featured-panel {
-    height: auto !important;
-    min-height: 300px !important;
-    width: 100% !important;
-    position: relative !important;
-    margin-bottom: 0 !important;
-  }
-
-  /* How It Works / Value Props / Safety / Financing — split panels */
-  .hiw-image,
-  .vp-image,
-  .safety-image,
-  .fin-image {
-    position: relative !important;
-    width: 100% !important;
-    height: 40vh !important;
-    min-height: 240px !important;
-  }
-
-  .hiw-image img,
-  .vp-image img,
-  .safety-image img,
-  .fin-image img {
-    object-fit: cover !important;
-    width: 100% !important;
-    height: 100% !important;
-  }
-
-  /* The right-side content panels in split sections */
-  .pinned-section > div[class*="right-0"],
-  .pinned-section > div[class*="absolute right"],
-  .pinned-section > div.absolute.right-0 {
-    position: relative !important;
-    width: 100% !important;
-    height: auto !important;
-    padding: 32px 20px !important;
-    inset: auto !important;
-  }
-
-  /* Financing panel */
-  .fin-panel {
-    position: relative !important;
-    width: 100% !important;
-    height: auto !important;
-    padding: 40px 20px !important;
-    background: #101214 !important;
-    color: white !important;
-    inset: auto !important;
-  }
-
-  /* Safety items */
-  .safety-item {
-    margin-bottom: 12px !important;
-    align-items: flex-start !important;
-  }
-
-  /* Footer adjustments */
-  .footer-input {
-    width: 100% !important;
-    border-radius: 6px !important;
-    margin-bottom: 8px !important;
-  }
-
-  /* Remove any 100vh sections on mobile */
-  .pinned-section[class*="z-"] {
-    min-height: 0 !important;
-    height: auto !important;
-  }
+/* ─── Link arrow underline ───────────────────────────────────── */
+.link-arrow {
+  position: relative;
 }
 
-/* ─── Bottom nav page spacing ───────────────────────────────── */
-@media (max-width: 768px) {
-  body {
-    padding-bottom: calc(var(--mobile-bottom-nav-h, 64px) + env(safe-area-inset-bottom, 0px));
-  }
+.link-arrow::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background-color: currentColor;
+  transition: width 0.3s ease;
 }
+
+.link-arrow:hover::after { width: 100%; }
 
 /* ─── Enhanced visual depth for inner pages ─────────────────── */
 .page-header {
@@ -411,9 +122,9 @@ img[loading] {
 
 /* ─── Reduced motion ────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .fin-cta { animation: none; }
-  .hiw-card::before { animation: none; }
-  .mobile-bottom-nav .nav-item-post .post-circle {
-    transform: translateY(-12px);
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

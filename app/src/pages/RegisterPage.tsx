@@ -1,7 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
-import { ArrowRight, Phone, Lock, Mail, User, Eye, EyeOff, Loader2, Building2, Gift } from 'lucide-react';
+import { ArrowRight, Phone, Lock, Mail, User, Eye, EyeOff, Loader2, Building2, Gift, Check, AlertCircle } from 'lucide-react';
+import Navbar from '../components/Navbar';
+
+// Shadcn UI
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Alert, AlertDescription } from '../components/ui/alert';
 
 const USER_TYPES = [
   { value: 'individual', label: 'Individual', desc: 'Buy, sell, or rent machinery' },
@@ -50,8 +58,34 @@ export default function RegisterPage() {
       setError('Name, phone, and password are required.');
       return;
     }
-    if (form.password.length < 6) {
-      setError('Password must be at least 6 characters.');
+
+    // Phone validation (exactly 10 digits)
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(form.phone)) {
+      setError('Please enter a valid 10-digit phone number.');
+      return;
+    }
+
+    // Email validation (standard email format)
+    if (form.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(form.email)) {
+        setError('Please enter a valid email address.');
+        return;
+      }
+    }
+
+    // Password validation (min 8 chars, at least one letter and one number)
+    if (form.password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+    if (!/[a-zA-Z]/.test(form.password)) {
+      setError('Password must contain at least one letter.');
+      return;
+    }
+    if (!/[0-9]/.test(form.password)) {
+      setError('Password must contain at least one number.');
       return;
     }
 
@@ -74,158 +108,226 @@ export default function RegisterPage() {
     }
   };
 
-  const inputClass = 'w-full pl-11 pr-4 py-3.5 bg-white border border-[#EDE8E0] rounded-lg text-sm text-[#101214] focus:border-[#FF6A00] focus:outline-none transition-colors shadow-sm min-h-[48px]';
-  const labelClass = 'block text-xs font-medium text-[#6F757C] mb-1.5 uppercase tracking-wider';
-
   return (
-    <div className="min-h-screen bg-[#EDE8E0] flex">
-      {/* Left panel */}
-      <div className="hidden lg:block lg:w-[50vw] relative">
-        <img
-          src="/images/safety_quarry.jpg"
-          alt="Heavy machinery"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#101214]/60 to-transparent" />
-        <div className="absolute bottom-12 left-12 text-white max-w-md">
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '2rem', lineHeight: 1.1 }}>
-            Join India's largest heavy equipment network.
-          </h2>
-          <p className="text-white/70 mt-3 text-sm">
-            Create a free account and start buying, selling, or renting machinery today.
-          </p>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-[#F5EFEB] flex">
+        {/* Left panel */}
+        <div className="hidden lg:block lg:w-[50vw] relative">
+          <img
+            src="/images/safety_quarry.jpg"
+            alt="Heavy machinery"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#101214]/80 to-transparent" />
+          <div className="absolute bottom-16 left-16 text-white max-w-lg">
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '2.5rem', lineHeight: 1.1 }}
+            >
+              Join India's largest heavy equipment network.
+            </motion.h2>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="text-white/70 mt-4 text-base"
+              style={{ fontFamily: 'DM Sans, sans-serif' }}
+            >
+              Create a free account and start buying, selling, or renting machinery today.
+            </motion.p>
+          </div>
+        </div>
+
+        {/* Right panel */}
+        <div className="flex-1 flex flex-col justify-center items-center px-5 sm:px-6 py-16 sm:py-12 bg-white relative overflow-y-auto">
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-[0.03]"
+            style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }}
+          />
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="w-full max-w-[480px] relative z-10"
+          >
+            <div className="text-center mb-6">
+              <Link to="/" className="inline-block">
+                <span style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.75rem', color: '#FF6A00' }}>
+                  YantraSetu
+                </span>
+              </Link>
+            </div>
+
+            <Card className="border-none shadow-2xl shadow-black/5 bg-white">
+              <CardHeader className="space-y-3 pb-6">
+                <CardTitle className="text-2xl text-center" style={{ fontFamily: 'Sora, sans-serif' }}>
+                  Create your account
+                </CardTitle>
+                <CardDescription className="text-center" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                  One account for everything — buy, sell, rent, hire.
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent>
+                {error && (
+                  <Alert variant="destructive" className="mb-6">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription style={{ fontFamily: 'DM Sans, sans-serif' }}>{error}</AlertDescription>
+                  </Alert>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>First Name</label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-[#6F757C]" />
+                        <Input
+                          value={form.firstName}
+                          onChange={(e) => update('firstName', e.target.value)}
+                          placeholder="First name"
+                          className="pl-9 h-11 focus-visible:ring-[#FF6A00]"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Last Name</label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-[#6F757C]" />
+                        <Input
+                          value={form.lastName}
+                          onChange={(e) => update('lastName', e.target.value)}
+                          placeholder="Last name"
+                          className="pl-9 h-11 focus-visible:ring-[#FF6A00]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Phone Number *</label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-3 h-4 w-4 text-[#6F757C]" />
+                      <Input
+                        type="tel"
+                        value={form.phone}
+                        onChange={(e) => update('phone', e.target.value)}
+                        placeholder="10-digit phone number"
+                        className="pl-9 h-11 focus-visible:ring-[#FF6A00]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Email (Optional)</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-[#6F757C]" />
+                      <Input
+                        type="email"
+                        value={form.email}
+                        onChange={(e) => update('email', e.target.value)}
+                        placeholder="you@example.com"
+                        className="pl-9 h-11 focus-visible:ring-[#FF6A00]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Password *</label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-[#6F757C]" />
+                      <Input
+                        type={showPassword ? 'text' : 'password'}
+                        value={form.password}
+                        onChange={(e) => update('password', e.target.value)}
+                        placeholder="Min 6 characters"
+                        className="pl-9 pr-9 h-11 focus-visible:ring-[#FF6A00]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 text-[#6F757C] hover:text-[#101214]"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>I am a</label>
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                      {USER_TYPES.map((t) => (
+                        <button
+                          key={t.value}
+                          type="button"
+                          onClick={() => update('userType', t.value)}
+                          className={`p-3 rounded-xl border text-left transition-all relative overflow-hidden ${
+                            form.userType === t.value
+                              ? 'border-[#FF6A00] bg-[#FF6A00]/5 shadow-sm'
+                              : 'border-[#EDE8E0] bg-white hover:border-[#6F757C]'
+                          }`}
+                        >
+                          <Building2 className={`h-4 w-4 mb-2 ${form.userType === t.value ? 'text-[#FF6A00]' : 'text-[#6F757C]'}`} />
+                          <p className={`text-xs font-semibold ${form.userType === t.value ? 'text-[#101214]' : 'text-[#6F757C]'}`} style={{ fontFamily: 'Sora, sans-serif' }}>
+                            {t.label}
+                          </p>
+                          {form.userType === t.value && (
+                            <div className="absolute top-2 right-2 bg-[#FF6A00] text-white rounded-full p-0.5">
+                              <Check className="h-3 w-3" />
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-[#6F757C] uppercase tracking-wider" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Referral Code (Optional)</label>
+                    <div className="relative">
+                      <Gift className="absolute left-3 top-3 h-4 w-4 text-[#6F757C]" />
+                      <Input
+                        type="text"
+                        value={form.referralCode}
+                        onChange={(e) => update('referralCode', e.target.value.toUpperCase())}
+                        placeholder="e.g. AB12CD34"
+                        maxLength={20}
+                        className="pl-9 h-11 focus-visible:ring-[#FF6A00]"
+                      />
+                    </div>
+                    {form.referralCode && (
+                      <p className="text-[10px] text-green-600 mt-1 ml-1 font-semibold flex items-center gap-1 uppercase tracking-wide" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                        <Check className="h-3 w-3" /> Referral code applied
+                      </p>
+                    )}
+                  </div>
+
+                  <Button type="submit" disabled={loading} className="w-full h-11 bg-[#101214] hover:bg-[#202428] text-white mt-2">
+                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : (
+                      <>
+                        Create Account <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </CardContent>
+              <CardFooter className="flex flex-col gap-4 border-t border-[#EDE8E0] pt-6 mt-2">
+                <p className="text-center text-sm text-[#6F757C]" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                  Already have an account?{' '}
+                  <Link to="/login" className="text-[#FF6A00] font-semibold hover:underline">
+                    Sign in
+                  </Link>
+                </p>
+                <Link to="/" className="text-center text-xs text-[#6F757C] hover:text-[#101214] transition-colors" style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                  ← Back to home
+                </Link>
+              </CardFooter>
+            </Card>
+          </motion.div>
         </div>
       </div>
-
-      {/* Right panel */}
-      <div className="flex-1 flex flex-col justify-center items-center px-5 sm:px-6 py-16 sm:py-12 overflow-y-auto">
-        <div className="w-full max-w-[420px]">
-          <Link to="/" className="block mb-8">
-            <span style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '1.5rem', color: '#101214' }}>
-              YantraSetu
-            </span>
-          </Link>
-
-          <h1 style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '1.75rem', color: '#101214', marginBottom: '0.5rem' }}>
-            Create your account
-          </h1>
-          <p className="text-[#6F757C] text-sm mb-8">
-            One account for everything — buy, sell, rent, hire.
-          </p>
-
-          {error && (
-            <div className="mb-6 p-3.5 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit}>
-            {/* Name row */}
-            <div className="grid grid-cols-2 gap-3 mb-5">
-              <div>
-                <label className={labelClass} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>First Name</label>
-                <div className="relative">
-                  <User size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F757C]" />
-                  <input type="text" value={form.firstName} onChange={(e) => update('firstName', e.target.value)}
-                    placeholder="First name" className={inputClass} style={{ fontFamily: 'Inter, sans-serif' }} />
-                </div>
-              </div>
-              <div>
-                <label className={labelClass} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Last Name</label>
-                <div className="relative">
-                  <User size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F757C]" />
-                  <input type="text" value={form.lastName} onChange={(e) => update('lastName', e.target.value)}
-                    placeholder="Last name" className={inputClass} style={{ fontFamily: 'Inter, sans-serif' }} />
-                </div>
-              </div>
-            </div>
-
-            {/* Phone */}
-            <div className="mb-5">
-              <label className={labelClass} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Phone Number *</label>
-              <div className="relative">
-                <Phone size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F757C]" />
-                <input type="tel" value={form.phone} onChange={(e) => update('phone', e.target.value)}
-                  placeholder="10-digit phone number" className={inputClass} style={{ fontFamily: 'Inter, sans-serif' }} />
-              </div>
-            </div>
-
-            {/* Email */}
-            <div className="mb-5">
-              <label className={labelClass} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Email (Optional)</label>
-              <div className="relative">
-                <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F757C]" />
-                <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)}
-                  placeholder="you@example.com" className={inputClass} style={{ fontFamily: 'Inter, sans-serif' }} />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div className="mb-5">
-              <label className={labelClass} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Password *</label>
-              <div className="relative">
-                <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F757C]" />
-                <input type={showPassword ? 'text' : 'password'} value={form.password} onChange={(e) => update('password', e.target.value)}
-                  placeholder="Min 6 characters" className={`${inputClass} pr-12`} style={{ fontFamily: 'Inter, sans-serif' }} />
-                <button type="button" onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6F757C] hover:text-[#101214] transition-colors">
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            {/* User Type */}
-            <div className="mb-6">
-              <label className={labelClass} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>I am a</label>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {USER_TYPES.map((t) => (
-                  <button key={t.value} type="button"
-                    onClick={() => update('userType', t.value)}
-                    className={`p-3 rounded-lg border text-left transition-all min-h-[56px] ${
-                      form.userType === t.value
-                        ? 'border-[#FF6A00] bg-[#FF6A00]/5 shadow-sm'
-                        : 'border-[#EDE8E0] bg-white hover:border-[#6F757C]'
-                    }`}
-                  >
-                    <Building2 size={16} className={form.userType === t.value ? 'text-[#FF6A00]' : 'text-[#6F757C]'} />
-                    <p className="text-xs font-semibold mt-1.5" style={{ fontFamily: 'Sora, sans-serif' }}>{t.label}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Referral Code */}
-            <div className="mb-6">
-              <label className={labelClass} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Referral Code (Optional)</label>
-              <div className="relative">
-                <Gift size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F757C]" />
-                <input type="text" value={form.referralCode} onChange={(e) => update('referralCode', e.target.value.toUpperCase())}
-                  placeholder="e.g. AB12CD34" className={inputClass} style={{ fontFamily: 'Inter, sans-serif' }}
-                  maxLength={20} />
-              </div>
-              {form.referralCode && (
-                <p className="text-xs text-green-600 mt-1 ml-1">Referral code applied ✓</p>
-              )}
-            </div>
-
-            <button type="submit" disabled={loading}
-              className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
-              {loading ? <Loader2 size={18} className="animate-spin" /> : (
-                <>Create Account <ArrowRight size={16} /></>
-              )}
-            </button>
-          </form>
-
-          <p className="text-center text-sm text-[#6F757C] mt-8">
-            Already have an account?{' '}
-            <Link to="/login" className="text-[#FF6A00] font-medium hover:underline">Sign in</Link>
-          </p>
-
-          <Link to="/" className="block text-center text-sm text-[#6F757C] mt-4 hover:text-[#101214] transition-colors">
-            ← Back to home
-          </Link>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

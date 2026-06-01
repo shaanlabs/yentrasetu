@@ -37,9 +37,90 @@ export default function OperatorsPage() {
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof OperatorForm, string>>>({});
   const [contactingId, setContactingId] = useState<string | null>(null);
 
+const MOCK_OPERATORS = [
+  {
+    id: 'op_mock_1',
+    user: { id: 'u_1', firstName: 'Ramesh', lastName: 'Kumar' },
+    yearsOfExperience: 8,
+    equipmentTypes: ['Excavator', 'Backhoe Loader'],
+    dayRate: 1500,
+    city: 'Bengaluru',
+    state: 'Karnataka',
+    isAvailable: true,
+    isVerified: true,
+    rating: 4.8,
+    reviewCount: 24
+  },
+  {
+    id: 'op_mock_2',
+    user: { id: 'u_2', firstName: 'Suresh', lastName: 'Singh' },
+    yearsOfExperience: 12,
+    equipmentTypes: ['Crane', 'Tower Crane'],
+    dayRate: 2200,
+    city: 'Mumbai',
+    state: 'Maharashtra',
+    isAvailable: true,
+    isVerified: true,
+    rating: 4.9,
+    reviewCount: 41
+  },
+  {
+    id: 'op_mock_3',
+    user: { id: 'u_3', firstName: 'Abdul', lastName: 'Rehman' },
+    yearsOfExperience: 5,
+    equipmentTypes: ['Dumper', 'Loader'],
+    dayRate: 1200,
+    city: 'Delhi NCR',
+    state: 'Delhi',
+    isAvailable: false,
+    isVerified: true,
+    rating: 4.5,
+    reviewCount: 12
+  },
+  {
+    id: 'op_mock_4',
+    user: { id: 'u_4', firstName: 'Vikram', lastName: 'Patil' },
+    yearsOfExperience: 15,
+    equipmentTypes: ['Bulldozer', 'Roller'],
+    dayRate: 1800,
+    city: 'Pune',
+    state: 'Maharashtra',
+    isAvailable: true,
+    isVerified: true,
+    rating: 4.7,
+    reviewCount: 38
+  },
+  {
+    id: 'op_mock_5',
+    user: { id: 'u_5', firstName: 'Manoj', lastName: 'Gowda' },
+    yearsOfExperience: 3,
+    equipmentTypes: ['Forklift'],
+    dayRate: 800,
+    city: 'Bengaluru',
+    state: 'Karnataka',
+    isAvailable: true,
+    isVerified: false,
+    rating: 4.2,
+    reviewCount: 5
+  },
+];
+
   useEffect(() => {
     setLoading(true);
-    operatorsApi.getOperators(filters).then(d => setOperators(d.operators)).catch(() => setOperators([])).finally(() => setLoading(false));
+    operatorsApi.getOperators(filters)
+      .then(d => {
+        // Merge API operators with mock operators for the demo
+        const merged = [...(d.operators || []), ...MOCK_OPERATORS];
+        // Apply basic filtering if needed for the mock data
+        const filtered = merged.filter(op => {
+          if (filters.city && !op.city.toLowerCase().includes(filters.city.toLowerCase())) return false;
+          if (filters.isAvailable === 'true' && !op.isAvailable) return false;
+          return true;
+        });
+        setOperators(filtered);
+      })
+      .catch(() => setOperators(MOCK_OPERATORS))
+      .finally(() => setLoading(false));
   }, [filters]);
 
   // Load existing profile
@@ -124,7 +205,13 @@ export default function OperatorsPage() {
   };
 
   return (
-    <PageShell breadcrumb="Operators" backTo="/services" backLabel="Services">
+    <PageShell 
+      breadcrumb="Operators" 
+      backTo="/services" 
+      backLabel="Services"
+      seoTitle="Hire Certified Heavy Equipment Operators | YantraSetu"
+      seoDescription="Find and hire verified, experienced heavy equipment operators for excavators, cranes, loaders, and more across India."
+    >
       {/* Title + List Service button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
         <div>

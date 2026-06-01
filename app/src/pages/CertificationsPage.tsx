@@ -152,7 +152,7 @@ export default function CertificationsPage() {
             <div className="mb-6">
               <label className="block text-xs font-medium text-[#6F757C] mb-1.5">Document Image *</label>
               {form.documentImage ? (
-                <div className="relative w-full h-48 border border-[#EDE8E0] rounded-lg overflow-hidden bg-[#EDE8E0]">
+                <div className="relative w-full aspect-[4/3] border border-[#EDE8E0] rounded-lg overflow-hidden bg-[#EDE8E0]">
                   <img src={form.documentImage} alt="Document" className="w-full h-full object-contain" />
                   <button type="button" onClick={() => setForm(p => ({ ...p, documentImage: '' }))}
                     className="absolute top-2 right-2 w-7 h-7 bg-white rounded-full shadow flex items-center justify-center"><X size={14} /></button>

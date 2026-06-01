@@ -20,7 +20,7 @@ const MachineryListing = sequelize.define('MachineryListing', {
     allowNull: false
   },
   category: {
-    type: DataTypes.ENUM('construction', 'mining', 'agriculture', 'industrial'),
+    type: DataTypes.ENUM('construction', 'concrete', 'foundation', 'mining', 'agriculture', 'industrial'),
     allowNull: false
   },
   subCategory: {
@@ -64,6 +64,18 @@ const MachineryListing = sequelize.define('MachineryListing', {
     type: DataTypes.ENUM('hourly', 'daily', 'monthly'),
     allowNull: true
   },
+  rentalRateDaily: {
+    type: DataTypes.DECIMAL(15, 2),
+    allowNull: true
+  },
+  rentalRateWeekly: {
+    type: DataTypes.DECIMAL(15, 2),
+    allowNull: true
+  },
+  rentalRateMonthly: {
+    type: DataTypes.DECIMAL(15, 2),
+    allowNull: true
+  },
   securityDeposit: {
     type: DataTypes.DECIMAL(15, 2),
     allowNull: true
@@ -74,6 +86,10 @@ const MachineryListing = sequelize.define('MachineryListing', {
     comment: 'Minimum duration in days'
   },
   withOperator: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  operatorAvailable: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   },
@@ -89,6 +105,36 @@ const MachineryListing = sequelize.define('MachineryListing', {
     type: DataTypes.INTEGER,
     allowNull: true,
     comment: 'Delivery radius in km'
+  },
+  availableFrom: {
+    type: DataTypes.DATEONLY,
+    allowNull: true
+  },
+  availableTo: {
+    type: DataTypes.DATEONLY,
+    allowNull: true
+  },
+  // Documents & Verification
+  registrationNumber: {
+    type: DataTypes.STRING(20),
+    allowNull: true
+  },
+  insuranceValid: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  documentImages: {
+    type: DataTypes.JSONB,
+    defaultValue: []
+  },
+  // Structured specs & features
+  specifications: {
+    type: DataTypes.JSONB,
+    defaultValue: {}
+  },
+  features: {
+    type: DataTypes.JSONB,
+    defaultValue: []
   },
   // Location
   address: {

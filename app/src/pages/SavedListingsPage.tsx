@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { machineryApi, type MachineryListing } from '../services/api';
-import { Heart, Trash2, Loader2, MapPin, Calendar, Gauge, Eye, ShoppingBag } from 'lucide-react';
+import { machineryApi, chatsApi, type MachineryListing } from '../services/api';
+import { Heart, Trash2, Loader2, MapPin, Calendar, Gauge, Eye, ShoppingBag, MessageSquare, CheckCircle2 } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
 const STORAGE_KEY = 'ys_saved_listings';
@@ -27,6 +27,8 @@ export function toggleSaved(id: string): boolean {
 export default function SavedListingsPage() {
   const [listings, setListings] = useState<MachineryListing[]>([]);
   const [loading, setLoading] = useState(true);
+  const [quoteRequesting, setQuoteRequesting] = useState(false);
+  const [quoteSuccess, setQuoteSuccess] = useState(false);
 
   useEffect(() => {
     const ids = getSavedIds();
@@ -53,6 +55,28 @@ export default function SavedListingsPage() {
   const formatPrice = (price: number) =>
     new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price);
 
+  const handleBulkQuote = async () => {
+    setQuoteRequesting(true);
+    try {
+      // Create a chat group or send bulk message to sellers
+      // Here we group by seller
+      const sellerIds = Array.from(new Set(listings.map(l => l.owner?.id).filter(Boolean))) as string[];
+      for (const sid of sellerIds) {
+        const sellerListings = listings.filter(l => l.owner?.id === sid);
+        const msg = `Hi, I would like to request a bulk quote for the following items:\n${sellerListings.map(l => `- ${l.make} ${l.model} (${l.listingType})`).join('\n')}`;
+        // Start or get chat
+        const { chat } = await chatsApi.startOrGet(sid, 'sale', sellerListings[0].id);
+        await chatsApi.sendMessage(chat.chatId, msg);
+      }
+      setQuoteSuccess(true);
+      setTimeout(() => setQuoteSuccess(false), 5000);
+    } catch (err: any) {
+      alert('Failed to request bulk quote: ' + (err.message || 'Unknown error'));
+    } finally {
+      setQuoteRequesting(false);
+    }
+  };
+
   return (
     <PageShell breadcrumb="Saved" backTo="/browse" backLabel="Browse" title="Saved Listings">
       {loading ? (
@@ -68,7 +92,22 @@ export default function SavedListingsPage() {
         </div>
       ) : (
         <>
-          <p className="text-sm text-[#6F757C] mb-4">{listings.length} saved listing{listings.length !== 1 ? 's' : ''}</p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <p className="text-sm text-[#6F757C]">{listings.length} items in your basket</p>
+            <button 
+              onClick={handleBulkQuote} 
+              disabled={quoteRequesting || quoteSuccess}
+              className={`text-sm px-6 py-2.5 rounded-lg flex items-center justify-center gap-2 font-bold transition-all ${
+                quoteSuccess 
+                  ? 'bg-green-100 text-green-700 border border-green-200' 
+                  : 'btn-primary'
+              }`}
+            >
+              {quoteRequesting ? <Loader2 size={16} className="animate-spin" /> : 
+               quoteSuccess ? <><CheckCircle2 size={16} /> Quote Requested</> : 
+               <><MessageSquare size={16} /> Request Bulk Quote</>}
+            </button>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {listings.map(listing => (
               <div key={listing.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-[#EDE8E0] hover:shadow-lg transition-all group relative">
@@ -81,9 +120,9 @@ export default function SavedListingsPage() {
                   <Trash2 size={14} className="text-red-500" />
                 </button>
 
-                <Link to={`/listing/${listing.id}`}>
+                <Link to={`/${listing.listingType === 'rent' ? 'rent' : 'sale'}/${`${listing.make}-${listing.model}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}-${listing.id}`}>
                   {/* Image */}
-                  <div className="relative h-52 sm:h-48 bg-[#EDE8E0]">
+                  <div className="relative aspect-[4/3] bg-[#EDE8E0]">
                     {listing.images?.[0] ? (
                       <img src={listing.images[0]} alt={`${listing.make} ${listing.model}`} className="w-full h-full object-cover" />
                     ) : (

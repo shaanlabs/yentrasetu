@@ -21,12 +21,14 @@ router.put('/auth/change-password', authenticate, authController.changePassword)
 router.post('/machinery', authenticate, listingCreateLimiter, detectDuplicateListings, analyzeListingContent, checkSuspiciousAccount, machineryController.createListing);
 router.get('/machinery', optionalAuth, machineryController.getListings);
 router.get('/machinery/categories', machineryController.getCategories);
+router.get('/machinery/search-suggestions', machineryController.searchSuggestions);
 router.get('/machinery/my-listings', authenticate, machineryController.getMyListings);
 router.get('/machinery/:id', optionalAuth, machineryController.getListing);
 router.put('/machinery/:id', authenticate, analyzeListingContent, machineryController.updateListing);
 router.delete('/machinery/:id', authenticate, machineryController.deleteListing);
 router.put('/machinery/:id/mark-sold', authenticate, machineryController.markAsSold);
 router.put('/machinery/:id/renew', authenticate, machineryController.renewListing);
+router.post('/machinery/:id/enquiry', machineryController.submitEnquiry);
 
 const partsController = require('../controllers/partsController');
 const operatorController = require('../controllers/operatorController');
@@ -178,6 +180,7 @@ router.get('/invoices/subscription/:subscriptionId', authenticate, invoiceContro
 const analyticsController = require('../controllers/analyticsController');
 router.post('/analytics/track-visit', optionalAuth, analyticsController.trackVisit);
 router.post('/analytics/track-conversion', optionalAuth, analyticsController.trackConversion);
+router.get('/analytics/public-stats', analyticsController.getPublicStats);
 router.get('/analytics/campaigns', authenticate, requireAdmin, analyticsController.getCampaignAnalytics);
 router.get('/analytics/demand-forecast', optionalAuth, analyticsController.getDemandForecast);
 router.get('/analytics/market-trends', analyticsController.getMarketTrends);

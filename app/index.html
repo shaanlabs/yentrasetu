@@ -35,9 +35,41 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      /* Nuke Google Translate banner */
+      .goog-te-banner-frame { display: none !important; visibility: hidden !important; }
+      iframe.goog-te-banner-frame { display: none !important; visibility: hidden !important; }
+      .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
+      .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
+      
+      /* Reset body and html offsets that Google tries to apply */
+      body { top: 0px !important; position: static !important; min-height: 100vh !important; }
+      html { top: 0px !important; position: static !important; height: 100% !important; }
+      
+      /* Hide google translate popup tooltip */
+      .goog-text-highlight { background: transparent !important; box-shadow: none !important; }
+      #goog-gt-tt, .goog-te-balloon-frame { display: none !important; }
+      
+      /* Hide the translation dropdown widget itself safely */
+      #google_translate_element { opacity: 0; width: 0; height: 0; position: absolute; overflow: hidden; z-index: -1; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    
+    <!-- Google Translate Script -->
+    <div id="google_translate_element" style="display:none;"></div>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en', 
+          includedLanguages: 'en,hi,mr,kn,ta',
+          autoDisplay: false
+        }, 'google_translate_element');
+      }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

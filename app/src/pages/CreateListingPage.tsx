@@ -10,7 +10,9 @@ import {
 import PageShell from '../components/PageShell';
 
 const CATEGORIES: Record<string, string[]> = {
-  construction: ['Excavators', 'Cranes', 'Bulldozers', 'Graders', 'Compactors', 'Tower Cranes', 'Concrete Pumps'],
+  construction: ['Excavators', 'Backhoe Loaders', 'Bulldozers', 'Motor Graders', 'Wheel Loaders', 'Soil Compactors', 'Tower Cranes', 'Mobile Cranes', 'Concrete Pumps'],
+  concrete: ['Batching Plants', 'Transit Mixers', 'Concrete Boom Pumps'],
+  foundation: ['Piling Rigs', 'Sheet Pile Drivers'],
   mining: ['Dumpers', 'Drills', 'Loaders', 'Conveyor Systems', 'Rock Breakers'],
   agriculture: ['Tractors', 'Harvesters', 'Rotavators', 'Sprayers', 'Threshers'],
   industrial: ['Forklifts', 'Compressors', 'Generators', 'CNC Machines', 'Welding Equipment'],
@@ -27,8 +29,11 @@ const INDIAN_STATES = [
 
 export default function CreateListingPage() {
   const navigate = useNavigate();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
   useEffect(() => { if (!authLoading && !isAuthenticated) navigate('/login'); }, [authLoading, isAuthenticated, navigate]);
+
+  // Restrict end customers from listing
+  const canList = user && ['dealer', 'contractor', 'company', 'admin', 'super_admin'].includes(user.userType);
 
   const [step, setStep] = useState(0); // 0 = type selection
   const [loading, setLoading] = useState(false);
@@ -45,6 +50,7 @@ export default function CreateListingPage() {
     availableFrom: '',
   });
   const [images, setImages] = useState<string[]>([]);
+  const [documentImages, setDocumentImages] = useState<string[]>([]);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [geoStatus, setGeoStatus] = useState<'idle' | 'loading' | 'done' | 'denied'>('idle');
   const [aiPrediction, setAiPrediction] = useState<any>(null);
@@ -71,6 +77,19 @@ export default function CreateListingPage() {
       if (!file.type.startsWith('image/')) { setError(`"${file.name}" is not an image.`); return; }
       const reader = new FileReader();
       reader.onload = () => { if (reader.result) setImages(prev => [...prev.slice(0, 4), reader.result as string]); };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+  };
+
+  const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    files.forEach(file => {
+      if (documentImages.length >= 3) return; // Max 3 docs
+      if (file.size > MAX_IMAGE_SIZE) { setError(`"${file.name}" is too large (max 5MB).`); return; }
+      if (!file.type.startsWith('image/') && file.type !== 'application/pdf') { setError(`"${file.name}" is not an image or PDF.`); return; }
+      const reader = new FileReader();
+      reader.onload = () => { if (reader.result) setDocumentImages(prev => [...prev.slice(0, 2), reader.result as string]); };
       reader.readAsDataURL(file);
     });
     e.target.value = '';
@@ -125,6 +144,7 @@ export default function CreateListingPage() {
       if (form.year) d.year = Number(form.year);
       if (form.hoursUsed) d.hoursUsed = Number(form.hoursUsed);
       if (images.length > 0) d.images = images;
+      if (documentImages.length > 0) d.documentImages = documentImages;
       if (coords) { d.latitude = coords.lat; d.longitude = coords.lng; }
       await machineryApi.createListing(d);
       navigate('/my-listings');
@@ -135,6 +155,40 @@ export default function CreateListingPage() {
   const formatPrice = (n: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n);
 
   if (authLoading) return <PageShell breadcrumb="Loading..." backTo="/" backLabel="Cancel"><div className="flex items-center justify-center py-32"><Loader2 size={32} className="animate-spin text-[#FF6A00]" /></div></PageShell>;
+
+  if (!canList) {
+    return (
+      <PageShell breadcrumb="Upgrade Account" backTo="/" backLabel="Back">
+        <div className="max-w-md mx-auto mt-10 text-center bg-white p-8 rounded-2xl shadow-sm border border-[#EDE8E0]">
+          <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle size={32} />
+          </div>
+          <h1 className="text-2xl font-bold mb-3 text-[#101214]" style={{ fontFamily: 'Sora, sans-serif' }}>
+            Seller Verification Required
+          </h1>
+          <p className="text-[#6F757C] text-sm mb-6 leading-relaxed">
+            To maintain a high-quality marketplace, only verified dealers, companies, and contractors can list equipment. 
+            Upgrade your account to start selling or renting out machines.
+          </p>
+          <div className="bg-[#F9F7F4] rounded-xl p-4 text-left mb-6 border border-[#EDE8E0]">
+            <h3 className="font-bold text-sm mb-2 font-mono uppercase tracking-wider text-[#6F757C]">Benefits</h3>
+            <ul className="space-y-2 text-sm text-[#101214]">
+              <li className="flex items-center gap-2"><CheckCircle size={14} className="text-green-500" /> List unlimited machinery</li>
+              <li className="flex items-center gap-2"><CheckCircle size={14} className="text-green-500" /> AI Pricing Insights</li>
+              <li className="flex items-center gap-2"><CheckCircle size={14} className="text-green-500" /> Direct buyer inquiries</li>
+            </ul>
+          </div>
+          <button 
+            onClick={() => navigate('/upgrade-account')} 
+            className="w-full h-12 bg-[#FF6A00] hover:bg-[#e55f00] text-white font-bold rounded-xl transition-colors"
+            style={{ fontFamily: 'Sora, sans-serif' }}
+          >
+            Apply for Seller Account
+          </button>
+        </div>
+      </PageShell>
+    );
+  }
 
   // ─── Step 0: Sale vs Rent Selection ───────────────────
   if (step === 0) {
@@ -573,6 +627,31 @@ export default function CreateListingPage() {
                     Listings with photos get 4x more views. Add at least one image.
                   </div>
                 )}
+              </div>
+
+              <div>
+                <label className={lbl} style={{ fontFamily: 'IBM Plex Mono, monospace' }}>Verification Documents (Optional)</label>
+                <div className="flex gap-3">
+                  {documentImages.map((doc, i) => (
+                    <div key={i} className="relative aspect-[3/4] w-20 rounded-lg border border-[#EDE8E0] overflow-hidden group bg-gray-50 flex items-center justify-center">
+                      {doc.startsWith('data:application/pdf') ? (
+                        <div className="text-xs text-[#6F757C] font-bold">PDF</div>
+                      ) : (
+                        <img src={doc} className="w-full h-full object-cover" alt="" />
+                      )}
+                      <button onClick={() => setDocumentImages(prev => prev.filter((_, j) => j !== i))}
+                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><X size={10} /></button>
+                    </div>
+                  ))}
+                  {documentImages.length < 3 && (
+                    <label className="aspect-[3/4] w-20 rounded-lg border-2 border-dashed border-[#EDE8E0] hover:border-[#FF6A00] flex flex-col items-center justify-center cursor-pointer text-[#6F757C] hover:text-[#FF6A00] transition-colors">
+                      <ImagePlus size={16} />
+                      <span className="text-[9px] mt-1 text-center leading-tight">RC /<br/>Insurance</span>
+                      <input type="file" accept="image/*,application/pdf" multiple onChange={handleDocumentUpload} className="hidden" />
+                    </label>
+                  )}
+                </div>
+                <p className="text-[10px] text-[#6F757C] mt-1">Upload RC, Insurance, or Purchase Invoice to get a "Verified" badge.</p>
               </div>
 
               <div>

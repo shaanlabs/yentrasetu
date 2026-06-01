@@ -75,13 +75,13 @@ export default function MyListingsPage() {
             {listings.map(listing => (
               <div key={listing.id} className="bg-white rounded-xl shadow-sm border border-[#EDE8E0] p-4 sm:p-5 flex flex-col sm:flex-row gap-4">
                 {/* Thumbnail */}
-                <div className="w-full sm:w-32 h-24 bg-[#EDE8E0] rounded overflow-hidden flex-shrink-0">
+                <div className="w-full sm:w-32 aspect-[4/3] bg-[#EDE8E0] rounded overflow-hidden flex-shrink-0">
                   {listing.images?.[0] ? <img src={listing.images[0]} className="w-full h-full object-cover" /> : <Gauge size={24} className="m-auto mt-7 text-[#6F757C] opacity-30" />}
                 </div>
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
-                    <Link to={`/listing/${listing.id}`} className="font-bold text-sm hover:text-[#FF6A00] transition-colors" style={{ fontFamily: 'Sora, sans-serif' }}>
+                    <Link to={`/${listing.listingType === 'rent' ? 'rent' : 'sale'}/${`${listing.make}-${listing.model}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}-${listing.id}`} className="font-bold text-sm hover:text-[#FF6A00] transition-colors" style={{ fontFamily: 'Sora, sans-serif' }}>
                       {listing.make} {listing.model}
                     </Link>
                     <span className={`px-2 py-1 text-[10px] font-bold rounded ${STATUS_COLORS[listing.status] || 'bg-gray-100'}`}

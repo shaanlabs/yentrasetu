@@ -27,6 +27,20 @@ const register = async (req, res) => {
   try {
     const { phone, email, password, firstName, lastName, userType } = req.body;
 
+    // Phone validation
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({ message: 'Please enter a valid 10-digit phone number.' });
+    }
+
+    // Email validation
+    if (email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: 'Please enter a valid email address.' });
+      }
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ where: { phone } });
     if (existingUser) {
@@ -85,6 +99,11 @@ const login = async (req, res) => {
   try {
     const { phone, password } = req.body;
 
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({ message: 'Please enter a valid 10-digit phone number.' });
+    }
+
     const user = await User.findOne({ where: { phone } });
     if (!user) {
       return res.status(401).json({ message: 'Invalid phone number or password.' });
@@ -132,27 +151,27 @@ const sendOTP = async (req, res) => {
   try {
     const { phone } = req.body;
 
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({ message: 'Please enter a valid 10-digit phone number.' });
+    }
+
     // Generate OTP
     const otp = generateOTP();
     const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Find or create user
+    // Find user
     let user = await User.findOne({ where: { phone } });
     
-    if (user) {
-      // Hash OTP before storing
-      const hashedOtp = await bcrypt.hash(otp, 6);
-      user.otpCode = hashedOtp;
-      user.otpExpiresAt = otpExpiresAt;
-      await user.save();
-    } else {
-      const hashedOtp = await bcrypt.hash(otp, 6);
-      user = await User.create({
-        phone,
-        otpCode: hashedOtp,
-        otpExpiresAt
-      });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found. Please register first.' });
     }
+
+    // Hash OTP before storing
+    const hashedOtp = await bcrypt.hash(otp, 6);
+    user.otpCode = hashedOtp;
+    user.otpExpiresAt = otpExpiresAt;
+    await user.save();
 
     // TODO: Integrate with SMS service (MSG91, Twilio)
     // For development, return OTP in response
@@ -309,7 +328,7 @@ const updateProfile = async (req, res) => {
     const allowedUpdates = [
       'firstName', 'lastName', 'email', 'companyName', 'gstNumber',
       'address', 'city', 'state', 'pincode', 'latitude', 'longitude',
-      'profileImage'
+      'profileImage', 'userType'
     ];
 
     const updateData = {};
@@ -318,6 +337,11 @@ const updateProfile = async (req, res) => {
         updateData[field] = updates[field];
       }
     });
+
+    // Security check for userType
+    if (updateData.userType && !['individual', 'contractor', 'company', 'dealer'].includes(updateData.userType)) {
+      delete updateData.userType;
+    }
 
     const user = await User.findByPk(req.userId);
     await user.update(updateData);
